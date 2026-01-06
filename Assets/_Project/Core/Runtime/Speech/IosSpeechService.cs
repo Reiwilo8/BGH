@@ -9,10 +9,12 @@ namespace Project.Core.Speech
         public void Speak(string text, SpeechPriority priority = SpeechPriority.Normal)
         {
             if (string.IsNullOrWhiteSpace(text)) return;
+            IsSpeaking = true;
             Debug.Log($"[iOSTTS STUB:{priority}] {text}");
+            IsSpeaking = false;
         }
 
-        public void StopAll() { }
+        public void StopAll() { IsSpeaking = false; }
         public void SetLanguage(string languageCode) { }
     }
 }
