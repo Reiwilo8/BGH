@@ -1,18 +1,17 @@
-using System.Collections;
 using Project.Core.Services;
 using Project.Core.Speech;
+using Project.Core.Visual;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Project.Core.App
 {
     public sealed class AppRootBootstrap : MonoBehaviour
     {
-        [Header("Additive scenes")]
+        [Header("Scenes")]
         [SerializeField] private string startSceneName = "StartScene";
+        [SerializeField] private string hubSceneName = "HubScene";
 
         private IServiceRegistry _services;
-
         public IServiceRegistry Services => _services;
 
         private void Awake()
@@ -21,34 +20,29 @@ namespace Project.Core.App
 
             _services = new ServiceRegistry();
 
+            _services.Register<IVisualModeService>(new VisualModeService());
+
             var feedRouter = new SpeechFeedRouter();
             _services.Register(feedRouter);
 
             var speech = SpeechServiceFactory.Create(feedRouter);
             _services.Register<ISpeechService>(speech);
 
-            StartCoroutine(BootRoutine());
+            var appFlow = new AppFlowService(startScene: startSceneName, hubScene: hubSceneName);
+            _services.Register<IAppFlowService>(appFlow);
         }
 
-        private IEnumerator BootRoutine()
+        private async void Start()
         {
-            if (!string.IsNullOrWhiteSpace(startSceneName) && !IsSceneLoaded(startSceneName))
+            try
             {
-                var op = SceneManager.LoadSceneAsync(startSceneName, LoadSceneMode.Additive);
-                while (op != null && !op.isDone)
-                    yield return null;
+                var flow = _services.Resolve<IAppFlowService>();
+                await flow.EnterStartAsync();
             }
-        }
-
-        private static bool IsSceneLoaded(string sceneName)
-        {
-            for (int i = 0; i < SceneManager.sceneCount; i++)
+            catch (System.Exception ex)
             {
-                var sc = SceneManager.GetSceneAt(i);
-                if (sc.isLoaded && sc.name == sceneName)
-                    return true;
+                Debug.LogException(ex);
             }
-            return false;
         }
     }
 }

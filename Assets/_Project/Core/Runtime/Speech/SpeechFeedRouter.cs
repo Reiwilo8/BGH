@@ -6,6 +6,8 @@ namespace Project.Core.Speech
 
         public void SetTarget(ISpeechFeed target) => _target = target;
 
+        public void ClearTarget() => _target = null;
+
         public void ClearTarget(ISpeechFeed target)
         {
             if (_target == target) _target = null;

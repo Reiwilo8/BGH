@@ -1,25 +1,20 @@
-using System.Collections;
 using Project.Core.App;
 using Project.Core.Speech;
 using Project.Core.Visual;
 using Project.UI.Visual;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Project.Hub.Start
 {
     public sealed class StartController : MonoBehaviour
     {
-        [Header("Scenes")]
-        [SerializeField] private string startSceneName = "StartScene";
-        [SerializeField] private string hubSceneName = "HubScene";
-
         [Header("Visual Assist UI (optional)")]
         [SerializeField] private StartVisualUiController visualUi;
 
         private IVisualModeService _visualMode;
         private ISpeechService _speech;
         private SpeechFeedRouter _speechFeedRouter;
+        private IAppFlowService _flow;
 
         private bool _isTransitioning;
 
@@ -34,6 +29,7 @@ namespace Project.Hub.Start
             }
 
             _speech = services.Resolve<ISpeechService>();
+            _flow = services.Resolve<IAppFlowService>();
 
             _speechFeedRouter = services.Resolve<SpeechFeedRouter>();
             if (visualUi != null)
@@ -43,8 +39,9 @@ namespace Project.Hub.Start
         private void Start()
         {
             RefreshUi();
-
-            _speech.Speak("Start. Confirm to open the Hub. Back to quit. Toggle Visual Assist available on this screen.", SpeechPriority.Normal);
+            _speech.Speak(
+                "Start. Confirm to open the Hub. Back to quit. Toggle Visual Assist available on this screen.",
+                SpeechPriority.Normal);
         }
 
         private void OnDestroy()
@@ -53,27 +50,27 @@ namespace Project.Hub.Start
                 _speechFeedRouter.ClearTarget(visualUi);
         }
 
-        public void EnterHub()
+        public async void EnterHub()
         {
-            if (_isTransitioning) return;
+            if (_isTransitioning || _flow.IsTransitioning) return;
             _isTransitioning = true;
 
             _speech.Speak("Opening Hub.", SpeechPriority.High);
-            StartCoroutine(GoToHub());
+            await _flow.EnterHubAsync();
         }
 
-        public void ExitApp()
+        public async void ExitApp()
         {
-            if (_isTransitioning) return;
+            if (_isTransitioning || _flow.IsTransitioning) return;
             _isTransitioning = true;
 
             _speech.Speak("Quitting application.", SpeechPriority.High);
-            QuitApp();
+            await _flow.ExitApplicationAsync();
         }
 
         public void ToggleVisualAssist()
         {
-            if (_isTransitioning) return;
+            if (_isTransitioning || (_flow != null && _flow.IsTransitioning)) return;
 
             _visualMode.ToggleVisualAssist();
             RefreshUi();
@@ -105,45 +102,6 @@ namespace Project.Hub.Start
                 "- Confirm: Double-tap\n" +
                 "- Back/Pause: Long-press\n" +
                 "- Toggle Visual Assist: Two-finger tap (Start screen only)";
-        }
-
-        private IEnumerator GoToHub()
-        {
-            if (!IsSceneLoaded(hubSceneName))
-            {
-                var load = SceneManager.LoadSceneAsync(hubSceneName, LoadSceneMode.Additive);
-                while (load != null && !load.isDone) yield return null;
-            }
-
-            if (IsSceneLoaded(startSceneName))
-            {
-                var unload = SceneManager.UnloadSceneAsync(startSceneName);
-                while (unload != null && !unload.isDone) yield return null;
-            }
-
-            var hubScene = SceneManager.GetSceneByName(hubSceneName);
-            if (hubScene.IsValid() && hubScene.isLoaded)
-                SceneManager.SetActiveScene(hubScene);
-        }
-
-        private static bool IsSceneLoaded(string sceneName)
-        {
-            for (int i = 0; i < SceneManager.sceneCount; i++)
-            {
-                var sc = SceneManager.GetSceneAt(i);
-                if (sc.isLoaded && sc.name == sceneName)
-                    return true;
-            }
-            return false;
-        }
-
-        private static void QuitApp()
-        {
-#if UNITY_EDITOR
-            Debug.Log("[App] Quit requested (Editor).");
-#else
-            Application.Quit();
-#endif
         }
     }
 }
