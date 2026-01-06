@@ -2,7 +2,8 @@
     "name": "Hub.Runtime",
     "rootNamespace": "",
     "references": [
-        "GUID:c945a836251f6f140aeaaf9add7e49ee"
+        "GUID:c945a836251f6f140aeaaf9add7e49ee",
+        "GUID:db9609db49fa24542a0b3a95b56cb30e"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
