@@ -1,5 +1,6 @@
 using System.Collections;
 using Project.Core.Services;
+using Project.Core.Speech;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,6 +20,12 @@ namespace Project.Core.App
             DontDestroyOnLoad(gameObject);
 
             _services = new ServiceRegistry();
+
+            var feedRouter = new SpeechFeedRouter();
+            _services.Register(feedRouter);
+
+            var speech = SpeechServiceFactory.Create(feedRouter);
+            _services.Register<ISpeechService>(speech);
 
             StartCoroutine(BootRoutine());
         }
