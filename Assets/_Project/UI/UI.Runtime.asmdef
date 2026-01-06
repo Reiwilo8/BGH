@@ -2,7 +2,8 @@
     "name": "UI.Runtime",
     "rootNamespace": "",
     "references": [
-        "GUID:c945a836251f6f140aeaaf9add7e49ee"
+        "GUID:c945a836251f6f140aeaaf9add7e49ee",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
