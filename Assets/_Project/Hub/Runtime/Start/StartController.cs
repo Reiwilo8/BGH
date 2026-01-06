@@ -1,6 +1,6 @@
 using System.Collections;
 using Project.Core.App;
-using Project.Core.Services;
+using Project.Core.Speech;
 using Project.Core.Visual;
 using Project.UI.Visual;
 using UnityEngine;
@@ -18,97 +18,93 @@ namespace Project.Hub.Start
         [SerializeField] private StartVisualUiController visualUi;
 
         private IVisualModeService _visualMode;
-        private StartOption _current = StartOption.EnterHub;
+        private ISpeechService _speech;
+        private SpeechFeedRouter _speechFeedRouter;
+
+        private bool _isTransitioning;
 
         private void Awake()
         {
-            IServiceRegistry services = App.Services;
+            var services = App.Services;
 
             if (!services.TryResolve<IVisualModeService>(out _visualMode))
             {
                 _visualMode = new VisualModeService();
                 services.Register<IVisualModeService>(_visualMode);
             }
+
+            _speech = services.Resolve<ISpeechService>();
+
+            _speechFeedRouter = services.Resolve<SpeechFeedRouter>();
+            if (visualUi != null)
+                _speechFeedRouter.SetTarget(visualUi);
         }
 
         private void Start()
         {
             RefreshUi();
-            Announce();
+
+            _speech.Speak("Start. Confirm to open the Hub. Back to quit. Toggle Visual Assist available on this screen.", SpeechPriority.Normal);
         }
 
-        private void RefreshUi()
+        private void OnDestroy()
         {
-            visualUi?.ApplyMode(_visualMode.Mode);
-            visualUi?.SetContent(BuildUiText());
+            if (_speechFeedRouter != null && visualUi != null)
+                _speechFeedRouter.ClearTarget(visualUi);
         }
 
-        private string BuildUiText()
+        public void EnterHub()
         {
-            return
-                "START\n\n" +
-                $"Selected: {_current}\n\n" +
-                "Keyboard / Mouse:\n" +
-                "- Next: Right or Down (arrows)\n" +
-                "- Previous: Left or Up (arrows)\n" +
-                "- Confirm: Enter / Space / Left Click\n" +
-                "- Back/Pause: Backspace / Escape / Right Click\n" +
-                "- Toggle Visual Assist: F1 (Start screen only)\n\n" +
-                "Touch gestures:\n" +
-                "- Next: Swipe Left or Swipe Up\n" +
-                "- Previous: Swipe Right or Swipe Down\n" +
-                "- Confirm: Double-tap\n" +
-                "- Back/Pause: Long-press\n" +
-                "- Toggle Visual Assist: Two-finger tap (Start screen only)\n";
+            if (_isTransitioning) return;
+            _isTransitioning = true;
+
+            _speech.Speak("Opening Hub.", SpeechPriority.High);
+            StartCoroutine(GoToHub());
         }
 
-        private void Announce()
+        public void ExitApp()
         {
-            Debug.Log($"[Start] Selected option = {_current}");
-        }
+            if (_isTransitioning) return;
+            _isTransitioning = true;
 
-        public void Next()
-        {
-            _current = (StartOption)(((int)_current + 1) % 3);
-            RefreshUi();
-            Announce();
-        }
-
-        public void Previous()
-        {
-            _current = (StartOption)(((int)_current - 1 + 3) % 3);
-            RefreshUi();
-            Announce();
-        }
-
-        public void Confirm()
-        {
-            switch (_current)
-            {
-                case StartOption.EnterHub:
-                    StartCoroutine(GoToHub());
-                    break;
-
-                case StartOption.ToggleVisualAssist:
-                    ToggleVisualAssist();
-                    break;
-
-                case StartOption.Exit:
-                    QuitApp();
-                    break;
-            }
-        }
-
-        public void Back()
-        {
+            _speech.Speak("Quitting application.", SpeechPriority.High);
             QuitApp();
         }
 
         public void ToggleVisualAssist()
         {
+            if (_isTransitioning) return;
+
             _visualMode.ToggleVisualAssist();
             RefreshUi();
-            Announce();
+
+            string msg = _visualMode.Mode == VisualMode.VisualAssist
+                ? "Visual Assist enabled."
+                : "Visual Assist disabled.";
+
+            _speech.Speak(msg, SpeechPriority.High);
+        }
+
+        private void RefreshUi()
+        {
+            if (visualUi == null) return;
+
+            visualUi.ApplyMode(_visualMode.Mode);
+            visualUi.SetContent(BuildUiText());
+        }
+
+        private static string BuildUiText()
+        {
+            return
+                "START\n\n" +
+                "Keyboard / Mouse:\n" +
+                "- Confirm: Enter / Space / Left Click\n" +
+                "- Back/Pause: Backspace / Esc / Right Click\n" +
+                "- Toggle Visual Assist: F1 (Start screen only)\n\n" +
+                "Touch gestures:\n" +
+                "- Confirm: Double-tap\n" +
+                "- Back/Pause: Long-press\n" +
+                "- Toggle Visual Assist: Two-finger tap (Start screen only)";
         }
 
         private IEnumerator GoToHub()
@@ -124,6 +120,10 @@ namespace Project.Hub.Start
                 var unload = SceneManager.UnloadSceneAsync(startSceneName);
                 while (unload != null && !unload.isDone) yield return null;
             }
+
+            var hubScene = SceneManager.GetSceneByName(hubSceneName);
+            if (hubScene.IsValid() && hubScene.isLoaded)
+                SceneManager.SetActiveScene(hubScene);
         }
 
         private static bool IsSceneLoaded(string sceneName)

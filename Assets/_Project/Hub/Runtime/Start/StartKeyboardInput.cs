@@ -25,17 +25,11 @@ namespace Project.Hub.Start
         {
             if (controller == null) return;
 
-            if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.DownArrow))
-                controller.Next();
-
-            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow))
-                controller.Previous();
-
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
-                controller.Confirm();
+                controller.EnterHub();
 
             if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetKeyDown(KeyCode.Escape))
-                controller.Back();
+                controller.ExitApp();
 
             if (Input.GetKeyDown(KeyCode.F1))
                 controller.ToggleVisualAssist();
@@ -50,10 +44,10 @@ namespace Project.Hub.Start
             }
 
             if (lmb)
-                controller.Confirm();
+                controller.EnterHub();
 
             if (rmb)
-                controller.Back();
+                controller.ExitApp();
         }
     }
 }
