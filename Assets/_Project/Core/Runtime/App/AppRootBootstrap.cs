@@ -1,3 +1,4 @@
+using Project.Core.Input;
 using Project.Core.Services;
 using Project.Core.Speech;
 using Project.Core.Visual;
@@ -5,6 +6,7 @@ using UnityEngine;
 
 namespace Project.Core.App
 {
+    [DefaultExecutionOrder(-10000)]
     public sealed class AppRootBootstrap : MonoBehaviour
     {
         [Header("Scenes")]
@@ -30,6 +32,8 @@ namespace Project.Core.App
 
             var appFlow = new AppFlowService(startScene: startSceneName, hubScene: hubSceneName);
             _services.Register<IAppFlowService>(appFlow);
+
+            _services.Register<IInputService>(new InputService());
         }
 
         private async void Start()

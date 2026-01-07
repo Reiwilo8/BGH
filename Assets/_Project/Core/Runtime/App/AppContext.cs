@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Project.Core.App
 {
-    public static class App
+    public static class AppContext
     {
         private static IServiceRegistry _services;
 
@@ -18,6 +18,8 @@ namespace Project.Core.App
                     throw new System.InvalidOperationException("AppRootBootstrap not found. Ensure AppRoot scene is loaded.");
 
                 _services = bootstrap.Services;
+                if (_services == null)
+                    throw new System.InvalidOperationException("AppRootBootstrap.Services is not initialized yet. Check script execution order.");
                 return _services;
             }
         }
