@@ -11,8 +11,8 @@ namespace Project.Hub
 
         private void Awake()
         {
-            var speech = App.Services.Resolve<ISpeechService>();
-            var flow = App.Services.Resolve<IAppFlowService>();
+            var speech = AppContext.Services.Resolve<ISpeechService>();
+            var flow = AppContext.Services.Resolve<IAppFlowService>();
 
             _sm = new HubStateMachine(speech, flow);
         }

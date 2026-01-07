@@ -538,7 +538,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1591102832}
   - component: {fileID: 1591102831}
-  - component: {fileID: 1591102830}
+  - component: {fileID: 1591102833}
   m_Layer: 0
   m_Name: StartController
   m_TagString: Untagged
@@ -546,19 +546,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1591102830
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1591102829}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b9314ebc0810cc43a117f218db31c64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controller: {fileID: 1591102831}
 --- !u!114 &1591102831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -571,8 +558,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0614604dac05741beedb29ffcae040, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startSceneName: StartScene
-  hubSceneName: HubScene
   visualUi: {fileID: 1229083472}
 --- !u!4 &1591102832
 Transform:
@@ -589,6 +574,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1591102833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1591102829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7f53428496716a49afddff49c86b0eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 1591102831}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

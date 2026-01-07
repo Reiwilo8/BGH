@@ -5,6 +5,7 @@ namespace Project.Core.Input
         Next,
         Previous,
         Confirm,
-        Back
+        Back,
+        ToggleVisualAssist
     }
 }

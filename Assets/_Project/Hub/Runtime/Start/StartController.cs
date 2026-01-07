@@ -20,14 +20,9 @@ namespace Project.Hub.Start
 
         private void Awake()
         {
-            var services = App.Services;
+            var services = AppContext.Services;
 
-            if (!services.TryResolve<IVisualModeService>(out _visualMode))
-            {
-                _visualMode = new VisualModeService();
-                services.Register<IVisualModeService>(_visualMode);
-            }
-
+            _visualMode = services.Resolve<IVisualModeService>();
             _speech = services.Resolve<ISpeechService>();
             _flow = services.Resolve<IAppFlowService>();
 
@@ -40,7 +35,7 @@ namespace Project.Hub.Start
         {
             RefreshUi();
             _speech.Speak(
-                "Start. Confirm to open the Hub. Back to quit. Toggle Visual Assist available on this screen.",
+                "Start. Confirm to open the Hub. Back to quit. Toggle Visual Assist is available on this screen.",
                 SpeechPriority.Normal);
         }
 
@@ -55,8 +50,15 @@ namespace Project.Hub.Start
             if (_isTransitioning || _flow.IsTransitioning) return;
             _isTransitioning = true;
 
-            _speech.Speak("Opening Hub.", SpeechPriority.High);
-            await _flow.EnterHubAsync();
+            try
+            {
+                _speech.Speak("Opening Hub.", SpeechPriority.High);
+                await _flow.EnterHubAsync();
+            }
+            finally
+            {
+                _isTransitioning = false;
+            }
         }
 
         public async void ExitApp()
@@ -64,8 +66,15 @@ namespace Project.Hub.Start
             if (_isTransitioning || _flow.IsTransitioning) return;
             _isTransitioning = true;
 
-            _speech.Speak("Quitting application.", SpeechPriority.High);
-            await _flow.ExitApplicationAsync();
+            try
+            {
+                _speech.Speak("Quitting application.", SpeechPriority.High);
+                await _flow.ExitApplicationAsync();
+            }
+            finally
+            {
+                _isTransitioning = false;
+            }
         }
 
         public void ToggleVisualAssist()
