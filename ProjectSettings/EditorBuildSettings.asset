@@ -14,6 +14,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/HubScene.unity
     guid: c52f372304757b84197184705405543d
+  - enabled: 1
+    path: Assets/Scenes/GameModuleScene.unity
+    guid: b88de5f26db2e59428cf3e93effb7f70
+  - enabled: 1
+    path: Assets/Scenes/SteamRushScene.unity
+    guid: 1ac5e9450970768458538b855b198ff8
+  - enabled: 1
+    path: Assets/Scenes/FishingScene.unity
+    guid: e46f9d248839cce4bab50798dede7a73
+  - enabled: 1
+    path: Assets/Scenes/MemoryScene.unity
+    guid: 2dc9ef6ab8d3afe429ce9a19f65bbad2
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

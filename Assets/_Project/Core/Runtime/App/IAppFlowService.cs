@@ -10,6 +10,9 @@ namespace Project.Core.App
         Task EnterHubAsync();
         Task ExitApplicationAsync();
         Task EnterGameModuleAsync(string gameId);
+        Task ExitGameModuleAsync();
+        Task StartGameplayAsync(string gameplaySceneName);
+        Task ReturnToGameModuleAsync();
         Task ReturnToHubAsync();
     }
 }
