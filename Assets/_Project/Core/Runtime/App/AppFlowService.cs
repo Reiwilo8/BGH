@@ -8,13 +8,20 @@ namespace Project.Core.App
     {
         private readonly string _startScene;
         private readonly string _hubScene;
+        private readonly string _gameModuleScene;
+
+        private string _currentGameplayScene;
 
         public bool IsTransitioning { get; private set; }
 
-        public AppFlowService(string startScene = "StartScene", string hubScene = "HubScene")
+        public AppFlowService(
+            string startScene = "StartScene",
+            string hubScene = "HubScene",
+            string gameModuleScene = "GameModuleScene")
         {
             _startScene = startScene;
             _hubScene = hubScene;
+            _gameModuleScene = gameModuleScene;
         }
 
         public async Task EnterStartAsync()
@@ -23,7 +30,14 @@ namespace Project.Core.App
             IsTransitioning = true;
 
             await EnsureLoadedAsync(_startScene);
+
             await EnsureUnloadedAsync(_hubScene);
+            await EnsureUnloadedAsync(_gameModuleScene);
+
+            if (!string.IsNullOrWhiteSpace(_currentGameplayScene))
+                await EnsureUnloadedAsync(_currentGameplayScene);
+
+            _currentGameplayScene = null;
 
             IsTransitioning = false;
         }
@@ -35,6 +49,13 @@ namespace Project.Core.App
 
             await EnsureLoadedAsync(_hubScene);
             await EnsureUnloadedAsync(_startScene);
+
+            await EnsureUnloadedAsync(_gameModuleScene);
+
+            if (!string.IsNullOrWhiteSpace(_currentGameplayScene))
+                await EnsureUnloadedAsync(_currentGameplayScene);
+
+            _currentGameplayScene = null;
 
             IsTransitioning = false;
         }
@@ -50,13 +71,79 @@ namespace Project.Core.App
 #endif
         }
 
-        public Task EnterGameModuleAsync(string gameId)
+        public async Task EnterGameModuleAsync(string gameId)
         {
-            Debug.Log($"[AppFlow] EnterGameModuleAsync({gameId}) - TODO");
-            return Task.CompletedTask;
+            if (IsTransitioning) return;
+            IsTransitioning = true;
+
+            var session = AppContext.Services.Resolve<AppSession>();
+            session.SelectGame(gameId);
+
+            await EnsureLoadedAsync(_hubScene);
+            await EnsureLoadedAsync(_gameModuleScene);
+
+            IsTransitioning = false;
         }
 
-        public Task ReturnToHubAsync() => EnterHubAsync();
+        public async Task ExitGameModuleAsync()
+        {
+            if (IsTransitioning) return;
+            IsTransitioning = true;
+
+            await EnsureLoadedAsync(_hubScene);
+            await EnsureUnloadedAsync(_gameModuleScene);
+
+            IsTransitioning = false;
+        }
+
+        public async Task StartGameplayAsync(string gameplaySceneName)
+        {
+            if (IsTransitioning) return;
+            if (string.IsNullOrWhiteSpace(gameplaySceneName))
+                return;
+
+            IsTransitioning = true;
+
+            _currentGameplayScene = gameplaySceneName;
+
+            await EnsureLoadedAsync(_currentGameplayScene);
+            await EnsureUnloadedAsync(_gameModuleScene);
+
+            IsTransitioning = false;
+        }
+
+        public async Task ReturnToGameModuleAsync()
+        {
+            if (IsTransitioning) return;
+            IsTransitioning = true;
+
+            await EnsureLoadedAsync(_gameModuleScene);
+
+            if (!string.IsNullOrWhiteSpace(_currentGameplayScene))
+            {
+                await EnsureUnloadedAsync(_currentGameplayScene);
+                _currentGameplayScene = null;
+            }
+
+            IsTransitioning = false;
+        }
+
+        public async Task ReturnToHubAsync()
+        {
+            if (IsTransitioning) return;
+            IsTransitioning = true;
+
+            await EnsureLoadedAsync(_hubScene);
+
+            await EnsureUnloadedAsync(_gameModuleScene);
+
+            if (!string.IsNullOrWhiteSpace(_currentGameplayScene))
+                await EnsureUnloadedAsync(_currentGameplayScene);
+
+            _currentGameplayScene = null;
+
+            IsTransitioning = false;
+        }
 
         private static async Task EnsureLoadedAsync(string sceneName)
         {

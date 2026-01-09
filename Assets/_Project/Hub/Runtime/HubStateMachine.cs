@@ -25,6 +25,8 @@ namespace Project.Hub
         }
 
         public void Dispatch(NavAction action) => _current?.Handle(action);
+
+        public void OnFocusGained() => _current?.OnFocusGained();
     }
 
     public interface IHubState
@@ -33,5 +35,6 @@ namespace Project.Hub
         void Enter();
         void Exit();
         void Handle(NavAction action);
+        void OnFocusGained();
     }
 }

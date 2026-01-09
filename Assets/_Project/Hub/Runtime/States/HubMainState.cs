@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Project.Core.App;
 using Project.Core.Input;
 using Project.Core.Speech;
 
@@ -22,10 +23,16 @@ namespace Project.Hub.States
 
         public void Enter()
         {
+            AppContext.Services.Resolve<AppSession>().SetHubTarget(HubReturnTarget.Main);
             AnnounceCurrent(includeHelp: true);
         }
 
         public void Exit() { }
+
+        public void OnFocusGained()
+        {
+            AnnounceCurrent(includeHelp: true);
+        }
 
         public void Handle(NavAction action)
         {
@@ -76,7 +83,7 @@ namespace Project.Hub.States
             switch (_current)
             {
                 case HubMainOption.GameSelect:
-                    _sm.Speech.Speak("Game Select is not implemented yet.", SpeechPriority.High);
+                    _sm.SetState(new HubGameSelectState(_sm));
                     break;
 
                 case HubMainOption.Settings:

@@ -2,6 +2,8 @@ using Project.Core.Input;
 using Project.Core.Services;
 using Project.Core.Speech;
 using Project.Core.Visual;
+using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Project.Core.App
@@ -22,6 +24,8 @@ namespace Project.Core.App
 
             _services = new ServiceRegistry();
 
+            _services.Register(new AppSession());
+
             _services.Register<IVisualModeService>(new VisualModeService());
 
             var feedRouter = new SpeechFeedRouter();
@@ -34,16 +38,22 @@ namespace Project.Core.App
             _services.Register<IAppFlowService>(appFlow);
 
             _services.Register<IInputService>(new InputService());
+            _services.Register<IInputFocusService>(new InputFocusService());
         }
 
-        private async void Start()
+        private void Start()
+        {
+            _ = StartAsync();
+        }
+
+        private async Task StartAsync()
         {
             try
             {
-                var flow = _services.Resolve<IAppFlowService>();
+                var flow = AppContext.Services.Resolve<IAppFlowService>();
                 await flow.EnterStartAsync();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.LogException(ex);
             }

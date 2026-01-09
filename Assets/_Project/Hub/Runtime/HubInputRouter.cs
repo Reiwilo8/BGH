@@ -9,6 +9,7 @@ namespace Project.Hub
         [SerializeField] private HubController hub;
 
         private IInputService _input;
+        private IInputFocusService _focus;
 
         private void Awake()
         {
@@ -16,10 +17,12 @@ namespace Project.Hub
                 hub = FindFirstObjectByType<HubController>();
 
             _input = AppContext.Services.Resolve<IInputService>();
+            _focus = AppContext.Services.Resolve<IInputFocusService>();
         }
 
         private void OnEnable()
         {
+            _focus.Push(InputScope.Hub);
             if (_input != null)
                 _input.OnNavAction += Handle;
         }
@@ -28,11 +31,13 @@ namespace Project.Hub
         {
             if (_input != null)
                 _input.OnNavAction -= Handle;
+            _focus.Pop(InputScope.Hub);
         }
 
         private void Handle(NavAction action)
         {
             if (hub == null) return;
+            if (_focus.Current != InputScope.Hub) return;
 
             if (action == NavAction.ToggleVisualAssist)
                 return;
