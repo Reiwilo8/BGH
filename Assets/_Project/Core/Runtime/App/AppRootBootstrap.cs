@@ -1,5 +1,6 @@
 using Project.Core.Input;
 using Project.Core.Services;
+using Project.Core.Settings;
 using Project.Core.Speech;
 using Project.Core.Visual;
 using System;
@@ -26,13 +27,46 @@ namespace Project.Core.App
 
             _services.Register(new AppSession());
 
-            _services.Register<IVisualModeService>(new VisualModeService());
+            var visualModeService = new VisualModeService();
+            _services.Register<IVisualModeService>(visualModeService);
+
+            var defaults = new AppSettingsData
+            {
+                languageCode = "en",
+                hasUserSelectedLanguage = false,
+
+                visualMode = VisualMode.AudioOnly,
+
+                preferredControlScheme = StartupDefaultsResolver.ResolvePlatformPreferredControlScheme(),
+                hasUserSelectedControlScheme = false
+            };
+
+            var settings = new PlayerPrefsSettingsService(defaults);
+            settings.Load();
+
+            if (!settings.Current.hasUserSelectedLanguage)
+            {
+                settings.Current.languageCode = StartupDefaultsResolver.ResolveSystemLanguageCode();
+                settings.Save();
+            }
+
+            if (!settings.Current.hasUserSelectedControlScheme)
+            {
+                settings.Current.preferredControlScheme = StartupDefaultsResolver.ResolvePlatformPreferredControlScheme();
+                settings.Save();
+            }
+
+            _services.Register<ISettingsService>(settings);
+
+            visualModeService.SetMode(settings.Current.visualMode);
 
             var feedRouter = new SpeechFeedRouter();
             _services.Register(feedRouter);
 
             var speech = SpeechServiceFactory.Create(feedRouter);
             _services.Register<ISpeechService>(speech);
+
+            speech.SetLanguage(settings.Current.languageCode);
 
             var appFlow = new AppFlowService(startScene: startSceneName, hubScene: hubSceneName);
             _services.Register<IAppFlowService>(appFlow);
