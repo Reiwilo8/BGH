@@ -45,7 +45,10 @@ namespace Project.Core.Input.Gestures
         private void OnEnable()
         {
             EnhancedTouchSupport.Enable();
+
+#if UNITY_EDITOR
             TouchSimulation.Enable();
+#endif
 
             Touch.onFingerDown += OnFingerDown;
             Touch.onFingerMove += OnFingerMove;
@@ -54,6 +57,10 @@ namespace Project.Core.Input.Gestures
 
         private void OnDisable()
         {
+#if UNITY_EDITOR
+            TouchSimulation.Disable();
+#endif
+
             Touch.onFingerDown -= OnFingerDown;
             Touch.onFingerMove -= OnFingerMove;
             Touch.onFingerUp -= OnFingerUp;

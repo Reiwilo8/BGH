@@ -8,6 +8,8 @@ namespace Project.Core.Speech
             return new AndroidSpeechService();
 #elif UNITY_IOS && !UNITY_EDITOR
             return new IosSpeechService();
+#elif UNITY_STANDALONE_WIN && !UNITY_EDITOR
+            return new WindowsSpeechService();
 #else
             return new EditorSpeechService(feed);
 #endif
