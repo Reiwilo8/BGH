@@ -1,4 +1,5 @@
 using Project.Core.App;
+using Project.Core.Settings;
 using Project.Core.Speech;
 using Project.Core.Visual;
 using Project.UI.Visual;
@@ -12,6 +13,7 @@ namespace Project.Hub.Start
         [SerializeField] private StartVisualUiController visualUi;
 
         private IVisualModeService _visualMode;
+        private ISettingsService _settings;
         private ISpeechService _speech;
         private SpeechFeedRouter _speechFeedRouter;
         private IAppFlowService _flow;
@@ -23,6 +25,7 @@ namespace Project.Hub.Start
             var services = AppContext.Services;
 
             _visualMode = services.Resolve<IVisualModeService>();
+            _settings = services.Resolve<ISettingsService>();
             _speech = services.Resolve<ISpeechService>();
             _flow = services.Resolve<IAppFlowService>();
 
@@ -68,7 +71,7 @@ namespace Project.Hub.Start
 
             try
             {
-                _speech.Speak("Quitting application.", SpeechPriority.High);
+                _speech.Speak("Closing application.", SpeechPriority.High);
                 await _flow.ExitApplicationAsync();
             }
             finally
@@ -82,6 +85,9 @@ namespace Project.Hub.Start
             if (_isTransitioning || (_flow != null && _flow.IsTransitioning)) return;
 
             _visualMode.ToggleVisualAssist();
+
+            _settings.SetVisualMode(_visualMode.Mode);
+
             RefreshUi();
 
             string msg = _visualMode.Mode == VisualMode.VisualAssist
