@@ -14,32 +14,42 @@ namespace Project.Core.Speech
         [DllImport("TtsBridgeWin")]
         private static extern void TTS_Stop();
 
+        [DllImport("TtsBridgeWin", CharSet = CharSet.Unicode)]
+        private static extern void TTS_SetLanguage(string lang);
+
         [DllImport("TtsBridgeWin")]
         private static extern void TTS_Shutdown();
 
-        public bool IsSpeaking { get; private set; }
+        [DllImport("TtsBridgeWin")]
+        private static extern bool TTS_IsSpeaking();
+
+        private string _lang = "en";
+
+        public bool IsSpeaking => TTS_IsSpeaking();
 
         public WindowsSpeechService()
         {
             TTS_Init();
+            TTS_SetLanguage(_lang);
         }
 
         public void Speak(string text, SpeechPriority priority = SpeechPriority.Normal)
         {
-            if (string.IsNullOrWhiteSpace(text)) return;
-            IsSpeaking = true;
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+
             TTS_Speak(text);
-            IsSpeaking = false;
         }
 
         public void StopAll()
         {
             TTS_Stop();
-            IsSpeaking = false;
         }
 
         public void SetLanguage(string languageCode)
         {
+            _lang = string.IsNullOrWhiteSpace(languageCode) ? "en" : languageCode;
+            TTS_SetLanguage(_lang);
         }
 
         ~WindowsSpeechService()

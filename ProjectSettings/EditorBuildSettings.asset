@@ -27,5 +27,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MemoryScene.unity
     guid: 2dc9ef6ab8d3afe429ce9a19f65bbad2
   m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 6138ff7d33e3264469bfb93776ed90f6, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+    com.unity.localization.settings: {fileID: 11400000, guid: 31c9c0f4b435fe740896ba1c110adefc, type: 2}
   m_UseUCBPForAssetBundles: 0

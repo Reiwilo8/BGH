@@ -1,20 +1,25 @@
 using Project.Core.App;
+using Project.Core.Audio;
 using Project.Core.Input;
-using Project.Core.Speech;
+using Project.Core.Settings;
 
 namespace Project.Hub
 {
     public sealed class HubStateMachine
     {
-        public readonly ISpeechService Speech;
+        public readonly IUiAudioOrchestrator UiAudio;
         public readonly IAppFlowService Flow;
+        public readonly ISettingsService Settings;
+
+        public readonly HubTransitionGate Transitions = new HubTransitionGate();
 
         private IHubState _current;
 
-        public HubStateMachine(ISpeechService speech, IAppFlowService flow)
+        public HubStateMachine(IUiAudioOrchestrator uiAudio, IAppFlowService flow, ISettingsService settings)
         {
-            Speech = speech;
+            UiAudio = uiAudio;
             Flow = flow;
+            Settings = settings;
         }
 
         public void SetState(IHubState next)
@@ -25,8 +30,8 @@ namespace Project.Hub
         }
 
         public void Dispatch(NavAction action) => _current?.Handle(action);
-
         public void OnFocusGained() => _current?.OnFocusGained();
+        public void OnRepeatRequested() => _current?.OnRepeatRequested();
     }
 
     public interface IHubState
@@ -36,5 +41,6 @@ namespace Project.Hub
         void Exit();
         void Handle(NavAction action);
         void OnFocusGained();
+        void OnRepeatRequested();
     }
 }

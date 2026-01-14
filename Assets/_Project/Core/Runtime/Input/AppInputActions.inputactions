@@ -50,6 +50,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Repeat",
+                    "type": "Button",
+                    "id": "bc180c01-23ef-4e02-8c00-3678a820dee5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Scroll",
+                    "type": "PassThrough",
+                    "id": "1a34d479-69cc-4fad-b0ec-b42bc75c8b82",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -110,17 +128,6 @@
                 },
                 {
                     "name": "",
-                    "id": "a1c67ff6-b9c4-4bbe-ab6d-773e9c59106a",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Confirm",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "ba00868b-963c-49d3-8dd2-d4618d5ab781",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
@@ -171,6 +178,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "ToggleVisualAssist",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0eea2035-e641-482d-bad8-307b94af06e7",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Repeat",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "00a7d55b-4fc5-455c-acee-60d2c8c2c22d",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Scroll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
