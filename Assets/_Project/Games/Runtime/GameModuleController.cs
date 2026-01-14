@@ -1,5 +1,9 @@
 using Project.Core.App;
+using Project.Core.Audio;
+using Project.Core.Audio.Sequences.Common;
 using Project.Core.Input;
+using Project.Core.Localization;
+using Project.Core.Settings;
 using Project.Core.Speech;
 using Project.Games.Catalog;
 using Project.Games.Definitions;
@@ -9,8 +13,9 @@ namespace Project.Games.Module
 {
     public sealed class GameModuleController : MonoBehaviour
     {
-        private ISpeechService _speech;
+        private IUiAudioOrchestrator _uiAudio;
         private IAppFlowService _flow;
+        private ISettingsService _settings;
         private AppSession _session;
         private GameCatalog _catalog;
 
@@ -29,34 +34,40 @@ namespace Project.Games.Module
 
         private void Awake()
         {
-            _speech = AppContext.Services.Resolve<ISpeechService>();
-            _flow = AppContext.Services.Resolve<IAppFlowService>();
-            _session = AppContext.Services.Resolve<AppSession>();
-            _catalog = AppContext.Services.Resolve<GameCatalog>();
+            var services = AppContext.Services;
+
+            _uiAudio = services.Resolve<IUiAudioOrchestrator>();
+            _flow = services.Resolve<IAppFlowService>();
+            _settings = services.Resolve<ISettingsService>();
+            _session = services.Resolve<AppSession>();
+            _catalog = services.Resolve<GameCatalog>();
         }
 
         private void Start()
         {
-            LoadSelectedGameOrFail();
+            if (!LoadSelectedGameOrFail())
+                return;
+
             BuildMenu();
             _index = ResolveInitialIndex();
-            Announce(includeHelp: true);
+            PlayPrompt();
         }
 
         public void Handle(NavAction action)
         {
-            if (_items == null || _items.Length == 0) return;
+            if (_items == null || _items.Length == 0)
+                return;
 
             switch (action)
             {
                 case NavAction.Next:
                     _index = (_index + 1) % _items.Length;
-                    Announce(includeHelp: false);
+                    PlayCurrent();
                     break;
 
                 case NavAction.Previous:
                     _index = (_index - 1 + _items.Length) % _items.Length;
-                    Announce(includeHelp: false);
+                    PlayCurrent();
                     break;
 
                 case NavAction.Confirm:
@@ -69,21 +80,22 @@ namespace Project.Games.Module
             }
         }
 
-        private void LoadSelectedGameOrFail()
+        private bool LoadSelectedGameOrFail()
         {
             if (string.IsNullOrWhiteSpace(_session.SelectedGameId))
             {
-                _speech.Speak("No game selected. Returning to Hub.", SpeechPriority.High);
                 _ = _flow.ReturnToHubAsync();
-                return;
+                return false;
             }
 
             _game = _catalog.GetById(_session.SelectedGameId);
             if (_game == null)
             {
-                _speech.Speak("Selected game is missing from catalog. Returning to Hub.", SpeechPriority.High);
                 _ = _flow.ReturnToHubAsync();
+                return false;
             }
+
+            return true;
         }
 
         private void BuildMenu()
@@ -94,104 +106,149 @@ namespace Project.Games.Module
             _items = new MenuItem[modeCount + 2];
 
             for (int i = 0; i < modeCount; i++)
-            {
                 _items[i] = new MenuItem { Kind = MenuItemKind.Mode, Mode = modes[i] };
-            }
 
-            _items[modeCount + 0] = new MenuItem { Kind = MenuItemKind.Settings };
+            _items[modeCount] = new MenuItem { Kind = MenuItemKind.Settings };
             _items[modeCount + 1] = new MenuItem { Kind = MenuItemKind.Back };
         }
 
-        private void Announce(bool includeHelp)
+        private void PlayPrompt()
         {
-            if (_game == null || _items == null || _items.Length == 0) return;
+            string hintKey = ResolveControlHintKey();
 
-            string header = $"Game menu. {_game.displayName}.";
-            string current = DescribeItem(_items[_index]);
+            var item = _items[_index];
+            string currentKey = item.Kind == MenuItemKind.Mode ? "current.mode" : "current.option";
+            string currentText = DescribeItem(item);
 
-            string help = includeHelp
-                ? " Use Next or Previous to choose. Confirm to select. Back to return to game selection."
-                : " Confirm to select.";
-
-            _speech.Speak($"{header} Current: {current}.{help}", SpeechPriority.Normal);
+            _uiAudio.Play(
+                UiAudioScope.GameModule,
+                ctx => Project.Games.Sequences.GameMenuPromptSequence.Run(
+                    ctx,
+                    _game.displayName,
+                    currentKey,
+                    currentText,
+                    hintKey),
+                SpeechPriority.Normal,
+                interruptible: true
+            );
         }
 
-        private string DescribeItem(MenuItem item)
+        public void OnRepeatRequested()
         {
-            if (item == null) return "Unknown";
+            if (_items == null || _items.Length == 0) return;
+            if (_flow.IsTransitioning) return;
+            PlayPrompt();
+        }
 
-            return item.Kind switch
-            {
-                MenuItemKind.Mode => item.Mode != null ? item.Mode.displayName : "Unknown mode",
-                MenuItemKind.Settings => "Settings",
-                MenuItemKind.Back => "Back",
-                _ => "Unknown"
-            };
+        private void PlayCurrent()
+        {
+            var item = _items[_index];
+            string key = item.Kind == MenuItemKind.Mode
+                ? "current.mode"
+                : "current.option";
+
+            _uiAudio.Play(
+                UiAudioScope.GameModule,
+                ctx => CurrentItemSequence.Run(ctx, key, DescribeItem(item)),
+                SpeechPriority.Normal,
+                interruptible: true
+            );
         }
 
         private async System.Threading.Tasks.Task ConfirmAsync()
         {
-            if (_flow.IsTransitioning) return;
+            if (_flow.IsTransitioning)
+                return;
 
             var item = _items[_index];
+
             switch (item.Kind)
             {
                 case MenuItemKind.Mode:
-                    if (item.Mode == null || string.IsNullOrWhiteSpace(item.Mode.modeId))
-                    {
-                        _speech.Speak("Invalid mode.", SpeechPriority.High);
+                    if (item.Mode == null || string.IsNullOrWhiteSpace(_game.gameplaySceneName))
                         return;
-                    }
-
-                    if (string.IsNullOrWhiteSpace(_game.gameplaySceneName))
-                    {
-                        _speech.Speak("Gameplay scene is not configured for this game.", SpeechPriority.High);
-                        return;
-                    }
 
                     _session.SelectMode(item.Mode.modeId);
-                    _speech.Speak($"Starting {item.Mode.displayName}.", SpeechPriority.High);
+
+                    _uiAudio.CancelCurrent();
+
+                    _uiAudio.Play(
+                        UiAudioScope.GameModule,
+                        ctx => NavigateToSequence.Run(ctx, "nav.to_gameplay", _game.displayName, item.Mode.displayName),
+                        SpeechPriority.High,
+                        interruptible: false
+                    );
+
                     await _flow.StartGameplayAsync(_game.gameplaySceneName);
                     break;
 
                 case MenuItemKind.Settings:
-                    _speech.Speak("Game settings are not implemented yet.", SpeechPriority.High);
+                    _uiAudio.PlayGated(
+                    UiAudioScope.GameModule,
+                    "nav.to_game_settings",
+                    () => _flow.IsTransitioning,
+                    0.5f,
+                    SpeechPriority.High,
+                    _game.displayName
+                    );
                     break;
 
                 case MenuItemKind.Back:
-                    _speech.Speak("Returning to game selection.", SpeechPriority.High);
-                    await _flow.ExitGameModuleAsync();
+                    await BackAsync();
                     break;
             }
         }
 
         private async System.Threading.Tasks.Task BackAsync()
         {
-            if (_flow.IsTransitioning) return;
-            _speech.Speak("Returning to game selection.", SpeechPriority.High);
+            if (_flow.IsTransitioning)
+                return;
+
+            _uiAudio.PlayGated(
+                UiAudioScope.GameModule,
+                "exit.to_game_select",
+                () => _flow.IsTransitioning,
+                0.5f,
+                SpeechPriority.High
+            );
+
             await _flow.ExitGameModuleAsync();
+        }
+
+        private string DescribeItem(MenuItem item)
+        {
+            return item.Kind switch
+            {
+                MenuItemKind.Mode => item.Mode != null ? item.Mode.displayName : "Unknown",
+                MenuItemKind.Settings => AppContext.Services.Resolve<ILocalizationService>().Get("common.settings"),
+                MenuItemKind.Back => AppContext.Services.Resolve<ILocalizationService>().Get("common.back"),
+                _ => "Unknown"
+            };
         }
 
         private int ResolveInitialIndex()
         {
-            if (_items == null || _items.Length == 0) return 0;
+            if (_items == null) return 0;
 
             var modeId = _session.SelectedModeId;
             if (string.IsNullOrWhiteSpace(modeId))
                 return 0;
 
             for (int i = 0; i < _items.Length; i++)
-            {
-                var it = _items[i];
-                if (it == null) continue;
-
-                if (it.Kind == MenuItemKind.Mode &&
-                    it.Mode != null &&
-                    it.Mode.modeId == modeId)
+                if (_items[i].Kind == MenuItemKind.Mode &&
+                    _items[i].Mode != null &&
+                    _items[i].Mode.modeId == modeId)
                     return i;
-            }
 
             return 0;
+        }
+
+        private string ResolveControlHintKey()
+        {
+            var scheme = _settings.Current.preferredControlScheme;
+            return scheme == Project.Core.Input.ControlScheme.Touch
+                ? "hint.game_menu.touch"
+                : "hint.game_menu.keyboard";
         }
     }
 }

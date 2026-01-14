@@ -1,0 +1,256 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Core Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Core
+  m_TableCollectionNameGuidString: 095f0b75ec45e4c468841c23d3ad974f
+  m_Entries:
+  - m_Id: 153419705643008
+    m_Key: app.welcome
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643009
+    m_Key: app.exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643010
+    m_Key: app.visual_assist.status_on
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643011
+    m_Key: app.visual_assist.on
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643012
+    m_Key: app.visual_assist.off
+    m_Metadata:
+      m_Items: []
+  - m_Id: 504174996254720
+    m_Key: hint.visual_assist.settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643013
+    m_Key: enter.start_screen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643014
+    m_Key: enter.main_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643015
+    m_Key: enter.game_select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643016
+    m_Key: enter.game_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643017
+    m_Key: enter.gameplay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643018
+    m_Key: nav.to_main_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643019
+    m_Key: nav.to_game_select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643020
+    m_Key: nav.to_main_settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643028
+    m_Key: nav.to_game_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1152678731083776
+    m_Key: nav.to_gameplay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1153700899745792
+    m_Key: nav.to_game_settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643021
+    m_Key: exit.to_start_screen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643022
+    m_Key: exit.to_main_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643023
+    m_Key: exit.to_game_select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643024
+    m_Key: exit.to_game_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643025
+    m_Key: current.option
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643026
+    m_Key: selected.option
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643027
+    m_Key: current.game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1156912407015424
+    m_Key: current.mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643029
+    m_Key: hint.start_screen.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643030
+    m_Key: hint.start_screen.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643032
+    m_Key: hint.controls_in_settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643033
+    m_Key: hint.main_menu.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643034
+    m_Key: hint.main_menu.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643035
+    m_Key: hint.game_select.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643036
+    m_Key: hint.game_select.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643037
+    m_Key: hint.game_menu.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643038
+    m_Key: hint.game_menu.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643039
+    m_Key: hint.gameplay.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643040
+    m_Key: hint.gameplay.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643041
+    m_Key: common.back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643042
+    m_Key: common.settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643043
+    m_Key: common.exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643044
+    m_Key: common.continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643045
+    m_Key: ui.title.start_screen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643046
+    m_Key: ui.title.main_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643047
+    m_Key: ui.title.game_select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643048
+    m_Key: ui.title.game_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643049
+    m_Key: ui.title.gameplay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643050
+    m_Key: ui.title.settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643051
+    m_Key: menu.main.game_select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643052
+    m_Key: menu.main.settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643053
+    m_Key: menu.main.exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643054
+    m_Key: menu.game.settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643055
+    m_Key: menu.game.back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643056
+    m_Key: mode.tutorial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643057
+    m_Key: mode.easy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643058
+    m_Key: mode.medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643059
+    m_Key: mode.hard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643060
+    m_Key: mode.endless
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643061
+    m_Key: mode.custom
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 6352009757386866900
+  references:
+    version: 2
+    RefIds:
+    - rid: 6352009757386866900
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1768064238049

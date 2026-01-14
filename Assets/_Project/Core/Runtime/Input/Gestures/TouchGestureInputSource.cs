@@ -1,3 +1,4 @@
+using Project.Core.Activity;
 using Project.Core.App;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
@@ -30,6 +31,9 @@ namespace Project.Core.Input.Gestures
         private float _twoStartDistance;
         private bool _twoCanceledByPinch;
 
+        private IRepeatService _repeat;
+        private Coroutine _pendingSingleTapCo;
+
         private void Awake()
         {
             if (settings == null)
@@ -40,6 +44,7 @@ namespace Project.Core.Input.Gestures
             }
 
             _input = AppContext.Services.Resolve<IInputService>();
+            _repeat = AppContext.Services.Resolve<IRepeatService>();
         }
 
         private void OnEnable()
@@ -137,6 +142,7 @@ namespace Project.Core.Input.Gestures
 
             if (_longPressFired)
             {
+                CancelPendingSingleTap();
                 _singleActive = false;
                 return;
             }
@@ -150,6 +156,7 @@ namespace Project.Core.Input.Gestures
 
             if (dt <= settings.swipeMaxTime && dist >= settings.swipeMinDistancePx)
             {
+                CancelPendingSingleTap();
                 EmitSwipe(delta);
                 _singleActive = false;
                 return;
@@ -163,6 +170,8 @@ namespace Project.Core.Input.Gestures
 
                 if (isDouble)
                 {
+                    CancelPendingSingleTap();
+
                     _lastTapTime = -999f;
                     _input.Emit(NavAction.Confirm);
                 }
@@ -170,6 +179,9 @@ namespace Project.Core.Input.Gestures
                 {
                     _lastTapTime = endTime;
                     _lastTapPos = endPos;
+
+                    CancelPendingSingleTap();
+                    _pendingSingleTapCo = StartCoroutine(FireSingleTapRepeatAfterDelay());
                 }
             }
 
@@ -248,6 +260,23 @@ namespace Project.Core.Input.Gestures
 
             _twoActive = false;
             _singleActive = false;
+        }
+
+        private void CancelPendingSingleTap()
+        {
+            if (_pendingSingleTapCo != null)
+            {
+                StopCoroutine(_pendingSingleTapCo);
+                _pendingSingleTapCo = null;
+            }
+        }
+
+        private System.Collections.IEnumerator FireSingleTapRepeatAfterDelay()
+        {
+            yield return new WaitForSecondsRealtime(settings.doubleTapMaxDelay);
+
+            _pendingSingleTapCo = null;
+            _repeat.RequestRepeat("singleTap");
         }
     }
 }

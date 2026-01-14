@@ -5,6 +5,7 @@ namespace Project.Core.Input
         Start,
         Hub,
         GameModule,
-        Gameplay
+        Gameplay,
+        Settings
     }
 }

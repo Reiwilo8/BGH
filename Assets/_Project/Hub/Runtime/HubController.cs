@@ -1,6 +1,8 @@
+using System.Collections;
 using Project.Core.App;
+using Project.Core.Audio;
 using Project.Core.Input;
-using Project.Core.Speech;
+using Project.Core.Settings;
 using UnityEngine;
 
 namespace Project.Hub
@@ -10,13 +12,18 @@ namespace Project.Hub
         private HubStateMachine _sm;
         private IInputFocusService _focus;
 
+        private bool _subscribed;
+        private Coroutine _lateSubscribe;
+
         private void Awake()
         {
-            var speech = AppContext.Services.Resolve<ISpeechService>();
-            var flow = AppContext.Services.Resolve<IAppFlowService>();
+            var services = AppContext.Services;
 
-            _sm = new HubStateMachine(speech, flow);
-            _focus = AppContext.Services.Resolve<IInputFocusService>();
+            var uiAudio = services.Resolve<IUiAudioOrchestrator>();
+            var flow = services.Resolve<IAppFlowService>();
+            var settings = services.Resolve<ISettingsService>();
+
+            _sm = new HubStateMachine(uiAudio, flow, settings);
         }
 
         private void Start()
@@ -29,17 +36,82 @@ namespace Project.Hub
                 _sm.SetState(new States.HubMainState(_sm));
         }
 
-        private void OnEnable() => _focus.OnChanged += OnFocusChanged;
+        private void OnEnable()
+        {
+            TrySubscribe();
 
-        private void OnDisable() => _focus.OnChanged -= OnFocusChanged;
+            if (!_subscribed && _lateSubscribe == null)
+                _lateSubscribe = StartCoroutine(LateSubscribeRoutine());
+        }
+
+        private void OnDisable()
+        {
+            if (_lateSubscribe != null)
+            {
+                StopCoroutine(_lateSubscribe);
+                _lateSubscribe = null;
+            }
+
+            TryUnsubscribe();
+        }
+
+        private IEnumerator LateSubscribeRoutine()
+        {
+            yield return null;
+            yield return null;
+
+            TrySubscribe();
+            _lateSubscribe = null;
+        }
+
+        private void TrySubscribe()
+        {
+            if (_subscribed)
+                return;
+
+            try
+            {
+                if (_focus == null)
+                    _focus = AppContext.Services.Resolve<IInputFocusService>();
+
+                if (_focus == null)
+                    return;
+
+                _focus.OnChanged += OnFocusChanged;
+                _subscribed = true;
+            }
+            catch
+            {
+            }
+        }
+
+        private void TryUnsubscribe()
+        {
+            if (!_subscribed)
+                return;
+
+            if (_focus != null)
+                _focus.OnChanged -= OnFocusChanged;
+
+            _subscribed = false;
+        }
 
         private void OnFocusChanged(InputScope scope)
         {
-            if (scope != InputScope.Hub) return;
+            if (scope != InputScope.Hub)
+                return;
 
             _sm.OnFocusGained();
         }
 
-        public void Handle(NavAction action) => _sm.Dispatch(action);
+        public void OnRepeatRequested()
+        {
+            _sm.OnRepeatRequested();
+        }
+
+        public void Handle(NavAction action)
+        {
+            _sm.Dispatch(action);
+        }
     }
 }

@@ -1,0 +1,260 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Core_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 095f0b75ec45e4c468841c23d3ad974f, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 153419705643037
+    m_Localized: Swipe to select game mode. Double-tap to confirm your selection.
+      Press and hold the screen to go back.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643036
+    m_Localized: Use the arrow keys to choose a game. Press Enter to confirm your
+      selection. Press Backspace to go back.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643035
+    m_Localized: Swipe to choose a game. Double-tap to confirm your selection. Press
+      and hold the screen to go back.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643034
+    m_Localized: Use the arrow keys to move through the options. Press Enter to confirm.
+      Press Backspace to go back. Press Space to repeat instructions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 504174996254720
+    m_Localized: You can toggle Visual Assist on start screen or in settings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643030
+    m_Localized: Press Enter to continue. Press Backspace to exit the app. Press
+      F1 key to toggle Visual Assist. You can press Space to repeat instructions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643029
+    m_Localized: Double-tap to continue. Press and hold the screen to exit the app.
+      Tap the screen with two fingers to toggle Visual Assist.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643028
+    m_Localized: Opening {0} menu.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643027
+    m_Localized: 'Current game: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643023
+    m_Localized: Returning to game selection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643022
+    m_Localized: Returning to the main menu.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643021
+    m_Localized: Returning to the start screen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643020
+    m_Localized: Opening settings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643019
+    m_Localized: Opening game selection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643018
+    m_Localized: Entering the main menu.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643017
+    m_Localized: '{0}. {1}. Gameplay.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643016
+    m_Localized: '{0}. Game menu.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643015
+    m_Localized: Game selection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643014
+    m_Localized: Main menu.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643033
+    m_Localized: Swipe to move through the options. Double-tap to confirm the current
+      option. Press and hold the screen to go back.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643032
+    m_Localized: You can change your preferred controls and review all accessible
+      actions in settings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643026
+    m_Localized: 'Selected: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643025
+    m_Localized: 'Current: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643024
+    m_Localized: Returning to the game menu.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643013
+    m_Localized: Start screen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643012
+    m_Localized: Visual Assist disabled.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643011
+    m_Localized: Visual Assist enabled.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643010
+    m_Localized: Visual Assist is currently enabled.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643009
+    m_Localized: Exiting application.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643038
+    m_Localized: Use the arrow keys to select game mode. Press Enter to confirm your
+      selection. Press Backspace to go back.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643039
+    m_Localized: To return to the game menu, press and hold the screen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643040
+    m_Localized: To return to the game menu, press Backspace.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643041
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643042
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643043
+    m_Localized: Exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643044
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643045
+    m_Localized: Start screen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643046
+    m_Localized: Main menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643047
+    m_Localized: Game selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643048
+    m_Localized: Game menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643049
+    m_Localized: Gameplay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643050
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643051
+    m_Localized: Game selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643052
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643053
+    m_Localized: Exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643054
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643055
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643056
+    m_Localized: Tutorial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643057
+    m_Localized: Easy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643058
+    m_Localized: Medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643059
+    m_Localized: Hard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643008
+    m_Localized: Welcome to Blind Games Hub.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643061
+    m_Localized: Custom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643060
+    m_Localized: Endless
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1152678731083776
+    m_Localized: Running {0} in {1} mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1153700899745792
+    m_Localized: Opening {0} settings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1156912407015424
+    m_Localized: 'Current mode: {0}.'
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

@@ -1,8 +1,13 @@
 using Project.Core.App;
+using Project.Core.Audio;
+using Project.Core.Audio.Sequences.Common;
+using Project.Core.Audio.Steps;
 using Project.Core.Input;
+using Project.Core.Settings;
 using Project.Core.Speech;
 using Project.Games.Catalog;
 using Project.Games.Definitions;
+using Project.Hub.Sequences;
 
 namespace Project.Hub.States
 {
@@ -24,24 +29,28 @@ namespace Project.Hub.States
         {
             AppContext.Services.Resolve<AppSession>().SetHubTarget(HubReturnTarget.GameSelect);
             _index = 0;
-            Announce(includeHelp: true);
+            PlayPrompt();
         }
 
         public void Exit() { }
-
-        public void OnFocusGained()
-        {
-            Announce(includeHelp: true);
-        }
+        public void OnFocusGained() => PlayPrompt();
+        public void OnRepeatRequested() => PlayPrompt();
 
         public void Handle(NavAction action)
         {
             var games = _catalog.games;
             if (games == null || games.Length == 0)
             {
-                _sm.Speech.Speak("No games available.", SpeechPriority.High);
+                _sm.UiAudio.Play(
+                    UiAudioScope.Hub,
+                    ctx => UiAudioSteps.SpeakKeyAndWait(ctx, "current.game", "None"),
+                    SpeechPriority.High,
+                    interruptible: true
+                );
+
                 if (action == NavAction.Back)
-                    _sm.SetState(new HubMainState(_sm));
+                    BackToMain();
+
                 return;
             }
 
@@ -51,69 +60,110 @@ namespace Project.Hub.States
             {
                 case NavAction.Next:
                     _index = (_index + 1) % count;
-                    Announce(includeHelp: false);
+                    PlayCurrent();
                     break;
 
                 case NavAction.Previous:
                     _index = (_index - 1 + count) % count;
-                    Announce(includeHelp: false);
+                    PlayCurrent();
                     break;
 
                 case NavAction.Confirm:
                     if (IsBackItem(games))
-                    {
-                        _sm.Speech.Speak("Back.", SpeechPriority.High);
-                        _sm.SetState(new HubMainState(_sm));
-                    }
+                        BackToMain();
                     else
-                    {
-                        _ = ConfirmAsync(games[_index]);
-                    }
+                        _ = ConfirmGameAsync(games[_index]);
                     break;
 
                 case NavAction.Back:
-                    _sm.SetState(new HubMainState(_sm));
+                    BackToMain();
                     break;
             }
         }
 
-        private bool IsBackItem(GameDefinition[] games)
+        private void PlayPrompt()
         {
-            return _index == games.Length;
+            string hintKey = ResolveControlHintKey(_sm.Settings.Current);
+
+            _sm.UiAudio.Play(
+                UiAudioScope.Hub,
+                ctx => GameSelectPromptSequence.Run(ctx, GetCurrentText(ctx, _catalog.games), hintKey),
+                SpeechPriority.Normal,
+                interruptible: true
+            );
         }
 
-        private void Announce(bool includeHelp)
+        private void PlayCurrent()
         {
-            var games = _catalog.games;
-            if (games == null || games.Length == 0)
-                return;
-
-            bool backItem = IsBackItem(games);
-
-            string currentText = backItem
-                ? "Back"
-                : (games[_index] != null ? games[_index].displayName : "Unknown");
-
-            string help = includeHelp
-                ? " Use Next or Previous to choose. Confirm to select. Back to return."
-                : " Confirm to select.";
-
-            _sm.Speech.Speak($"Game selection. Current: {currentText}.{help}", SpeechPriority.Normal);
+            _sm.UiAudio.Play(
+                UiAudioScope.Hub,
+                ctx => CurrentItemSequence.Run(ctx, "current.game", GetCurrentText(ctx, _catalog.games)),
+                SpeechPriority.Normal,
+                interruptible: true
+            );
         }
 
-        private async System.Threading.Tasks.Task ConfirmAsync(GameDefinition game)
+        private void BackToMain()
+        {
+            _sm.UiAudio.PlayGated(
+                UiAudioScope.Hub,
+                "exit.to_main_menu",
+                stillTransitioning: () => _sm.Transitions.IsTransitioning,
+                delaySeconds: 0.5f,
+                priority: SpeechPriority.High
+            );
+
+            _sm.Transitions.RunInstant(() =>
+            {
+                _sm.SetState(new HubMainState(_sm));
+            });
+        }
+
+        private async System.Threading.Tasks.Task ConfirmGameAsync(GameDefinition game)
         {
             if (_sm.Flow.IsTransitioning)
                 return;
 
             if (game == null || string.IsNullOrWhiteSpace(game.gameId))
-            {
-                _sm.Speech.Speak("Invalid game selection.", SpeechPriority.High);
                 return;
-            }
 
-            _sm.Speech.Speak($"Opening {game.displayName} menu.", SpeechPriority.High);
+            _sm.UiAudio.PlayGated(
+                UiAudioScope.Hub,
+                "nav.to_game_menu",
+                stillTransitioning: () => _sm.Flow.IsTransitioning,
+                delaySeconds: 0.5f,
+                priority: SpeechPriority.High,
+                game.displayName
+            );
+
             await _sm.Flow.EnterGameModuleAsync(game.gameId);
+        }
+
+        private bool IsBackItem(GameDefinition[] games) => _index == games.Length;
+
+        private string GetCurrentText(UiAudioContext ctx, GameDefinition[] games)
+        {
+            if (games == null || games.Length == 0)
+                return ctx.Localization.Get("common.back");
+
+            if (IsBackItem(games))
+                return ctx.Localization.Get("common.back");
+
+            var g = games[_index];
+            return (g != null && !string.IsNullOrWhiteSpace(g.displayName))
+                ? g.displayName
+                : "Unknown";
+        }
+
+        private static string ResolveControlHintKey(AppSettingsData settings)
+        {
+            var scheme = settings.hasUserSelectedControlScheme
+                ? settings.preferredControlScheme
+                : StartupDefaultsResolver.ResolvePlatformPreferredControlScheme();
+
+            return scheme == Project.Core.Input.ControlScheme.Touch
+                ? "hint.game_select.touch"
+                : "hint.game_select.keyboard";
         }
     }
 }

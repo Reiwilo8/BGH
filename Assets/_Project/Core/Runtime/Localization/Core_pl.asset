@@ -1,0 +1,271 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Core_pl
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: pl
+  m_SharedData: {fileID: 11400000, guid: 095f0b75ec45e4c468841c23d3ad974f, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 153419705643037
+    m_Localized: "Przeci\u0105gaj palcem, aby wybra\u0107 tryb gry. Podw\xF3jnym
+      stukni\u0119ciem zatwierdzasz sw\xF3j wyb\xF3r. Przytrzymaj palec na ekranie,
+      \u017Ceby si\u0119 cofn\u0105\u0107."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643036
+    m_Localized: "U\u017Cyj strza\u0142ek do wybrania gry. Wci\u015Bnij Enter, aby
+      zatwierdzi\u0107 sw\xF3j wyb\xF3r. Wci\u015Bnij Backspace, \u017Ceby si\u0119
+      cofn\u0105\u0107."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643035
+    m_Localized: "Przeci\u0105gaj palcem, aby wybra\u0107 gr\u0119. Podw\xF3jnym
+      stukni\u0119ciem zatwierdzasz sw\xF3j wyb\xF3r. Przytrzymaj palec na ekranie,
+      \u017Ceby si\u0119 cofn\u0105\u0107."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643034
+    m_Localized: "U\u017Cyj strza\u0142ek do przechodzenia mi\u0119dzy opcjami. Wci\u015Bnij
+      Enter, aby zatwierdzi\u0107 wybran\u0105 opcj\u0119. Wci\u015Bnij Backspace,
+      \u017Ceby si\u0119 cofn\u0105\u0107. Mo\u017Cesz wcisn\u0105\u0107 Spacj\u0119,
+      w celu powt\xF3rzenia instrukcji."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 504174996254720
+    m_Localized: "Mo\u017Cesz prze\u0142\u0105czy\u0107 tryb wizualny na ekranie
+      startowym lub w ustawieniach."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643030
+    m_Localized: "Naci\u015Bnij Enter, aby kontynuowa\u0107. Naci\u015Bnij Backspace,
+      \u017Ceby zamkn\u0105\u0107 aplikacj\u0119. Naci\u015Bnij klawisz F1 w celu
+      prze\u0142\u0105czenia trybu wizualnego. Mo\u017Cesz wci\u015Bn\u0105\u0107
+      Spacj\u0119 dla powt\xF3rzenia instrukcji."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643029
+    m_Localized: "Stuknij dwukrotnie, aby kontynuowa\u0107. Przytrzymaj palec na
+      ekranie, \u017Ceby zamkn\u0105\u0107 aplikacj\u0119. Stuknij w ekran dwoma
+      palcami, w celu prze\u0142\u0105czenia trybu wizualnego."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643028
+    m_Localized: Otwieranie menu {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643023
+    m_Localized: "Powr\xF3t do wyboru gry."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643022
+    m_Localized: "Powr\xF3t do menu g\u0142\xF3wnego."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643021
+    m_Localized: "Powr\xF3t do ekranu startowego."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643020
+    m_Localized: "Otwieranie ustawie\u0144."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643019
+    m_Localized: Otwieranie wyboru gry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643018
+    m_Localized: "Przej\u015Bcie do menu g\u0142\xF3wnego."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643017
+    m_Localized: '{0}. {1}. Rozgrywka.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643016
+    m_Localized: '{0}. Menu gry.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643015
+    m_Localized: "Wyb\xF3r gry."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643014
+    m_Localized: "Menu g\u0142\xF3wne."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643033
+    m_Localized: "Przeci\u0105gaj palcem, aby przechodzi\u0107 mi\u0119dzy opcjami.
+      Podw\xF3jnym stukni\u0119ciem zatwierdzasz aktualn\u0105 opcj\u0119. Przytrzymaj
+      palec na ekranie, aby si\u0119 cofn\u0105\u0107."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643032
+    m_Localized: "Mo\u017Cesz zmieni\u0107 preferowane sterowanie i zobaczy\u0107
+      list\u0119 wszystkich dost\u0119pnych akcji w ustawieniach."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643027
+    m_Localized: 'Aktualna gra: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643026
+    m_Localized: 'Wybrano: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643025
+    m_Localized: 'Aktualnie: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643024
+    m_Localized: "Powr\xF3t do menu gry."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643013
+    m_Localized: Ekran startowy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643012
+    m_Localized: "Tryb wizualny wy\u0142\u0105czony."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643011
+    m_Localized: "Tryb wizualny w\u0142\u0105czony."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643010
+    m_Localized: "Tryb wizualny jest obecnie w\u0142\u0105czony."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643009
+    m_Localized: Zamykanie aplikacji.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643038
+    m_Localized: "U\u017Cyj strza\u0142ek do wyboru trybu gry. Wci\u015Bnij Enter,
+      aby zatwierdzi\u0107 sw\xF3j wyb\xF3r. Wci\u015Bnij Backspace, \u017Ceby si\u0119
+      cofn\u0105\u0107."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643039
+    m_Localized: "Aby wr\xF3ci\u0107 do menu gry, przytrzymaj palec na ekranie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643040
+    m_Localized: "Aby wr\xF3ci\u0107 do menu gry, naci\u015Bnij Backspace."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643041
+    m_Localized: Wstecz
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643042
+    m_Localized: Ustawienia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643043
+    m_Localized: "Wyj\u015Bcie"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643044
+    m_Localized: Kontynuuj
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643045
+    m_Localized: Ekran startowy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643046
+    m_Localized: "Menu g\u0142\xF3wne"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643047
+    m_Localized: "Wyb\xF3r gry"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643048
+    m_Localized: Menu gry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643049
+    m_Localized: Rozgrywka
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643050
+    m_Localized: Ustawienia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643051
+    m_Localized: "Wyb\xF3r gry"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643052
+    m_Localized: Ustawienia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643053
+    m_Localized: "Wyj\u015Bcie"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643054
+    m_Localized: Ustawienia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643055
+    m_Localized: Wstecz
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643056
+    m_Localized: Samouczek
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643057
+    m_Localized: "\u0141atwy"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643058
+    m_Localized: "\u015Aredni"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643059
+    m_Localized: Trudny
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643008
+    m_Localized: Witaj w Blind Games Hub.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643061
+    m_Localized: "W\u0142asny"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643060
+    m_Localized: "Niesko\u0144czony"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1152678731083776
+    m_Localized: 'Uruchamianie: {0}. Tryb: {1}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1153700899745792
+    m_Localized: "Otwieranie ustawie\u0144 {0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1156912407015424
+    m_Localized: 'Aktualny tryb: {0}.'
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

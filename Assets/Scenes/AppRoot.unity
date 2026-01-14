@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 53891177}
   - component: {fileID: 53891176}
   - component: {fileID: 53891178}
+  - component: {fileID: 53891179}
   m_Layer: 0
   m_Name: AppRoot
   m_TagString: Untagged
@@ -151,6 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startSceneName: StartScene
   hubSceneName: HubScene
+  speakOnBoot: 0
 --- !u!4 &53891177
 Transform:
   m_ObjectHideFlags: 0
@@ -179,6 +181,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameCatalog: {fileID: 11400000, guid: f644ddffd28c34d4a96719b2e473a91a, type: 2}
+--- !u!114 &53891179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53891175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f07a32e33ffc9a43a9ea742f45464c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &913697826
 GameObject:
   m_ObjectHideFlags: 0

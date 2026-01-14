@@ -1,7 +1,12 @@
+using System.Collections;
 using Project.Core.App;
+using Project.Core.Audio;
+using Project.Core.Audio.Sequences.Common;
+using Project.Core.Localization;
 using Project.Core.Settings;
 using Project.Core.Speech;
 using Project.Core.Visual;
+using Project.Hub.Start.Sequences;
 using Project.UI.Visual;
 using UnityEngine;
 
@@ -12,11 +17,12 @@ namespace Project.Hub.Start
         [Header("Visual Assist UI (optional)")]
         [SerializeField] private StartVisualUiController visualUi;
 
-        private IVisualModeService _visualMode;
-        private ISettingsService _settings;
-        private ISpeechService _speech;
-        private SpeechFeedRouter _speechFeedRouter;
+        private IUiAudioOrchestrator _uiAudio;
         private IAppFlowService _flow;
+        private ISettingsService _settings;
+        private IVisualModeService _visualMode;
+        private ILocalizationService _loc;
+        private SpeechFeedRouter _speechFeedRouter;
 
         private bool _isTransitioning;
 
@@ -24,22 +30,32 @@ namespace Project.Hub.Start
         {
             var services = AppContext.Services;
 
-            _visualMode = services.Resolve<IVisualModeService>();
-            _settings = services.Resolve<ISettingsService>();
-            _speech = services.Resolve<ISpeechService>();
-            _flow = services.Resolve<IAppFlowService>();
-
+            _uiAudio = services.Resolve<IUiAudioOrchestrator>();
             _speechFeedRouter = services.Resolve<SpeechFeedRouter>();
-            if (visualUi != null)
+            _flow = services.Resolve<IAppFlowService>();
+            _settings = services.Resolve<ISettingsService>();
+            _visualMode = services.Resolve<IVisualModeService>();
+            _loc = services.Resolve<ILocalizationService>();
+        }
+
+        private void OnEnable()
+        {
+            if (_speechFeedRouter != null && visualUi != null)
                 _speechFeedRouter.SetTarget(visualUi);
         }
 
         private void Start()
         {
             RefreshUi();
-            _speech.Speak(
-                "Start. Confirm to open the Hub. Back to quit. Toggle Visual Assist is available on this screen.",
-                SpeechPriority.Normal);
+            StartCoroutine(BootSpeechRoutine());
+        }
+
+        private IEnumerator BootSpeechRoutine()
+        {
+            yield return null;
+            yield return null;
+
+            PlayStandardPrompt();
         }
 
         private void OnDestroy()
@@ -48,14 +64,30 @@ namespace Project.Hub.Start
                 _speechFeedRouter.ClearTarget(visualUi);
         }
 
+        public void OnRepeatRequested()
+        {
+            if (_isTransitioning || _flow.IsTransitioning) return;
+
+            PlayStandardPrompt();
+        }
+
         public async void EnterHub()
         {
             if (_isTransitioning || _flow.IsTransitioning) return;
             _isTransitioning = true;
 
+            _uiAudio.CancelCurrent();
+
             try
             {
-                _speech.Speak("Opening Hub.", SpeechPriority.High);
+                _uiAudio.PlayGated(
+                    UiAudioScope.Start,
+                    "nav.to_main_menu",
+                    stillTransitioning: () => _flow.IsTransitioning,
+                    delaySeconds: 0.5f,
+                    priority: SpeechPriority.High
+                );
+
                 await _flow.EnterHubAsync();
             }
             finally
@@ -64,37 +96,86 @@ namespace Project.Hub.Start
             }
         }
 
-        public async void ExitApp()
+        public void ExitApp()
         {
             if (_isTransitioning || _flow.IsTransitioning) return;
             _isTransitioning = true;
 
-            try
+            _uiAudio.CancelCurrent();
+
+            var h = _uiAudio.Play(
+                UiAudioScope.Start,
+                ctx => ExitAppSequence.Run(ctx),
+                SpeechPriority.High,
+                interruptible: false
+            );
+
+            StartCoroutine(ExitAfterSpeech(h));
+        }
+
+        private IEnumerator ExitAfterSpeech(UiAudioSequenceHandle h)
+        {
+            yield return WaitForUiAudioOrTimeout(h, 3f);
+
+            var task = _flow.ExitApplicationAsync();
+            while (!task.IsCompleted) yield return null;
+
+            _isTransitioning = false;
+        }
+
+        private IEnumerator WaitForUiAudioOrTimeout(UiAudioSequenceHandle h, float timeoutSeconds)
+        {
+            float t = 0f;
+
+            if (h == null) yield break;
+
+            while (!h.IsCompleted && !h.IsCancelled && t < timeoutSeconds)
             {
-                _speech.Speak("Closing application.", SpeechPriority.High);
-                await _flow.ExitApplicationAsync();
-            }
-            finally
-            {
-                _isTransitioning = false;
+                t += Time.unscaledDeltaTime;
+                yield return null;
             }
         }
 
         public void ToggleVisualAssist()
         {
-            if (_isTransitioning || (_flow != null && _flow.IsTransitioning)) return;
+            if (_isTransitioning || _flow.IsTransitioning) return;
+
+            _uiAudio.CancelCurrent();
 
             _visualMode.ToggleVisualAssist();
-
             _settings.SetVisualMode(_visualMode.Mode);
 
+            bool enabled = _visualMode.Mode == VisualMode.VisualAssist;
+
+            _uiAudio.Play(
+                UiAudioScope.Start,
+                ctx => ToggleVisualAssistSequence.Run(ctx, enabled),
+                SpeechPriority.High,
+                interruptible: true
+            );
+
             RefreshUi();
+        }
 
-            string msg = _visualMode.Mode == VisualMode.VisualAssist
-                ? "Visual Assist enabled."
-                : "Visual Assist disabled.";
+        private void PlayStandardPrompt()
+        {
+            bool vaEnabled = _visualMode.Mode == VisualMode.VisualAssist;
+            string controlHintKey = ResolveControlHintKey();
 
-            _speech.Speak(msg, SpeechPriority.High);
+            _uiAudio.Play(
+                UiAudioScope.Start,
+                ctx => StartStandardPromptSequence.Run(ctx, vaEnabled, controlHintKey),
+                SpeechPriority.Normal,
+                interruptible: true
+            );
+        }
+
+        private string ResolveControlHintKey()
+        {
+            var scheme = _settings.Current.preferredControlScheme;
+            return scheme == Project.Core.Input.ControlScheme.Touch
+                ? "hint.start_screen.touch"
+                : "hint.start_screen.keyboard";
         }
 
         private void RefreshUi()
