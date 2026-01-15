@@ -70,7 +70,11 @@ namespace Project.Games.Gameplay
 
         private void PlayPrompt()
         {
-            string hintKey = _settings.Current.preferredControlScheme == Project.Core.Input.ControlScheme.Touch
+            var mode = _settings.Current.controlHintMode;
+            if (mode == ControlHintMode.Auto)
+                mode = StartupDefaultsResolver.ResolvePlatformPreferredHintMode();
+
+            string hintKey = mode == ControlHintMode.Touch
                 ? "hint.gameplay.touch"
                 : "hint.gameplay.keyboard";
 

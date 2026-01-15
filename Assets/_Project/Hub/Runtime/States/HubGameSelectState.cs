@@ -157,11 +157,11 @@ namespace Project.Hub.States
 
         private static string ResolveControlHintKey(AppSettingsData settings)
         {
-            var scheme = settings.hasUserSelectedControlScheme
-                ? settings.preferredControlScheme
-                : StartupDefaultsResolver.ResolvePlatformPreferredControlScheme();
+            var mode = settings.controlHintMode;
+            if (mode == ControlHintMode.Auto)
+                mode = StartupDefaultsResolver.ResolvePlatformPreferredHintMode();
 
-            return scheme == Project.Core.Input.ControlScheme.Touch
+            return mode == ControlHintMode.Touch
                 ? "hint.game_select.touch"
                 : "hint.game_select.keyboard";
         }

@@ -45,33 +45,22 @@ namespace Project.Core.App
             {
                 languageCode = "en",
                 hasUserSelectedLanguage = false,
+
                 visualMode = VisualMode.AudioOnly,
-                preferredControlScheme = StartupDefaultsResolver.ResolvePlatformPreferredControlScheme(),
-                hasUserSelectedControlScheme = false
+
+                controlHintMode = Project.Core.Input.ControlHintMode.Auto,
+
+                repeatIdleSeconds = 10f,
+
+                sfxVolume = 1f,
+                cuesEnabled = true
             };
 
             var settings = new PlayerPrefsSettingsService(defaults);
             settings.Load();
-
-            if (!settings.Current.hasUserSelectedLanguage)
-            {
-                var sysLang = StartupDefaultsResolver.ResolveSystemLanguageCode();
-                if (!string.IsNullOrWhiteSpace(sysLang))
-                    settings.Current.languageCode = sysLang;
-            }
-
-            if (!settings.Current.hasUserSelectedControlScheme)
-            {
-                settings.Current.preferredControlScheme =
-                    StartupDefaultsResolver.ResolvePlatformPreferredControlScheme();
-            }
-
-            settings.Save();
             _services.Register<ISettingsService>(settings);
 
             _services.Register<IAudioCueService>(new NullAudioCueService());
-
-            visualModeService.SetMode(settings.Current.visualMode);
 
             var feedRouter = new SpeechFeedRouter();
             _services.Register(feedRouter);
@@ -82,12 +71,14 @@ namespace Project.Core.App
             var localization = new UnityLocalizationService();
             _services.Register<ILocalizationService>(localization);
 
+            ApplyStartupLanguage(settings, localization);
+
             localization.SetLanguage(settings.Current.languageCode);
 
-            _services.Register<ISpeechLocalizer>(
-                new SpeechLocalizer(localization, speech));
-
+            _services.Register<ISpeechLocalizer>(new SpeechLocalizer(localization, speech));
             _speechLanguageBinder = new SpeechLanguageBinder(localization, speech);
+
+            visualModeService.SetMode(settings.Current.visualMode);
 
             var uiAudio = FindFirstObjectByType<UiAudioOrchestrator>();
             if (uiAudio == null)
@@ -98,7 +89,6 @@ namespace Project.Core.App
             }
 
             uiAudio.Init(speech, localization);
-
             _services.Register<IUiAudioOrchestrator>(uiAudio);
 
             var appFlow = new AppFlowService(
@@ -109,22 +99,17 @@ namespace Project.Core.App
             var inactivity = new UserInactivityService();
             _services.Register<IUserInactivityService>(inactivity);
 
-            _services.Register<IInputService>(
-                new InputService(inactivity));
+            _services.Register<IInputService>(new InputService(inactivity));
+            _services.Register<IInputFocusService>(new InputFocusService());
 
-            _services.Register<IInputFocusService>(
-                new InputFocusService());
-
-            var repeat = new RepeatService(inactivity, speech, appFlow)
-            {
-                IdleThresholdSeconds = 10f
-            };
+            var repeat = new RepeatService(inactivity, speech, appFlow);
+            repeat.IdleThresholdSeconds = Mathf.Clamp(settings.Current.repeatIdleSeconds, 1f, 15f);
             _services.Register<IRepeatService>(repeat);
 
+            settings.Save();
+
             if (speakOnBoot)
-                speech.Speak(
-                    "Speech system initialized.",
-                    SpeechPriority.High);
+                speech.Speak("Speech system initialized.", SpeechPriority.High);
         }
 
         private void Start()
@@ -139,15 +124,18 @@ namespace Project.Core.App
                 var services = AppContext.Services;
 
                 var flow = services.Resolve<IAppFlowService>();
-                var loc = services.Resolve<ILocalizationService>();
-                var speech = services.Resolve<ISpeechService>();
+                var uiAudio = services.Resolve<IUiAudioOrchestrator>();
 
                 await Task.Yield();
 
-                var welcomeText = loc.Get("app.welcome");
-                speech.Speak(welcomeText, SpeechPriority.High);
+                var h = uiAudio.Play(
+                    UiAudioScope.Start,
+                    ctx => Project.Core.Audio.Steps.UiAudioSteps.SpeakKeyAndWait(ctx, "app.welcome"),
+                    SpeechPriority.High,
+                    interruptible: false
+                );
 
-                await Task.Delay(500);
+                await WaitForUiAudioOrTimeoutAsync(h, 4f);
 
                 await flow.EnterStartAsync();
             }
@@ -157,9 +145,47 @@ namespace Project.Core.App
             }
         }
 
+        private static async Task WaitForUiAudioOrTimeoutAsync(UiAudioSequenceHandle h, float timeoutSeconds)
+        {
+            if (h == null) return;
+
+            float start = Time.realtimeSinceStartup;
+            while (!h.IsCompleted && !h.IsCancelled)
+            {
+                if (Time.realtimeSinceStartup - start >= timeoutSeconds)
+                    return;
+
+                await Task.Yield();
+            }
+        }
+
         private void OnDestroy()
         {
             _speechLanguageBinder?.Dispose();
+        }
+
+        private static void ApplyStartupLanguage(
+            ISettingsService settings,
+            ILocalizationService localization)
+        {
+            if (settings == null || localization == null)
+                return;
+
+            if (settings.Current.hasUserSelectedLanguage)
+            {
+                if (string.IsNullOrWhiteSpace(settings.Current.languageCode))
+                    settings.Current.languageCode = "en";
+                return;
+            }
+
+            var sys = StartupDefaultsResolver.ResolveSystemLanguageCode();
+            if (string.IsNullOrWhiteSpace(sys))
+                sys = "en";
+
+            settings.Current.languageCode = sys;
+
+            localization.SetLanguage(sys);
+            settings.Current.languageCode = localization.CurrentLanguageCode;
         }
     }
 }

@@ -19,11 +19,16 @@ namespace Project.Core.Settings
         {
 #if UNITY_ANDROID || UNITY_IOS
             return ControlScheme.Touch;
-#elif UNITY_STANDALONE || UNITY_EDITOR
-            return ControlScheme.KeyboardMouse;
 #else
             return ControlScheme.KeyboardMouse;
 #endif
+        }
+
+        public static ControlHintMode ResolvePlatformPreferredHintMode()
+        {
+            return ResolvePlatformPreferredControlScheme() == ControlScheme.Touch
+                ? ControlHintMode.Touch
+                : ControlHintMode.KeyboardMouse;
         }
     }
 }

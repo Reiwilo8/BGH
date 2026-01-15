@@ -65,7 +65,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643022
-    m_Localized: Returning to the main menu.
+    m_Localized: Returning to main menu.
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643021
@@ -115,7 +115,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643025
-    m_Localized: 'Current: {0}.'
+    m_Localized: 'Current option: {0}.'
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643024
@@ -156,63 +156,63 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643041
-    m_Localized: Back
+    m_Localized: Back.
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643042
-    m_Localized: Settings
+    m_Localized: Settings.
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643043
-    m_Localized: Exit
+    m_Localized: Exit.
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643044
-    m_Localized: Continue
+  - m_Id: 1512428316553216
+    m_Localized: Restores all settings to their default state.
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643045
-    m_Localized: Start screen
+  - m_Id: 1540706121183232
+    m_Localized: Keyboard actions.
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643046
-    m_Localized: Main menu
+  - m_Id: 1540505570537472
+    m_Localized: Touch actions.
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643047
-    m_Localized: Game selection
+  - m_Id: 1540161201401856
+    m_Localized: Learn available actions.
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643048
-    m_Localized: Game menu
+  - m_Id: 1539034774925312
+    m_Localized: Controls instructions.
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643049
-    m_Localized: Gameplay
+  - m_Id: 1538371852595200
+    m_Localized: Control preferences and help.
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643050
-    m_Localized: Settings
+  - m_Id: 1538214943682560
+    m_Localized: Controls.
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643051
     m_Localized: Game selection
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643052
-    m_Localized: Settings
+  - m_Id: 1513647764303872
+    m_Localized: Polish.
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643053
-    m_Localized: Exit
+  - m_Id: 1513574435287040
+    m_Localized: English.
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643054
-    m_Localized: Settings
+  - m_Id: 1513483070763008
+    m_Localized: Off.
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643055
-    m_Localized: Back
+  - m_Id: 1512580779503616
+    m_Localized: On.
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643056
@@ -253,6 +253,207 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 1156912407015424
     m_Localized: 'Current mode: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1478152942415872
+    m_Localized: Settings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1478681202421760
+    m_Localized: Opening {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1480802916265984
+    m_Localized: 'Current value: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1481064540172288
+    m_Localized: 'Selected: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1484218996518912
+    m_Localized: Swipe to move through the options and settings. Double-tap to confirm
+      the current option or select a setting. Press and hold the screen to go back.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1485219082170368
+    m_Localized: Use the arrow keys to move through the options and settings. Press
+      Enter to confirm an option or select a setting. Press Backspace to go back.
+      Press Space to repeat instructions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1485952313618432
+    m_Localized: Swipe to select value. Double-tap to confirm your selection. Press
+      and hold the screen to cancel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1487222457921536
+    m_Localized: Use the arrow keys to select value. Press Enter to confirm your
+      selection. Press Backspace to cancel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1488185436565504
+    m_Localized: Swipe to adjust value. Double-tap to confirm your adjustment. Press
+      and hold the screen to cancel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1488635531522048
+    m_Localized: Use the arrow keys to adjust value. Press Enter to confirm your
+      adjustment. Press Backspace to cancel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1492878011297792
+    m_Localized: Double-tap to confirm action. Press and hold the screen to cancel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1495444233285632
+    m_Localized: Press Enter to confirm action. Press Backspace to cancel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1495698135478272
+    m_Localized: Confirm action.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1496083579432960
+    m_Localized: Action applied.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1496323153883136
+    m_Localized: Action cancelled.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1496559343529984
+    m_Localized: Language.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1496772858769408
+    m_Localized: Choose the language used for spoken messages.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1496994175414272
+    m_Localized: Visual Assist.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1497395658387456
+    m_Localized: Enables graphical visualization of apps current state.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1498926109585408
+    m_Localized: Preferred controls hints.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499056267227136
+    m_Localized: Choose which control instructions you hear.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499317048078336
+    m_Localized: Auto (by device).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499721852940288
+    m_Localized: Touch.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499826676985856
+    m_Localized: Keyboard & mouse.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1500032474705920
+    m_Localized: Repeat idle time.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1500314730393600
+    m_Localized: Minimum idle time required before Repeat works.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1500582238908416
+    m_Localized: Audio.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1500715399671808
+    m_Localized: Sound effects and cues settings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1501026914824192
+    m_Localized: Sound effects volume.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1501481111810048
+    m_Localized: Adjust volume of sound effects.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1504083610333184
+    m_Localized: 'Current setting: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1502158642900992
+    m_Localized: Enable sound cues.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1507491801100288
+    m_Localized: Enables sound cues.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1511885540061184
+    m_Localized: Reset settings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1541038213591040
+    m_Localized: Mouse actions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1542528231698432
+    m_Localized: 'Touch controls:
+
+      Swipe up or swipe left to select next item.
+
+      Swipe
+      down or swipe right to select previous item.
+
+      Double tap to confirm,
+      alternatively enter.
+
+      Long-press to go back or cancel action, alternatively
+      exit app.
+
+      Single tap to repeat instructions.
+
+      Tap with two fingers
+      to toggle Visual Assist, start screen only.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1544169915838464
+    m_Localized: 'Keyboard controls:
+
+      Press down or right arrow to select next
+      item.
+
+      Press up or left arrow to select previous item.
+
+      Press Enter
+      to confirm, alternatively enter.
+
+      Press Backspace or Escape to go back
+      or cancel action, alternatively exit app.
+
+      Press Space to repeat instructions.
+
+      Press
+      F1 to toggle Visual Assist, start screen only.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1546472823615488
+    m_Localized: 'Mouse controls:
+
+      Scroll down to select next item.
+
+      Scroll
+      up to select previous item.
+
+      Left click to confirm, alternatively enter.
+
+      Right
+      click to go back or cancel action, alternatively exit app.'
     m_Metadata:
       m_Items: []
   references:
