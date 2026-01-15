@@ -80,6 +80,13 @@ namespace Project.Games.Module
             }
         }
 
+        public void OnRepeatRequested()
+        {
+            if (_items == null || _items.Length == 0) return;
+            if (_flow.IsTransitioning) return;
+            PlayPrompt();
+        }
+
         private bool LoadSelectedGameOrFail()
         {
             if (string.IsNullOrWhiteSpace(_session.SelectedGameId))
@@ -133,13 +140,6 @@ namespace Project.Games.Module
             );
         }
 
-        public void OnRepeatRequested()
-        {
-            if (_items == null || _items.Length == 0) return;
-            if (_flow.IsTransitioning) return;
-            PlayPrompt();
-        }
-
         private void PlayCurrent()
         {
             var item = _items[_index];
@@ -184,12 +184,12 @@ namespace Project.Games.Module
 
                 case MenuItemKind.Settings:
                     _uiAudio.PlayGated(
-                    UiAudioScope.GameModule,
-                    "nav.to_game_settings",
-                    () => _flow.IsTransitioning,
-                    0.5f,
-                    SpeechPriority.High,
-                    _game.displayName
+                        UiAudioScope.GameModule,
+                        "nav.to_game_settings",
+                        () => _flow.IsTransitioning,
+                        0.5f,
+                        SpeechPriority.High,
+                        _game.displayName
                     );
                     break;
 
@@ -245,8 +245,11 @@ namespace Project.Games.Module
 
         private string ResolveControlHintKey()
         {
-            var scheme = _settings.Current.preferredControlScheme;
-            return scheme == Project.Core.Input.ControlScheme.Touch
+            var mode = _settings.Current.controlHintMode;
+            if (mode == ControlHintMode.Auto)
+                mode = StartupDefaultsResolver.ResolvePlatformPreferredHintMode();
+
+            return mode == ControlHintMode.Touch
                 ? "hint.game_menu.touch"
                 : "hint.game_menu.keyboard";
         }

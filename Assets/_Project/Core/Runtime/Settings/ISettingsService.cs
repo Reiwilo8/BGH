@@ -1,3 +1,6 @@
+using Project.Core.Input;
+using Project.Core.Visual;
+
 namespace Project.Core.Settings
 {
     public interface ISettingsService
@@ -11,8 +14,13 @@ namespace Project.Core.Settings
         void ResetToDefaults();
 
         void SetLanguage(string languageCode, bool userSelected);
-        void SetVisualMode(Project.Core.Visual.VisualMode mode);
+        void SetVisualMode(VisualMode mode);
 
-        void SetPreferredControlScheme(Project.Core.Input.ControlScheme scheme, bool userSelected);
+        void SetControlHintMode(ControlHintMode mode);
+
+        void SetRepeatIdleSeconds(float seconds);
+
+        void SetSfxVolume01(float volume01);
+        void SetCuesEnabled(bool enabled);
     }
 }

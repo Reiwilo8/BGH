@@ -15,6 +15,8 @@ namespace Project.Hub
 
         private IHubState _current;
 
+        public States.HubMainOption HubMainSelection { get; set; } = States.HubMainOption.GameSelect;
+
         public HubStateMachine(IUiAudioOrchestrator uiAudio, IAppFlowService flow, ISettingsService settings)
         {
             UiAudio = uiAudio;

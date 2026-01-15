@@ -6,7 +6,7 @@ namespace Project.Core.Settings
 {
     public sealed class PlayerPrefsSettingsService : ISettingsService
     {
-        private const string Key = "app_settings_v1";
+        private const string Key = "app_settings_v2";
 
         public AppSettingsData Current { get; private set; }
         public AppSettingsData Defaults { get; }
@@ -41,6 +41,9 @@ namespace Project.Core.Settings
             {
                 Current = Clone(Defaults);
             }
+
+            Current.repeatIdleSeconds = Mathf.Clamp(Current.repeatIdleSeconds, 1f, 15f);
+            Current.sfxVolume = Mathf.Clamp01(Current.sfxVolume);
         }
 
         public void Save()
@@ -71,10 +74,27 @@ namespace Project.Core.Settings
             Save();
         }
 
-        public void SetPreferredControlScheme(ControlScheme scheme, bool userSelected)
+        public void SetControlHintMode(ControlHintMode mode)
         {
-            Current.preferredControlScheme = scheme;
-            Current.hasUserSelectedControlScheme = userSelected;
+            Current.controlHintMode = mode;
+            Save();
+        }
+
+        public void SetRepeatIdleSeconds(float seconds)
+        {
+            Current.repeatIdleSeconds = Mathf.Clamp(seconds, 1f, 15f);
+            Save();
+        }
+
+        public void SetSfxVolume01(float volume01)
+        {
+            Current.sfxVolume = Mathf.Clamp01(volume01);
+            Save();
+        }
+
+        public void SetCuesEnabled(bool enabled)
+        {
+            Current.cuesEnabled = enabled;
             Save();
         }
 
@@ -85,8 +105,10 @@ namespace Project.Core.Settings
                 languageCode = src.languageCode,
                 hasUserSelectedLanguage = src.hasUserSelectedLanguage,
                 visualMode = src.visualMode,
-                preferredControlScheme = src.preferredControlScheme,
-                hasUserSelectedControlScheme = src.hasUserSelectedControlScheme
+                controlHintMode = src.controlHintMode,
+                repeatIdleSeconds = src.repeatIdleSeconds,
+                sfxVolume = src.sfxVolume,
+                cuesEnabled = src.cuesEnabled
             };
         }
     }

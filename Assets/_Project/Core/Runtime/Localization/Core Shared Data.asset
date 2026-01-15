@@ -47,6 +47,10 @@ MonoBehaviour:
     m_Key: enter.main_menu
     m_Metadata:
       m_Items: []
+  - m_Id: 1478152942415872
+    m_Key: enter.main_settings
+    m_Metadata:
+      m_Items: []
   - m_Id: 153419705643015
     m_Key: enter.game_select
     m_Metadata:
@@ -63,12 +67,16 @@ MonoBehaviour:
     m_Key: nav.to_main_menu
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643019
-    m_Key: nav.to_game_select
-    m_Metadata:
-      m_Items: []
   - m_Id: 153419705643020
     m_Key: nav.to_main_settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1478681202421760
+    m_Key: nav.to_settings_folder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153419705643019
+    m_Key: nav.to_game_select
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643028
@@ -107,6 +115,18 @@ MonoBehaviour:
     m_Key: selected.option
     m_Metadata:
       m_Items: []
+  - m_Id: 1504083610333184
+    m_Key: current.setting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1480802916265984
+    m_Key: current.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1481064540172288
+    m_Key: selected.value
+    m_Metadata:
+      m_Items: []
   - m_Id: 153419705643027
     m_Key: current.game
     m_Metadata:
@@ -133,6 +153,50 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 153419705643034
     m_Key: hint.main_menu.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1484218996518912
+    m_Key: hint.settings.browse.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1485219082170368
+    m_Key: hint.settings.browse.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1485952313618432
+    m_Key: hint.settings.edit_list.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1487222457921536
+    m_Key: hint.settings.edit_list.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1488185436565504
+    m_Key: hint.settings.edit_range.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1488635531522048
+    m_Key: hint.settings.edit_range.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1492878011297792
+    m_Key: hint.settings.confirm_action.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1495444233285632
+    m_Key: hint.settings.confirm_action.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1495698135478272
+    m_Key: settings.action.confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1496083579432960
+    m_Key: settings.action.applied
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1496323153883136
+    m_Key: settings.action.cancelled
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643035
@@ -171,52 +235,140 @@ MonoBehaviour:
     m_Key: common.exit
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643044
-    m_Key: common.continue
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153419705643045
-    m_Key: ui.title.start_screen
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153419705643046
-    m_Key: ui.title.main_menu
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153419705643047
-    m_Key: ui.title.game_select
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153419705643048
-    m_Key: ui.title.game_menu
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153419705643049
-    m_Key: ui.title.gameplay
-    m_Metadata:
-      m_Items: []
-  - m_Id: 153419705643050
-    m_Key: ui.title.settings
-    m_Metadata:
-      m_Items: []
   - m_Id: 153419705643051
     m_Key: menu.main.game_select
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643052
-    m_Key: menu.main.settings
+  - m_Id: 1496559343529984
+    m_Key: settings.language
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643053
-    m_Key: menu.main.exit
+  - m_Id: 1496772858769408
+    m_Key: settings.language.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643054
-    m_Key: menu.game.settings
+  - m_Id: 1496994175414272
+    m_Key: settings.visual_assist
     m_Metadata:
       m_Items: []
-  - m_Id: 153419705643055
-    m_Key: menu.game.back
+  - m_Id: 1497395658387456
+    m_Key: settings.visual_assist.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1538214943682560
+    m_Key: settings.controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1538371852595200
+    m_Key: settings.controls.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1498926109585408
+    m_Key: settings.control_hints
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499056267227136
+    m_Key: settings.control_hints.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499317048078336
+    m_Key: settings.control_hints.auto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499721852940288
+    m_Key: settings.control_hints.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1499826676985856
+    m_Key: settings.control_hints.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1539034774925312
+    m_Key: settings.controls_help
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1540161201401856
+    m_Key: settings.controls_help.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1540505570537472
+    m_Key: settings.controls_help.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1540706121183232
+    m_Key: settings.controls_help.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1541038213591040
+    m_Key: settings.controls_help.mouse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1542528231698432
+    m_Key: hint.actions.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1544169915838464
+    m_Key: hint.actions.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1546472823615488
+    m_Key: hint.actions.mouse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1500032474705920
+    m_Key: settings.repeat_idle_seconds
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1500314730393600
+    m_Key: settings.repeat_idle_seconds.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1500582238908416
+    m_Key: settings.audio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1500715399671808
+    m_Key: settings.audio.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1501026914824192
+    m_Key: settings.sfx_volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1501481111810048
+    m_Key: settings.sfx_volume.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1502158642900992
+    m_Key: settings.enable_cues
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1507491801100288
+    m_Key: settings.enable_cues.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1511885540061184
+    m_Key: settings.reset_defaults
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1512428316553216
+    m_Key: settings.reset_defaults.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1512580779503616
+    m_Key: settings.on
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1513483070763008
+    m_Key: settings.off
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1513574435287040
+    m_Key: settings.lang.en
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1513647764303872
+    m_Key: settings.lang.pl
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643056

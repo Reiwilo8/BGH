@@ -6,6 +6,7 @@ using Project.Core.Settings;
 using Project.Core.Speech;
 using Project.Hub.Sequences;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Project.Hub.States
 {
@@ -19,7 +20,7 @@ namespace Project.Hub.States
     public sealed class HubMainState : IHubState
     {
         private readonly HubStateMachine _sm;
-        private HubMainOption _current = HubMainOption.GameSelect;
+        private HubMainOption _current;
 
         public string Name => "Hub.Main";
         public HubMainState(HubStateMachine sm) => _sm = sm;
@@ -27,6 +28,9 @@ namespace Project.Hub.States
         public void Enter()
         {
             AppContext.Services.Resolve<AppSession>().SetHubTarget(HubReturnTarget.Main);
+
+            _current = _sm.HubMainSelection;
+
             PlayPrompt();
         }
 
@@ -40,11 +44,13 @@ namespace Project.Hub.States
             {
                 case NavAction.Next:
                     _current = (HubMainOption)(((int)_current + 1) % 3);
+                    _sm.HubMainSelection = _current; // NEW
                     PlayCurrent();
                     break;
 
                 case NavAction.Previous:
                     _current = (HubMainOption)(((int)_current - 1 + 3) % 3);
+                    _sm.HubMainSelection = _current; // NEW
                     PlayCurrent();
                     break;
 
@@ -106,12 +112,20 @@ namespace Project.Hub.States
                     break;
 
                 case HubMainOption.Settings:
-                    _sm.UiAudio.Play(
+                    _sm.HubMainSelection = HubMainOption.Settings;
+
+                    _sm.UiAudio.PlayGated(
                         UiAudioScope.Hub,
-                        ctx => NavigateToSequence.Run(ctx, "nav.to_main_settings"),
-                        SpeechPriority.High,
-                        interruptible: true
+                        "nav.to_main_settings",
+                        stillTransitioning: () => _sm.Transitions.IsTransitioning,
+                        delaySeconds: 0.5f,
+                        priority: SpeechPriority.High
                     );
+
+                    _sm.Transitions.RunInstant(() =>
+                    {
+                        _sm.SetState(new HubSettingsState(_sm));
+                    });
                     break;
 
                 case HubMainOption.Exit:
@@ -124,12 +138,23 @@ namespace Project.Hub.States
 
         private async Task QuitAsync()
         {
-            _sm.UiAudio.Play(
+            _sm.UiAudio.CancelCurrent();
+
+            var h = _sm.UiAudio.Play(
                 UiAudioScope.Hub,
                 ctx => ExitAppSequence.Run(ctx),
                 SpeechPriority.High,
                 interruptible: false
             );
+
+            float start = Time.realtimeSinceStartup;
+            while (h != null && !h.IsCompleted && !h.IsCancelled)
+            {
+                if (Time.realtimeSinceStartup - start >= 4f)
+                    break;
+
+                await Task.Yield();
+            }
 
             await _sm.Flow.ExitApplicationAsync();
         }
@@ -165,11 +190,11 @@ namespace Project.Hub.States
 
         private static string ResolveControlHintKey(AppSettingsData settings)
         {
-            var scheme = settings.hasUserSelectedControlScheme
-                ? settings.preferredControlScheme
-                : StartupDefaultsResolver.ResolvePlatformPreferredControlScheme();
+            var mode = settings.controlHintMode;
+            if (mode == Project.Core.Input.ControlHintMode.Auto)
+                mode = StartupDefaultsResolver.ResolvePlatformPreferredHintMode();
 
-            return scheme == Project.Core.Input.ControlScheme.Touch
+            return mode == Project.Core.Input.ControlHintMode.Touch
                 ? "hint.main_menu.touch"
                 : "hint.main_menu.keyboard";
         }

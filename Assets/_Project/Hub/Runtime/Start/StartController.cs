@@ -2,7 +2,7 @@ using System.Collections;
 using Project.Core.App;
 using Project.Core.Audio;
 using Project.Core.Audio.Sequences.Common;
-using Project.Core.Localization;
+using Project.Core.Input;
 using Project.Core.Settings;
 using Project.Core.Speech;
 using Project.Core.Visual;
@@ -21,7 +21,6 @@ namespace Project.Hub.Start
         private IAppFlowService _flow;
         private ISettingsService _settings;
         private IVisualModeService _visualMode;
-        private ILocalizationService _loc;
         private SpeechFeedRouter _speechFeedRouter;
 
         private bool _isTransitioning;
@@ -35,7 +34,6 @@ namespace Project.Hub.Start
             _flow = services.Resolve<IAppFlowService>();
             _settings = services.Resolve<ISettingsService>();
             _visualMode = services.Resolve<IVisualModeService>();
-            _loc = services.Resolve<ILocalizationService>();
         }
 
         private void OnEnable()
@@ -66,14 +64,17 @@ namespace Project.Hub.Start
 
         public void OnRepeatRequested()
         {
-            if (_isTransitioning || _flow.IsTransitioning) return;
+            if (_isTransitioning) return;
+            if (_flow != null && _flow.IsTransitioning) return;
 
             PlayStandardPrompt();
         }
 
         public async void EnterHub()
         {
-            if (_isTransitioning || _flow.IsTransitioning) return;
+            if (_isTransitioning) return;
+            if (_flow != null && _flow.IsTransitioning) return;
+
             _isTransitioning = true;
 
             _uiAudio.CancelCurrent();
@@ -83,7 +84,7 @@ namespace Project.Hub.Start
                 _uiAudio.PlayGated(
                     UiAudioScope.Start,
                     "nav.to_main_menu",
-                    stillTransitioning: () => _flow.IsTransitioning,
+                    stillTransitioning: () => _flow != null && _flow.IsTransitioning,
                     delaySeconds: 0.5f,
                     priority: SpeechPriority.High
                 );
@@ -98,7 +99,9 @@ namespace Project.Hub.Start
 
         public void ExitApp()
         {
-            if (_isTransitioning || _flow.IsTransitioning) return;
+            if (_isTransitioning) return;
+            if (_flow != null && _flow.IsTransitioning) return;
+
             _isTransitioning = true;
 
             _uiAudio.CancelCurrent();
@@ -123,12 +126,11 @@ namespace Project.Hub.Start
             _isTransitioning = false;
         }
 
-        private IEnumerator WaitForUiAudioOrTimeout(UiAudioSequenceHandle h, float timeoutSeconds)
+        private static IEnumerator WaitForUiAudioOrTimeout(UiAudioSequenceHandle h, float timeoutSeconds)
         {
-            float t = 0f;
-
             if (h == null) yield break;
 
+            float t = 0f;
             while (!h.IsCompleted && !h.IsCancelled && t < timeoutSeconds)
             {
                 t += Time.unscaledDeltaTime;
@@ -138,11 +140,13 @@ namespace Project.Hub.Start
 
         public void ToggleVisualAssist()
         {
-            if (_isTransitioning || _flow.IsTransitioning) return;
+            if (_isTransitioning) return;
+            if (_flow != null && _flow.IsTransitioning) return;
 
             _uiAudio.CancelCurrent();
 
             _visualMode.ToggleVisualAssist();
+
             _settings.SetVisualMode(_visualMode.Mode);
 
             bool enabled = _visualMode.Mode == VisualMode.VisualAssist;
@@ -160,7 +164,7 @@ namespace Project.Hub.Start
         private void PlayStandardPrompt()
         {
             bool vaEnabled = _visualMode.Mode == VisualMode.VisualAssist;
-            string controlHintKey = ResolveControlHintKey();
+            string controlHintKey = ResolveControlHintKey(_settings.Current);
 
             _uiAudio.Play(
                 UiAudioScope.Start,
@@ -170,10 +174,13 @@ namespace Project.Hub.Start
             );
         }
 
-        private string ResolveControlHintKey()
+        private static string ResolveControlHintKey(AppSettingsData settings)
         {
-            var scheme = _settings.Current.preferredControlScheme;
-            return scheme == Project.Core.Input.ControlScheme.Touch
+            var mode = settings.controlHintMode;
+            if (mode == ControlHintMode.Auto)
+                mode = StartupDefaultsResolver.ResolvePlatformPreferredHintMode();
+
+            return mode == ControlHintMode.Touch
                 ? "hint.start_screen.touch"
                 : "hint.start_screen.keyboard";
         }
@@ -190,13 +197,23 @@ namespace Project.Hub.Start
         {
             return
                 "START\n\n" +
-                "Keyboard / Mouse:\n" +
-                "- Confirm: Enter / Space / Left Click\n" +
-                "- Back/Pause: Backspace / Esc / Right Click\n" +
+                "Keyboard:\n" +
+                "- Next: Right / Down Arrow\n" +
+                "- Previous: Left / Up Arrow\n" +
+                "- Confirm: Enter\n" +
+                "- Back: Backspace / Esc\n" +
+                "- Repeat: Space\n" +
                 "- Toggle Visual Assist: F1 (Start screen only)\n\n" +
-                "Touch gestures:\n" +
+                "Mouse:\n" +
+                "- Next / Previous: Scroll Down / Up\n" +
+                "- Confirm: Left Click\n" +
+                "- Back: Right Click\n\n" +
+                "Touch:\n" +
+                "- Next: Swipe Left / Up\n" +
+                "- Previous: Swipe Right / Down\n" +
                 "- Confirm: Double-tap\n" +
-                "- Back/Pause: Long-press\n" +
+                "- Back: Long-press\n" +
+                "- Repeat: Single tap\n" +
                 "- Toggle Visual Assist: Two-finger tap (Start screen only)";
         }
     }
