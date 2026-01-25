@@ -1,6 +1,7 @@
 using Project.Core.Activity;
 using Project.Core.App;
 using Project.Core.Input;
+using Project.Core.VisualAssist;
 using UnityEngine;
 
 namespace Project.Games.Gameplay
@@ -12,12 +13,14 @@ namespace Project.Games.Gameplay
         private IInputService _input;
         private IInputFocusService _focus;
         private IRepeatService _repeat;
+        private IVisualAssistService _va;
 
         private void Awake()
         {
             _input = AppContext.Services.Resolve<IInputService>();
             _focus = AppContext.Services.Resolve<IInputFocusService>();
             _repeat = AppContext.Services.Resolve<IRepeatService>();
+            _va = AppContext.Services.Resolve<IVisualAssistService>();
 
             if (controller == null)
                 controller = FindFirstObjectByType<GameplayPlaceholderController>();
@@ -56,6 +59,7 @@ namespace Project.Games.Gameplay
         private void HandleRepeat()
         {
             if (_focus.Current != InputScope.Gameplay) return;
+            _va?.FlashRepeat(0.25f);
             controller?.OnRepeatRequested();
         }
     }

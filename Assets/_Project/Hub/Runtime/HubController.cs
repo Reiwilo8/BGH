@@ -2,7 +2,9 @@ using System.Collections;
 using Project.Core.App;
 using Project.Core.Audio;
 using Project.Core.Input;
+using Project.Core.Localization;
 using Project.Core.Settings;
+using Project.Core.VisualAssist;
 using UnityEngine;
 
 namespace Project.Hub
@@ -11,6 +13,9 @@ namespace Project.Hub
     {
         private HubStateMachine _sm;
         private IInputFocusService _focus;
+
+        private ILocalizationService _loc;
+        private IVisualAssistService _va;
 
         private bool _subscribed;
         private Coroutine _lateSubscribe;
@@ -23,11 +28,16 @@ namespace Project.Hub
             var flow = services.Resolve<IAppFlowService>();
             var settings = services.Resolve<ISettingsService>();
 
+            _loc = services.Resolve<ILocalizationService>();
+            _va = TryResolveVa(services);
+
             _sm = new HubStateMachine(uiAudio, flow, settings);
         }
 
         private void Start()
         {
+            ApplyVisualAssistBaselineForHub();
+
             var session = AppContext.Services.Resolve<AppSession>();
 
             if (session.HubTarget == HubReturnTarget.GameSelect)
@@ -101,6 +111,8 @@ namespace Project.Hub
             if (scope != InputScope.Hub)
                 return;
 
+            ApplyVisualAssistBaselineForHub();
+
             _sm.OnFocusGained();
         }
 
@@ -112,6 +124,28 @@ namespace Project.Hub
         public void Handle(NavAction action)
         {
             _sm.Dispatch(action);
+        }
+
+        private static IVisualAssistService TryResolveVa(Project.Core.Services.IServiceRegistry services)
+        {
+            try { return services.Resolve<IVisualAssistService>(); }
+            catch { return null; }
+        }
+
+        private void ApplyVisualAssistBaselineForHub()
+        {
+            if (_va == null || _loc == null)
+                return;
+
+            _va.SetHeaderKey("va.app_name");
+            _va.SetSubHeaderKey("va.screen.main_menu");
+
+            _va.ClearTransitioning();
+            _va.ClearDimmer();
+            _va.ClearCenter(VaCenterLayer.Transition);
+            _va.ClearCenter(VaCenterLayer.Gesture);
+
+            _va.SetCenterText(VaCenterLayer.PlannedSpeech, _loc.Get("enter.main_menu"));
         }
     }
 }

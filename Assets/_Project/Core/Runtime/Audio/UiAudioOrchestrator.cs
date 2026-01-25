@@ -4,6 +4,7 @@ using UnityEngine;
 using Project.Core.Localization;
 using Project.Core.Speech;
 using Project.Core.Audio.Sequences.Common;
+using Project.Core.VisualAssist;
 
 namespace Project.Core.Audio
 {
@@ -16,9 +17,9 @@ namespace Project.Core.Audio
 
         private ISpeechService _speech;
         private ILocalizationService _localization;
+        private IVisualAssistService _visualAssist;
 
         private Coroutine _gate;
-
         private PendingRequest _pending;
 
         private sealed class PendingRequest
@@ -30,10 +31,11 @@ namespace Project.Core.Audio
             public UiAudioSequenceHandle Handle;
         }
 
-        public void Init(ISpeechService speech, ILocalizationService localization)
+        public void Init(ISpeechService speech, ILocalizationService localization, IVisualAssistService visualAssist)
         {
             _speech = speech;
             _localization = localization;
+            _visualAssist = visualAssist;
         }
 
         public UiAudioSequenceHandle Play(
@@ -97,6 +99,8 @@ namespace Project.Core.Audio
             _currentPriority = priority;
             _currentInterruptible = interruptible;
 
+            (_visualAssist as IVisualAssistMarqueeGate)?.ForceRelease();
+
             _currentHandle = new UiAudioSequenceHandle();
             _running = StartCoroutine(Run(sequence, _currentHandle));
 
@@ -147,6 +151,8 @@ namespace Project.Core.Audio
                 _pending = null;
             }
 
+            (_visualAssist as IVisualAssistMarqueeGate)?.ForceRelease();
+
             _speech?.StopAll();
         }
 
@@ -195,7 +201,7 @@ namespace Project.Core.Audio
             if (handle == null || handle.IsCancelled)
                 yield break;
 
-            var ctx = new UiAudioContext(_speech, _localization, handle);
+            var ctx = new UiAudioContext(_speech, _localization, _visualAssist, handle);
 
             yield return sequence(ctx);
 

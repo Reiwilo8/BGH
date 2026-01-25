@@ -5,9 +5,12 @@ using Project.Core.Audio.Steps;
 using Project.Core.Input;
 using Project.Core.Settings;
 using Project.Core.Speech;
+using Project.Core.VisualAssist;
 using Project.Games.Catalog;
 using Project.Games.Definitions;
 using Project.Hub.Sequences;
+using System.Collections;
+using UnityEngine;
 
 namespace Project.Hub.States
 {
@@ -17,30 +20,37 @@ namespace Project.Hub.States
         private readonly GameCatalog _catalog;
         private int _index;
 
+        private readonly IVisualAssistService _va;
+
         public string Name => "Hub.GameSelect";
 
         public HubGameSelectState(HubStateMachine sm)
         {
             _sm = sm;
             _catalog = AppContext.Services.Resolve<GameCatalog>();
+            _va = AppContext.Services.Resolve<IVisualAssistService>();
         }
 
         public void Enter()
         {
             AppContext.Services.Resolve<AppSession>().SetHubTarget(HubReturnTarget.GameSelect);
             _index = 0;
+
+            RefreshVa();
             PlayPrompt();
         }
 
         public void Exit() { }
-        public void OnFocusGained() => PlayPrompt();
-        public void OnRepeatRequested() => PlayPrompt();
+        public void OnFocusGained() { RefreshVa(); PlayPrompt(); }
+        public void OnRepeatRequested() { RefreshVa(); PlayPrompt(); }
 
         public void Handle(NavAction action)
         {
             var games = _catalog.games;
             if (games == null || games.Length == 0)
             {
+                RefreshVa();
+
                 _sm.UiAudio.Play(
                     UiAudioScope.Hub,
                     ctx => UiAudioSteps.SpeakKeyAndWait(ctx, "current.game", "None"),
@@ -60,11 +70,19 @@ namespace Project.Hub.States
             {
                 case NavAction.Next:
                     _index = (_index + 1) % count;
+
+                    _va?.PulseListMove(VaListMoveDirection.Next);
+
+                    RefreshVa();
                     PlayCurrent();
                     break;
 
                 case NavAction.Previous:
                     _index = (_index - 1 + count) % count;
+
+                    _va?.PulseListMove(VaListMoveDirection.Previous);
+
+                    RefreshVa();
                     PlayCurrent();
                     break;
 
@@ -79,6 +97,47 @@ namespace Project.Hub.States
                     BackToMain();
                     break;
             }
+        }
+
+        private void RefreshVa()
+        {
+            _va?.SetHeaderKey("va.screen.game_select");
+            _va?.SetSubHeaderText(GetCurrentTextForVa(_catalog.games));
+            _va?.SetIdleHintKey(ResolveControlHintKey(_sm.Settings.Current));
+
+            ScheduleClearTransitioning();
+        }
+
+        private void ScheduleClearTransitioning()
+        {
+            if (_va == null) return;
+            if (!_va.IsTransitioning) return;
+
+            if (_sm.UiAudio is MonoBehaviour mb)
+                mb.StartCoroutine(ClearTransitioningNextFrame());
+            else
+                _va.ClearTransitioning();
+        }
+
+        private IEnumerator ClearTransitioningNextFrame()
+        {
+            yield return null;
+            _va?.ClearTransitioning();
+        }
+
+        private string GetCurrentTextForVa(GameDefinition[] games)
+        {
+            var loc = AppContext.Services.Resolve<Project.Core.Localization.ILocalizationService>();
+
+            if (games == null || games.Length == 0)
+                return loc.Get("va.current", loc.Get("common.back"));
+
+            if (IsBackItem(games))
+                return loc.Get("va.current", loc.Get("common.back"));
+
+            var g = games[_index];
+            var name = (g != null && !string.IsNullOrWhiteSpace(g.displayName)) ? g.displayName : "Unknown";
+            return loc.Get("va.game", name);
         }
 
         private void PlayPrompt()
@@ -105,6 +164,8 @@ namespace Project.Hub.States
 
         private void BackToMain()
         {
+            _va?.NotifyTransitioning();
+
             _sm.UiAudio.PlayGated(
                 UiAudioScope.Hub,
                 "exit.to_main_menu",
@@ -126,6 +187,8 @@ namespace Project.Hub.States
 
             if (game == null || string.IsNullOrWhiteSpace(game.gameId))
                 return;
+
+            _va?.NotifyTransitioning();
 
             _sm.UiAudio.PlayGated(
                 UiAudioScope.Hub,

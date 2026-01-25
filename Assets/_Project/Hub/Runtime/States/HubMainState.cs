@@ -4,7 +4,9 @@ using Project.Core.Audio.Sequences.Common;
 using Project.Core.Input;
 using Project.Core.Settings;
 using Project.Core.Speech;
+using Project.Core.VisualAssist;
 using Project.Hub.Sequences;
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -22,8 +24,14 @@ namespace Project.Hub.States
         private readonly HubStateMachine _sm;
         private HubMainOption _current;
 
+        private readonly IVisualAssistService _va;
+
         public string Name => "Hub.Main";
-        public HubMainState(HubStateMachine sm) => _sm = sm;
+        public HubMainState(HubStateMachine sm)
+        {
+            _sm = sm;
+            _va = AppContext.Services.Resolve<IVisualAssistService>();
+        }
 
         public void Enter()
         {
@@ -31,12 +39,13 @@ namespace Project.Hub.States
 
             _current = _sm.HubMainSelection;
 
+            RefreshVa();
             PlayPrompt();
         }
 
         public void Exit() { }
-        public void OnFocusGained() => PlayPrompt();
-        public void OnRepeatRequested() => PlayPrompt();
+        public void OnFocusGained() { RefreshVa(); PlayPrompt(); }
+        public void OnRepeatRequested() { RefreshVa(); PlayPrompt(); }
 
         public void Handle(NavAction action)
         {
@@ -44,13 +53,21 @@ namespace Project.Hub.States
             {
                 case NavAction.Next:
                     _current = (HubMainOption)(((int)_current + 1) % 3);
-                    _sm.HubMainSelection = _current; // NEW
+                    _sm.HubMainSelection = _current;
+
+                    _va?.PulseListMove(VaListMoveDirection.Next);
+
+                    RefreshVa();
                     PlayCurrent();
                     break;
 
                 case NavAction.Previous:
                     _current = (HubMainOption)(((int)_current - 1 + 3) % 3);
-                    _sm.HubMainSelection = _current; // NEW
+                    _sm.HubMainSelection = _current;
+
+                    _va?.PulseListMove(VaListMoveDirection.Previous);
+
+                    RefreshVa();
                     PlayCurrent();
                     break;
 
@@ -62,6 +79,39 @@ namespace Project.Hub.States
                     _ = ReturnToStartAsync();
                     break;
             }
+        }
+
+        private void RefreshVa()
+        {
+            _va?.SetHeaderKey("va.screen.main_menu");
+            _va?.SetSubHeaderKey("va.current", GetOptionText());
+            _va?.SetIdleHintKey(ResolveControlHintKey(_sm.Settings.Current));
+
+            ScheduleClearTransitioning();
+        }
+
+        private void ScheduleClearTransitioning()
+        {
+            if (_va == null) return;
+            if (!_va.IsTransitioning) return;
+
+            if (_sm.UiAudio is MonoBehaviour mb)
+                mb.StartCoroutine(ClearTransitioningNextFrame());
+            else
+                _va.ClearTransitioning();
+        }
+
+        private IEnumerator ClearTransitioningNextFrame()
+        {
+            yield return null;
+
+            _va?.ClearTransitioning();
+        }
+
+        private string GetOptionText()
+        {
+            var loc = AppContext.Services.Resolve<Project.Core.Localization.ILocalizationService>();
+            return loc.Get(GetOptionKey(_current));
         }
 
         private void PlayPrompt()
@@ -97,6 +147,8 @@ namespace Project.Hub.States
             switch (_current)
             {
                 case HubMainOption.GameSelect:
+                    _va?.NotifyTransitioning();
+
                     _sm.UiAudio.PlayGated(
                         UiAudioScope.Hub,
                         "nav.to_game_select",
@@ -113,6 +165,8 @@ namespace Project.Hub.States
 
                 case HubMainOption.Settings:
                     _sm.HubMainSelection = HubMainOption.Settings;
+
+                    _va?.NotifyTransitioning();
 
                     _sm.UiAudio.PlayGated(
                         UiAudioScope.Hub,
@@ -139,6 +193,7 @@ namespace Project.Hub.States
         private async Task QuitAsync()
         {
             _sm.UiAudio.CancelCurrent();
+            _va?.NotifyTransitioning();
 
             var h = _sm.UiAudio.Play(
                 UiAudioScope.Hub,
@@ -165,6 +220,7 @@ namespace Project.Hub.States
                 return;
 
             _sm.UiAudio.CancelCurrent();
+            _va?.NotifyTransitioning();
 
             _sm.UiAudio.PlayGated(
                 UiAudioScope.Hub,

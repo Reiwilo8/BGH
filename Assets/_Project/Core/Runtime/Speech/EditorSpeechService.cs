@@ -4,13 +4,7 @@ namespace Project.Core.Speech
 {
     public sealed class EditorSpeechService : ISpeechService
     {
-        private readonly ISpeechFeed _feed;
         public bool IsSpeaking { get; private set; }
-
-        public EditorSpeechService(ISpeechFeed feed = null)
-        {
-            _feed = feed;
-        }
 
         public void Speak(string text, SpeechPriority priority = SpeechPriority.Normal)
         {
@@ -18,7 +12,6 @@ namespace Project.Core.Speech
 
             IsSpeaking = true;
             Debug.Log($"[TTS:{priority}] {text}");
-            _feed?.OnSpoken(text, priority);
             IsSpeaking = false;
         }
 

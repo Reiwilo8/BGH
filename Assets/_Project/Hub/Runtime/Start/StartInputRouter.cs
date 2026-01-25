@@ -1,6 +1,7 @@
 using Project.Core.Activity;
 using Project.Core.App;
 using Project.Core.Input;
+using Project.Core.VisualAssist;
 using UnityEngine;
 
 namespace Project.Hub.Start
@@ -12,6 +13,7 @@ namespace Project.Hub.Start
         private IInputService _input;
         private IInputFocusService _focus;
         private IRepeatService _repeat;
+        private IVisualAssistService _va;
 
         private void Awake()
         {
@@ -21,6 +23,7 @@ namespace Project.Hub.Start
             _input = AppContext.Services.Resolve<IInputService>();
             _focus = AppContext.Services.Resolve<IInputFocusService>();
             _repeat = AppContext.Services.Resolve<IRepeatService>();
+            _va = AppContext.Services.Resolve<IVisualAssistService>();
         }
 
         private void OnEnable()
@@ -74,6 +77,7 @@ namespace Project.Hub.Start
             if (controller == null) return;
             if (_focus.Current != InputScope.Start) return;
 
+            _va?.FlashRepeat(0.25f);
             controller.OnRepeatRequested();
         }
     }
