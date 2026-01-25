@@ -7,6 +7,7 @@ using Project.Core.Services;
 using Project.Core.Settings;
 using Project.Core.Speech;
 using Project.Core.Visual;
+using Project.Core.VisualAssist;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -46,14 +47,21 @@ namespace Project.Core.App
                 languageCode = "en",
                 hasUserSelectedLanguage = false,
 
-                visualMode = VisualMode.AudioOnly,
-
                 controlHintMode = Project.Core.Input.ControlHintMode.Auto,
+
+                sfxVolume = 1f,
+                cuesEnabled = true,
 
                 repeatIdleSeconds = 10f,
 
-                sfxVolume = 1f,
-                cuesEnabled = true
+                autoRepeatEnabled = true,
+                autoRepeatIdleSeconds = 20f,
+
+                visualMode = VisualMode.AudioOnly,
+
+                vaTextSizePreset = VisualAssistTextSizePreset.Medium,
+                vaMarqueeSpeedScale = 1.0f,
+                vaDimmerStrength01 = 0.7f
             };
 
             var settings = new PlayerPrefsSettingsService(defaults);
@@ -62,23 +70,22 @@ namespace Project.Core.App
 
             _services.Register<IAudioCueService>(new NullAudioCueService());
 
-            var feedRouter = new SpeechFeedRouter();
-            _services.Register(feedRouter);
-
-            var speech = SpeechServiceFactory.Create(feedRouter);
+            var speech = SpeechServiceFactory.Create();
             _services.Register<ISpeechService>(speech);
 
             var localization = new UnityLocalizationService();
             _services.Register<ILocalizationService>(localization);
 
             ApplyStartupLanguage(settings, localization);
-
             localization.SetLanguage(settings.Current.languageCode);
 
             _services.Register<ISpeechLocalizer>(new SpeechLocalizer(localization, speech));
             _speechLanguageBinder = new SpeechLanguageBinder(localization, speech);
 
             visualModeService.SetMode(settings.Current.visualMode);
+
+            var va = new VisualAssistService(localization);
+            _services.Register<IVisualAssistService>(va);
 
             var uiAudio = FindFirstObjectByType<UiAudioOrchestrator>();
             if (uiAudio == null)
@@ -88,7 +95,7 @@ namespace Project.Core.App
                 uiAudio = go.AddComponent<UiAudioOrchestrator>();
             }
 
-            uiAudio.Init(speech, localization);
+            uiAudio.Init(speech, localization, va);
             _services.Register<IUiAudioOrchestrator>(uiAudio);
 
             var appFlow = new AppFlowService(
@@ -102,14 +109,27 @@ namespace Project.Core.App
             _services.Register<IInputService>(new InputService(inactivity));
             _services.Register<IInputFocusService>(new InputFocusService());
 
-            var repeat = new RepeatService(inactivity, speech, appFlow);
+            var repeat = new RepeatService(inactivity, speech, appFlow, settings);
             repeat.IdleThresholdSeconds = Mathf.Clamp(settings.Current.repeatIdleSeconds, 1f, 15f);
             _services.Register<IRepeatService>(repeat);
+
+            EnsureRepeatAutoDriver(intervalSeconds: 0.5f);
 
             settings.Save();
 
             if (speakOnBoot)
                 speech.Speak("Speech system initialized.", SpeechPriority.High);
+        }
+
+        private void EnsureRepeatAutoDriver(float intervalSeconds)
+        {
+            var driver = GetComponent<RepeatAutoDriver>();
+            if (driver == null)
+                driver = gameObject.AddComponent<RepeatAutoDriver>();
+
+            driver.enabled = true;
+
+            driver.Init(intervalSeconds);
         }
 
         private void Start()

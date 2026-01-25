@@ -2,7 +2,7 @@ namespace Project.Core.Speech
 {
     public static class SpeechServiceFactory
     {
-        public static ISpeechService Create(ISpeechFeed feed = null)
+        public static ISpeechService Create()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
             return new AndroidSpeechService();
@@ -11,7 +11,7 @@ namespace Project.Core.Speech
 #elif UNITY_STANDALONE_WIN && !UNITY_EDITOR
             return new WindowsSpeechService();
 #else
-            return new EditorSpeechService(feed);
+            return new EditorSpeechService();
 #endif
         }
     }

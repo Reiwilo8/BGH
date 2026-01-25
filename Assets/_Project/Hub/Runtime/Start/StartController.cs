@@ -1,4 +1,3 @@
-using System.Collections;
 using Project.Core.App;
 using Project.Core.Audio;
 using Project.Core.Audio.Sequences.Common;
@@ -6,22 +5,20 @@ using Project.Core.Input;
 using Project.Core.Settings;
 using Project.Core.Speech;
 using Project.Core.Visual;
+using Project.Core.VisualAssist;
 using Project.Hub.Start.Sequences;
-using Project.UI.Visual;
 using UnityEngine;
+using System.Collections;
 
 namespace Project.Hub.Start
 {
     public sealed class StartController : MonoBehaviour
     {
-        [Header("Visual Assist UI (optional)")]
-        [SerializeField] private StartVisualUiController visualUi;
-
         private IUiAudioOrchestrator _uiAudio;
         private IAppFlowService _flow;
         private ISettingsService _settings;
         private IVisualModeService _visualMode;
-        private SpeechFeedRouter _speechFeedRouter;
+        private IVisualAssistService _va;
 
         private bool _isTransitioning;
 
@@ -30,21 +27,15 @@ namespace Project.Hub.Start
             var services = AppContext.Services;
 
             _uiAudio = services.Resolve<IUiAudioOrchestrator>();
-            _speechFeedRouter = services.Resolve<SpeechFeedRouter>();
             _flow = services.Resolve<IAppFlowService>();
             _settings = services.Resolve<ISettingsService>();
             _visualMode = services.Resolve<IVisualModeService>();
-        }
-
-        private void OnEnable()
-        {
-            if (_speechFeedRouter != null && visualUi != null)
-                _speechFeedRouter.SetTarget(visualUi);
+            _va = services.Resolve<IVisualAssistService>();
         }
 
         private void Start()
         {
-            RefreshUi();
+            RefreshVaStatic();
             StartCoroutine(BootSpeechRoutine());
         }
 
@@ -54,12 +45,6 @@ namespace Project.Hub.Start
             yield return null;
 
             PlayStandardPrompt();
-        }
-
-        private void OnDestroy()
-        {
-            if (_speechFeedRouter != null && visualUi != null)
-                _speechFeedRouter.ClearTarget(visualUi);
         }
 
         public void OnRepeatRequested()
@@ -78,6 +63,8 @@ namespace Project.Hub.Start
             _isTransitioning = true;
 
             _uiAudio.CancelCurrent();
+
+            _va?.NotifyTransitioning();
 
             try
             {
@@ -105,6 +92,8 @@ namespace Project.Hub.Start
             _isTransitioning = true;
 
             _uiAudio.CancelCurrent();
+
+            _va?.NotifyTransitioning();
 
             var h = _uiAudio.Play(
                 UiAudioScope.Start,
@@ -146,7 +135,6 @@ namespace Project.Hub.Start
             _uiAudio.CancelCurrent();
 
             _visualMode.ToggleVisualAssist();
-
             _settings.SetVisualMode(_visualMode.Mode);
 
             bool enabled = _visualMode.Mode == VisualMode.VisualAssist;
@@ -158,17 +146,23 @@ namespace Project.Hub.Start
                 interruptible: true
             );
 
-            RefreshUi();
+            RefreshVaStatic();
         }
 
         private void PlayStandardPrompt()
         {
+            RefreshVaStatic();
+
             bool vaEnabled = _visualMode.Mode == VisualMode.VisualAssist;
             string controlHintKey = ResolveControlHintKey(_settings.Current);
 
+            _va?.SetIdleHintKey(controlHintKey);
+
+            bool suggestLandscape = ShouldSuggestLandscapeMobile();
+
             _uiAudio.Play(
                 UiAudioScope.Start,
-                ctx => StartStandardPromptSequence.Run(ctx, vaEnabled, controlHintKey),
+                ctx => StartStandardPromptSequence.Run(ctx, vaEnabled, controlHintKey, suggestLandscape),
                 SpeechPriority.Normal,
                 interruptible: true
             );
@@ -185,36 +179,19 @@ namespace Project.Hub.Start
                 : "hint.start_screen.keyboard";
         }
 
-        private void RefreshUi()
+        private static bool ShouldSuggestLandscapeMobile()
         {
-            if (visualUi == null) return;
+            if (!Application.isMobilePlatform)
+                return false;
 
-            visualUi.ApplyMode(_visualMode.Mode);
-            visualUi.SetContent(BuildUiText());
+            return true;
         }
 
-        private static string BuildUiText()
+        private void RefreshVaStatic()
         {
-            return
-                "START\n\n" +
-                "Keyboard:\n" +
-                "- Next: Right / Down Arrow\n" +
-                "- Previous: Left / Up Arrow\n" +
-                "- Confirm: Enter\n" +
-                "- Back: Backspace / Esc\n" +
-                "- Repeat: Space\n" +
-                "- Toggle Visual Assist: F1 (Start screen only)\n\n" +
-                "Mouse:\n" +
-                "- Next / Previous: Scroll Down / Up\n" +
-                "- Confirm: Left Click\n" +
-                "- Back: Right Click\n\n" +
-                "Touch:\n" +
-                "- Next: Swipe Left / Up\n" +
-                "- Previous: Swipe Right / Down\n" +
-                "- Confirm: Double-tap\n" +
-                "- Back: Long-press\n" +
-                "- Repeat: Single tap\n" +
-                "- Toggle Visual Assist: Two-finger tap (Start screen only)";
+            _va?.SetHeaderKey("va.app_name");
+            _va?.SetSubHeaderKey("va.screen.start");
+            _va?.ClearTransitioning();
         }
     }
 }

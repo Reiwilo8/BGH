@@ -51,8 +51,8 @@ MonoBehaviour:
   - m_Id: 153419705643030
     m_Localized: "Naci\u015Bnij Enter, aby kontynuowa\u0107. Naci\u015Bnij Backspace,
       \u017Ceby zamkn\u0105\u0107 aplikacj\u0119. Naci\u015Bnij klawisz F1 w celu
-      prze\u0142\u0105czenia trybu wizualnego. Mo\u017Cesz wci\u015Bn\u0105\u0107
-      Spacj\u0119 dla powt\xF3rzenia instrukcji."
+      prze\u0142\u0105czenia trybu wizualnego. Mo\u017Cesz wcisn\u0105\u0107 Spacj\u0119
+      dla powt\xF3rzenia instrukcji."
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643029
@@ -167,15 +167,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643041
-    m_Localized: Wstecz.
+    m_Localized: Wstecz
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643042
-    m_Localized: Ustawienia.
+    m_Localized: Ustawienia
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643043
-    m_Localized: "Wyj\u015Bcie."
+    m_Localized: "Wyj\u015Bcie"
     m_Metadata:
       m_Items: []
   - m_Id: 1512428316553216
@@ -183,11 +183,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1540706121183232
-    m_Localized: Akcje klawiatury.
+    m_Localized: Akcje klawiatury
     m_Metadata:
       m_Items: []
   - m_Id: 1540505570537472
-    m_Localized: Akcje dotykowe.
+    m_Localized: Akcje dotykowe
     m_Metadata:
       m_Items: []
   - m_Id: 1540161201401856
@@ -195,7 +195,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1539034774925312
-    m_Localized: Instrukcje sterowania.
+    m_Localized: Instrukcje sterowania
     m_Metadata:
       m_Items: []
   - m_Id: 1538371852595200
@@ -203,7 +203,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1538214943682560
-    m_Localized: Sterowanie.
+    m_Localized: Sterowanie
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643051
@@ -211,19 +211,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1513647764303872
-    m_Localized: Polski.
+    m_Localized: Polski
     m_Metadata:
       m_Items: []
   - m_Id: 1513574435287040
-    m_Localized: Angielski.
+    m_Localized: Angielski
     m_Metadata:
       m_Items: []
   - m_Id: 1513483070763008
-    m_Localized: "Wy\u0142\u0105czone."
+    m_Localized: "Wy\u0142\u0105czone"
     m_Metadata:
       m_Items: []
   - m_Id: 1512580779503616
-    m_Localized: "W\u0142\u0105czone."
+    m_Localized: "W\u0142\u0105czone"
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643056
@@ -342,7 +342,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1496559343529984
-    m_Localized: "J\u0119zyk."
+    m_Localized: "J\u0119zyk"
     m_Metadata:
       m_Items: []
   - m_Id: 1496772858769408
@@ -350,16 +350,16 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1496994175414272
-    m_Localized: Tryb wizualny.
+    m_Localized: Tryb wizualny
     m_Metadata:
       m_Items: []
   - m_Id: 1497395658387456
     m_Localized: "W\u0142\u0105cza graficzn\u0105 wizualizacj\u0119 obecnego stanu
-      aplikacji"
+      aplikacji."
     m_Metadata:
       m_Items: []
   - m_Id: 1498926109585408
-    m_Localized: Preferowane instrukcje sterowania.
+    m_Localized: Preferowane instrukcje sterowania
     m_Metadata:
       m_Items: []
   - m_Id: 1499056267227136
@@ -367,27 +367,28 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1499317048078336
-    m_Localized: "Auto (wed\u0142ug urz\u0105dzenia."
+    m_Localized: Automatyczne
     m_Metadata:
       m_Items: []
   - m_Id: 1499721852940288
-    m_Localized: Dotykowe.
+    m_Localized: Dotykowe
     m_Metadata:
       m_Items: []
   - m_Id: 1499826676985856
-    m_Localized: Klawiatura i mysz.
+    m_Localized: Klawiatura i mysz
     m_Metadata:
       m_Items: []
   - m_Id: 1500032474705920
-    m_Localized: "Czas bezczynno\u015Bci dla powt\xF3rki."
+    m_Localized: "Czas bezczynno\u015Bci dla powt\xF3rki"
     m_Metadata:
       m_Items: []
   - m_Id: 1500314730393600
-    m_Localized: "Minimalny czas bezczynno\u015Bci wymagany do dzia\u0142ania powt\xF3rzenia."
+    m_Localized: "Czas bezczynno\u015Bci, po kt\xF3rym mo\u017Cna powt\xF3rzy\u0107
+      g\u0142\xF3wn\u0105 wiadomo\u015B\u0107."
     m_Metadata:
       m_Items: []
   - m_Id: 1500582238908416
-    m_Localized: "D\u017Awi\u0119k."
+    m_Localized: "D\u017Awi\u0119k"
     m_Metadata:
       m_Items: []
   - m_Id: 1500715399671808
@@ -395,7 +396,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1501026914824192
-    m_Localized: "G\u0142o\u015Bno\u015B\u0107 efekt\xF3w d\u017Awi\u0119kowych."
+    m_Localized: "G\u0142o\u015Bno\u015B\u0107 efekt\xF3w d\u017Awi\u0119kowych"
     m_Metadata:
       m_Items: []
   - m_Id: 1501481111810048
@@ -407,7 +408,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1502158642900992
-    m_Localized: "W\u0142\u0105cz sygna\u0142y d\u017Awi\u0119kowe."
+    m_Localized: "W\u0142\u0105cz sygna\u0142y d\u017Awi\u0119kowe"
     m_Metadata:
       m_Items: []
   - m_Id: 1507491801100288
@@ -415,39 +416,180 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1511885540061184
-    m_Localized: Zresetuj ustawienia.
+    m_Localized: Zresetuj ustawienia
     m_Metadata:
       m_Items: []
   - m_Id: 1541038213591040
-    m_Localized: Akcje myszy.
+    m_Localized: Akcje myszy
     m_Metadata:
       m_Items: []
   - m_Id: 1542528231698432
-    m_Localized: "Sterowanie dotykowe:\nPrzesu\u0144 w g\xF3r\u0119 lub w lewo, aby
-      wybra\u0107 nast\u0119pny element.\nPrzesu\u0144 w d\xF3\u0142 lub w prawo,
-      aby wybra\u0107 poprzedni element.\nStuknij podw\xF3jnie, aby zatwierdzi\u0107
-      albo wej\u015B\u0107.\nPrzytrzymaj ekran palcem, aby si\u0119 cofn\u0105\u0107
-      lub anulowa\u0107 akcj\u0119 albo wyj\u015B\u0107 z aplikacji.\nStuknij raz,
-      aby powt\xF3rzy\u0107 instrukcje.\nStuknij dwoma palcami, aby prze\u0142\u0105czy\u0107
+    m_Localized: "Sterowanie dotykowe: Przesu\u0144 w g\xF3r\u0119 lub w lewo, aby
+      wybra\u0107 nast\u0119pny element. Przesu\u0144 w d\xF3\u0142 lub w prawo,
+      aby wybra\u0107 poprzedni element. Stuknij podw\xF3jnie, aby zatwierdzi\u0107
+      albo wej\u015B\u0107. Przytrzymaj ekran palcem, aby si\u0119 cofn\u0105\u0107
+      lub anulowa\u0107 akcj\u0119 albo wyj\u015B\u0107 z aplikacji. Stuknij raz,
+      aby powt\xF3rzy\u0107 instrukcje. Stuknij dwoma palcami, aby prze\u0142\u0105czy\u0107
       tryb wizualny, tylko na ekranie startowym."
     m_Metadata:
       m_Items: []
   - m_Id: 1544169915838464
-    m_Localized: "Sterowanie klawiatur\u0105:\nWci\u015Bnij strza\u0142k\u0119 w
-      d\xF3\u0142 lub w prawo, aby wybra\u0107 nast\u0119pny element.\nWci\u015Bnij
-      strza\u0142k\u0119 w g\xF3r\u0119 lub w lewo, aby wybra\u0107 poprzedni element.\nWci\u015Bnij
-      Enter, aby zatwierdzi\u0107 albo wej\u015B\u0107.\nWci\u015Bnij Backspace lub
+    m_Localized: "Sterowanie klawiatur\u0105: Wci\u015Bnij strza\u0142k\u0119 w d\xF3\u0142
+      lub w prawo, aby wybra\u0107 nast\u0119pny element. Wci\u015Bnij strza\u0142k\u0119
+      w g\xF3r\u0119 lub w lewo, aby wybra\u0107 poprzedni element. Wci\u015Bnij
+      Enter, aby zatwierdzi\u0107 albo wej\u015B\u0107. Wci\u015Bnij Backspace lub
       Escape, aby si\u0119 cofn\u0105\u0107 lub anulowa\u0107 akcj\u0119 albo wyj\u015B\u0107
-      z aplikacji.\nWci\u015Bnij spacj\u0119, aby powt\xF3rzy\u0107 instrukcje.\nWci\u015Bnij
+      z aplikacji. Wci\u015Bnij spacj\u0119, aby powt\xF3rzy\u0107 instrukcje. Wci\u015Bnij
       F1, aby prze\u0142\u0105czy\u0107 tryb wizualny, tylko na ekranie startowym."
     m_Metadata:
       m_Items: []
   - m_Id: 1546472823615488
-    m_Localized: "Sterowanie mysz\u0105:\nPrzewi\u0144 w d\xF3\u0142, aby wybra\u0107
-      nast\u0119pny element.\nPrzewi\u0144 w g\xF3r\u0119, aby wybra\u0107 poprzedni
-      element.\nWci\u015Bnij lewy przycisk myszy, aby zatwierdzi\u0107 albo wej\u015B\u0107.\nWci\u015Bnij
-      prawy przycisk myszy, aby si\u0119 cofn\u0105\u0107 lub anulowa\u0107 akcj\u0119
-      albo wyj\u015B\u0107 z aplikacji."
+    m_Localized: "Sterowanie mysz\u0105: Przewi\u0144 w d\xF3\u0142, aby wybra\u0107
+      nast\u0119pny element. Przewi\u0144 w g\xF3r\u0119, aby wybra\u0107 poprzedni
+      element. Wci\u015Bnij lewy przycisk myszy, aby zatwierdzi\u0107 albo wej\u015B\u0107.
+      Wci\u015Bnij prawy przycisk myszy, aby si\u0119 cofn\u0105\u0107 lub anulowa\u0107
+      akcj\u0119 albo wyj\u015B\u0107 z aplikacji."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784287155089408
+    m_Localized: Blind Games Hub
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784419665735680
+    m_Localized: Ekran startowy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784533562060800
+    m_Localized: "Menu g\u0142\xF3wne"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784624427462656
+    m_Localized: "Wyb\xF3r gry"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784725224976384
+    m_Localized: Ustawienia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784871694266368
+    m_Localized: Menu {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785121976774656
+    m_Localized: '{0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785206898847744
+    m_Localized: Przechodzenie...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785364067807232
+    m_Localized: 'Aktualnie: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785539121278976
+    m_Localized: 'Gra: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785621434494976
+    m_Localized: 'Tryb: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785697644998656
+    m_Localized: 'Ustawienie: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785823058882560
+    m_Localized: "Warto\u015B\u0107: {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785926679162880
+    m_Localized: "Powt\xF3rka"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4405080947060736
+    m_Localized: Tryb wizualny
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4405401693876224
+    m_Localized: "Opcje i wygl\u0105d trybu wizualnego."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4406100699803648
+    m_Localized: Rozmiar tekstu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4406385354633216
+    m_Localized: "Wybierz rozmiar napis\xF3w w trybie wizualnym."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4408093933727744
+    m_Localized: "Pr\u0119dko\u015B\u0107 przewijania"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4408390357774336
+    m_Localized: "Dostosuj pr\u0119dko\u015B\u0107 przewijania d\u0142ugich komunikat\xF3w
+      w trybie wizualnym."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4409128286842880
+    m_Localized: "Stopie\u0144 wyszarzenia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4409546303762432
+    m_Localized: "Ustaw stopie\u0144 wyszarzenia w trybie wizualnym."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4410736181669888
+    m_Localized: "Ma\u0142y"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4410892612431872
+    m_Localized: "\u015Aredni"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4411021197209600
+    m_Localized: "Du\u017Cy"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4411127090802688
+    m_Localized: "Bardzo du\u017Cy"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4643841337356288
+    m_Localized: Powtarzanie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4644015560355840
+    m_Localized: "Ustawienia powtarzania instrukcji podczas bezczynno\u015Bci."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4695493708771328
+    m_Localized: Automatyczne powtarzanie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4695977026809856
+    m_Localized: "W\u0142\u0105cza automatyczne powtarzanie g\u0142\xF3wnej wiadomo\u015Bci
+      po ustawionym czasie bezczynno\u015Bci."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4696734383894528
+    m_Localized: "Op\xF3\u017Anienie automatycznego powt\xF3rzenia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4697093214990336
+    m_Localized: "Czas bezczynno\u015Bci, po kt\xF3rym g\u0142\xF3wna wiadomo\u015B\u0107
+      jest automatycznie powtarzana."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5184041587208192
+    m_Localized: "Polecamy korzystanie z s\u0142uchawek lub innych system\xF3w d\u017Awi\u0119ku
+      stereo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5184834906255360
+    m_Localized: "Trzymaj urz\u0105dzenie poziomo dla najlepszego do\u015Bwiadczenia
+      z gry."
     m_Metadata:
       m_Items: []
   references:

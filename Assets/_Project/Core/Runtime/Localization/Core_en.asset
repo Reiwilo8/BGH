@@ -39,17 +39,17 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 504174996254720
-    m_Localized: You can toggle Visual Assist on start screen or in settings.
+    m_Localized: You can toggle visual mode on start screen or in settings.
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643030
     m_Localized: Press Enter to continue. Press Backspace to exit the app. Press
-      F1 key to toggle Visual Assist. You can press Space to repeat instructions.
+      F1 key to toggle visual mode. You can press Space to repeat instructions.
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643029
     m_Localized: Double-tap to continue. Press and hold the screen to exit the app.
-      Tap the screen with two fingers to toggle Visual Assist.
+      Tap the screen with two fingers to toggle visual mode.
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643028
@@ -127,15 +127,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643012
-    m_Localized: Visual Assist disabled.
+    m_Localized: Visual mode disabled.
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643011
-    m_Localized: Visual Assist enabled.
+    m_Localized: Visual mode enabled.
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643010
-    m_Localized: Visual Assist is currently enabled.
+    m_Localized: Visual mode is currently enabled.
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643009
@@ -156,15 +156,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643041
-    m_Localized: Back.
+    m_Localized: Back
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643042
-    m_Localized: Settings.
+    m_Localized: Settings
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643043
-    m_Localized: Exit.
+    m_Localized: Exit
     m_Metadata:
       m_Items: []
   - m_Id: 1512428316553216
@@ -172,11 +172,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1540706121183232
-    m_Localized: Keyboard actions.
+    m_Localized: Keyboard actions
     m_Metadata:
       m_Items: []
   - m_Id: 1540505570537472
-    m_Localized: Touch actions.
+    m_Localized: Touch actions
     m_Metadata:
       m_Items: []
   - m_Id: 1540161201401856
@@ -184,7 +184,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1539034774925312
-    m_Localized: Controls instructions.
+    m_Localized: Controls instructions
     m_Metadata:
       m_Items: []
   - m_Id: 1538371852595200
@@ -192,7 +192,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1538214943682560
-    m_Localized: Controls.
+    m_Localized: Controls
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643051
@@ -200,19 +200,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1513647764303872
-    m_Localized: Polish.
+    m_Localized: Polish
     m_Metadata:
       m_Items: []
   - m_Id: 1513574435287040
-    m_Localized: English.
+    m_Localized: English
     m_Metadata:
       m_Items: []
   - m_Id: 1513483070763008
-    m_Localized: Off.
+    m_Localized: Off
     m_Metadata:
       m_Items: []
   - m_Id: 1512580779503616
-    m_Localized: On.
+    m_Localized: On
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643056
@@ -323,7 +323,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1496559343529984
-    m_Localized: Language.
+    m_Localized: Language
     m_Metadata:
       m_Items: []
   - m_Id: 1496772858769408
@@ -331,7 +331,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1496994175414272
-    m_Localized: Visual Assist.
+    m_Localized: Visual mode
     m_Metadata:
       m_Items: []
   - m_Id: 1497395658387456
@@ -339,7 +339,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1498926109585408
-    m_Localized: Preferred controls hints.
+    m_Localized: Preferred controls hints
     m_Metadata:
       m_Items: []
   - m_Id: 1499056267227136
@@ -347,27 +347,27 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1499317048078336
-    m_Localized: Auto (by device).
+    m_Localized: Automatic
     m_Metadata:
       m_Items: []
   - m_Id: 1499721852940288
-    m_Localized: Touch.
+    m_Localized: Touch
     m_Metadata:
       m_Items: []
   - m_Id: 1499826676985856
-    m_Localized: Keyboard & mouse.
+    m_Localized: Keyboard & mouse
     m_Metadata:
       m_Items: []
   - m_Id: 1500032474705920
-    m_Localized: Repeat idle time.
+    m_Localized: Idle time for repeat
     m_Metadata:
       m_Items: []
   - m_Id: 1500314730393600
-    m_Localized: Minimum idle time required before Repeat works.
+    m_Localized: Idle time after which you can repeat main message.
     m_Metadata:
       m_Items: []
   - m_Id: 1500582238908416
-    m_Localized: Audio.
+    m_Localized: Audio
     m_Metadata:
       m_Items: []
   - m_Id: 1500715399671808
@@ -375,7 +375,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1501026914824192
-    m_Localized: Sound effects volume.
+    m_Localized: Sound effects volume
     m_Metadata:
       m_Items: []
   - m_Id: 1501481111810048
@@ -387,7 +387,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1502158642900992
-    m_Localized: Enable sound cues.
+    m_Localized: Enable sound cues
     m_Metadata:
       m_Items: []
   - m_Id: 1507491801100288
@@ -395,65 +395,169 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1511885540061184
-    m_Localized: Reset settings.
+    m_Localized: Reset settings
     m_Metadata:
       m_Items: []
   - m_Id: 1541038213591040
-    m_Localized: Mouse actions.
+    m_Localized: Mouse actions
     m_Metadata:
       m_Items: []
   - m_Id: 1542528231698432
-    m_Localized: 'Touch controls:
-
-      Swipe up or swipe left to select next item.
-
-      Swipe
-      down or swipe right to select previous item.
-
-      Double tap to confirm,
-      alternatively enter.
-
-      Long-press to go back or cancel action, alternatively
-      exit app.
-
-      Single tap to repeat instructions.
-
-      Tap with two fingers
-      to toggle Visual Assist, start screen only.'
+    m_Localized: 'Touch controls: Swipe up or swipe left to select next item. Swipe
+      down or swipe right to select previous item. Double tap to confirm, alternatively
+      enter. Long-press to go back or cancel action, alternatively exit app. Single
+      tap to repeat instructions. Tap with two fingers to toggle visual mode, start
+      screen only.'
     m_Metadata:
       m_Items: []
   - m_Id: 1544169915838464
-    m_Localized: 'Keyboard controls:
-
-      Press down or right arrow to select next
-      item.
-
-      Press up or left arrow to select previous item.
-
-      Press Enter
-      to confirm, alternatively enter.
-
-      Press Backspace or Escape to go back
-      or cancel action, alternatively exit app.
-
-      Press Space to repeat instructions.
-
-      Press
-      F1 to toggle Visual Assist, start screen only.'
+    m_Localized: 'Keyboard controls: Press down or right arrow to select next item.
+      Press up or left arrow to select previous item. Press Enter to confirm, alternatively
+      enter. Press Backspace or Escape to go back or cancel action, alternatively
+      exit app. Press Space to repeat instructions. Press F1 to toggle visual mode,
+      start screen only.'
     m_Metadata:
       m_Items: []
   - m_Id: 1546472823615488
-    m_Localized: 'Mouse controls:
-
-      Scroll down to select next item.
-
-      Scroll
-      up to select previous item.
-
-      Left click to confirm, alternatively enter.
-
-      Right
-      click to go back or cancel action, alternatively exit app.'
+    m_Localized: 'Mouse controls: Scroll down to select next item. Scroll up to select
+      previous item. Left click to confirm, alternatively enter. Right click to go
+      back or cancel action, alternatively exit app.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784287155089408
+    m_Localized: Blind Games Hub
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784419665735680
+    m_Localized: Start screen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784533562060800
+    m_Localized: Main menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784624427462656
+    m_Localized: Game selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784725224976384
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784871694266368
+    m_Localized: '{0} menu'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785121976774656
+    m_Localized: '{0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785206898847744
+    m_Localized: Transitioning...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785364067807232
+    m_Localized: 'Current: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785539121278976
+    m_Localized: 'Game: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785621434494976
+    m_Localized: 'Mode: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785697644998656
+    m_Localized: 'Setting: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785823058882560
+    m_Localized: 'Value: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785926679162880
+    m_Localized: Repeat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4405080947060736
+    m_Localized: Visual mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4405401693876224
+    m_Localized: Visual mode options and appearance.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4406100699803648
+    m_Localized: Text size
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4406385354633216
+    m_Localized: Choose the size of text in visual mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4408093933727744
+    m_Localized: Marquee speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4408390357774336
+    m_Localized: Adjust the scrolling speed of long messages in visual mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4409128286842880
+    m_Localized: Dimmer strength
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4409546303762432
+    m_Localized: Set dimming strength in visual mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4410736181669888
+    m_Localized: Small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4410892612431872
+    m_Localized: Medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4411021197209600
+    m_Localized: Large
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4411127090802688
+    m_Localized: Extra large
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4643841337356288
+    m_Localized: Repeat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4644015560355840
+    m_Localized: "Controls repeating instructions when you\u2019re idle."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4695493708771328
+    m_Localized: Automatic repeat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4695977026809856
+    m_Localized: Enables automatic repeat of main message after set idle time.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4696734383894528
+    m_Localized: Automatic repeat delay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4697093214990336
+    m_Localized: Idle time after which main message is repeated automaticaly.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5184041587208192
+    m_Localized: We suggest using headphones or other stereo audio systems.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5184834906255360
+    m_Localized: Hold your device horizontally for the best gaming experience.
     m_Metadata:
       m_Items: []
   references:

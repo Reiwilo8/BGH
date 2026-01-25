@@ -24,19 +24,23 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643010
-    m_Key: app.visual_assist.status_on
+    m_Key: app.visual_mode.status_on
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643011
-    m_Key: app.visual_assist.on
+    m_Key: app.visual_mode.on
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643012
-    m_Key: app.visual_assist.off
+    m_Key: app.visual_mode.off
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5184041587208192
+    m_Key: hint.audio.stereo
     m_Metadata:
       m_Items: []
   - m_Id: 504174996254720
-    m_Key: hint.visual_assist.settings
+    m_Key: hint.visual_mode.settings
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643013
@@ -247,14 +251,6 @@ MonoBehaviour:
     m_Key: settings.language.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 1496994175414272
-    m_Key: settings.visual_assist
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1497395658387456
-    m_Key: settings.visual_assist.desc
-    m_Metadata:
-      m_Items: []
   - m_Id: 1538214943682560
     m_Key: settings.controls
     m_Metadata:
@@ -315,20 +311,20 @@ MonoBehaviour:
     m_Key: hint.actions.mouse
     m_Metadata:
       m_Items: []
-  - m_Id: 1500032474705920
-    m_Key: settings.repeat_idle_seconds
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1500314730393600
-    m_Key: settings.repeat_idle_seconds.desc
-    m_Metadata:
-      m_Items: []
   - m_Id: 1500582238908416
     m_Key: settings.audio
     m_Metadata:
       m_Items: []
   - m_Id: 1500715399671808
     m_Key: settings.audio.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1502158642900992
+    m_Key: settings.enable_cues
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1507491801100288
+    m_Key: settings.enable_cues.desc
     m_Metadata:
       m_Items: []
   - m_Id: 1501026914824192
@@ -339,12 +335,76 @@ MonoBehaviour:
     m_Key: settings.sfx_volume.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 1502158642900992
-    m_Key: settings.enable_cues
+  - m_Id: 4643841337356288
+    m_Key: settings.repeat
     m_Metadata:
       m_Items: []
-  - m_Id: 1507491801100288
-    m_Key: settings.enable_cues.desc
+  - m_Id: 4644015560355840
+    m_Key: settings.repeat.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1500032474705920
+    m_Key: settings.repeat.manual_delay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1500314730393600
+    m_Key: settings.repeat.manual_delay.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4695493708771328
+    m_Key: settings.repeat.auto_enabled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4695977026809856
+    m_Key: settings.repeat.auto_enabled.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4696734383894528
+    m_Key: settings.repeat.auto_delay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4697093214990336
+    m_Key: settings.repeat.auto_delay.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4405080947060736
+    m_Key: settings.visual_mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4405401693876224
+    m_Key: settings.visual_mode.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1496994175414272
+    m_Key: settings.visual_mode.enabled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1497395658387456
+    m_Key: settings.visual_mode.enabled.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4406100699803648
+    m_Key: settings.visual_mode.text_size
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4406385354633216
+    m_Key: settings.visual_mode.text_size.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4408093933727744
+    m_Key: settings.visual_mode.marquee_speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4408390357774336
+    m_Key: settings.visual_mode.marquee_speed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4409128286842880
+    m_Key: settings.visual_mode.dimmer_strength
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4409546303762432
+    m_Key: settings.visual_mode.dimmer_strength.desc
     m_Metadata:
       m_Items: []
   - m_Id: 1511885540061184
@@ -361,6 +421,22 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 1513483070763008
     m_Key: settings.off
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4410736181669888
+    m_Key: settings.small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4410892612431872
+    m_Key: settings.medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4411021197209600
+    m_Key: settings.large
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4411127090802688
+    m_Key: settings.extra_large
     m_Metadata:
       m_Items: []
   - m_Id: 1513574435287040
@@ -393,6 +469,66 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 153419705643061
     m_Key: mode.custom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784287155089408
+    m_Key: va.app_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784419665735680
+    m_Key: va.screen.start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784533562060800
+    m_Key: va.screen.main_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784624427462656
+    m_Key: va.screen.game_select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784725224976384
+    m_Key: va.screen.settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1784871694266368
+    m_Key: va.screen.game_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785121976774656
+    m_Key: va.screen.gameplay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785206898847744
+    m_Key: va.status.transitioning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785364067807232
+    m_Key: va.current
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785539121278976
+    m_Key: va.game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785621434494976
+    m_Key: va.mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785697644998656
+    m_Key: va.setting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785823058882560
+    m_Key: va.value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1785926679162880
+    m_Key: va.repeat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5184834906255360
+    m_Key: hint.mobile.landscape
     m_Metadata:
       m_Items: []
   m_Metadata:

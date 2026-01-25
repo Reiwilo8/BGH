@@ -1,5 +1,6 @@
 using Project.Core.Activity;
 using Project.Core.App;
+using Project.Core.VisualAssist;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
@@ -10,7 +11,12 @@ namespace Project.Core.Input.Gestures
     {
         [SerializeField] private GestureSettings settings;
 
+        [Header("Visual Assist (optional)")]
+        [SerializeField][Range(0f, 1f)] private float longPressDimMaxAlpha = 0.65f;
+
         private IInputService _input;
+        private IRepeatService _repeat;
+        private IVisualAssistService _va;
 
         private bool _singleActive;
         private int _singleFingerId;
@@ -31,7 +37,6 @@ namespace Project.Core.Input.Gestures
         private float _twoStartDistance;
         private bool _twoCanceledByPinch;
 
-        private IRepeatService _repeat;
         private Coroutine _pendingSingleTapCo;
 
         private void Awake()
@@ -45,6 +50,8 @@ namespace Project.Core.Input.Gestures
 
             _input = AppContext.Services.Resolve<IInputService>();
             _repeat = AppContext.Services.Resolve<IRepeatService>();
+
+            _va = AppContext.Services.Resolve<IVisualAssistService>();
         }
 
         private void OnEnable()
@@ -69,6 +76,42 @@ namespace Project.Core.Input.Gestures
             Touch.onFingerDown -= OnFingerDown;
             Touch.onFingerMove -= OnFingerMove;
             Touch.onFingerUp -= OnFingerUp;
+
+            _va?.ClearDimmer();
+        }
+
+        private void Update()
+        {
+            if (_va == null) return;
+            if (!_singleActive) return;
+            if (_twoActive) return;
+            if (_longPressFired) return;
+
+            Finger f = null;
+            foreach (var af in Touch.activeFingers)
+            {
+                if (af.index == _singleFingerId)
+                {
+                    f = af;
+                    break;
+                }
+            }
+
+            if (f == null)
+                return;
+
+            float held = Now() - _singleStartTime;
+            if (held < 0f) held = 0f;
+
+            float move = Vector2.Distance(f.screenPosition, _singleStartPos);
+            if (move > settings.longPressMaxMovePx)
+            {
+                _va.SetDimAlpha01(0f);
+                return;
+            }
+
+            float t01 = settings.longPressTime <= 0.01f ? 1f : Mathf.Clamp01(held / settings.longPressTime);
+            _va.SetDimAlpha01(t01 * longPressDimMaxAlpha);
         }
 
         private float Now() => settings.useUnscaledTime ? Time.unscaledTime : Time.time;
@@ -95,6 +138,8 @@ namespace Project.Core.Input.Gestures
                 _singleStartPos = finger.screenPosition;
                 _singleStartTime = Now();
                 _longPressFired = false;
+
+                _va?.SetDimAlpha01(0f);
             }
         }
 
@@ -125,6 +170,9 @@ namespace Project.Core.Input.Gestures
             if (move > settings.longPressMaxMovePx) return;
 
             _longPressFired = true;
+
+            _va?.ClearDimmer();
+
             _input.Emit(NavAction.Back);
         }
 
@@ -139,6 +187,8 @@ namespace Project.Core.Input.Gestures
 
             if (!_singleActive) return;
             if (finger.index != _singleFingerId) return;
+
+            _va?.ClearDimmer();
 
             if (_longPressFired)
             {

@@ -5,6 +5,7 @@ using Project.Core.Input;
 using Project.Core.Localization;
 using Project.Core.Settings;
 using Project.Core.Speech;
+using Project.Core.VisualAssist;
 using Project.Games.Catalog;
 using Project.Games.Definitions;
 using UnityEngine;
@@ -18,6 +19,9 @@ namespace Project.Games.Module
         private ISettingsService _settings;
         private AppSession _session;
         private GameCatalog _catalog;
+        private ILocalizationService _loc;
+
+        private IVisualAssistService _va;
 
         private GameDefinition _game;
 
@@ -41,6 +45,9 @@ namespace Project.Games.Module
             _settings = services.Resolve<ISettingsService>();
             _session = services.Resolve<AppSession>();
             _catalog = services.Resolve<GameCatalog>();
+            _loc = services.Resolve<ILocalizationService>();
+
+            _va = services.Resolve<IVisualAssistService>();
         }
 
         private void Start()
@@ -50,6 +57,8 @@ namespace Project.Games.Module
 
             BuildMenu();
             _index = ResolveInitialIndex();
+
+            RefreshVa(pulse: VaListMoveDirection.None);
             PlayPrompt();
         }
 
@@ -62,11 +71,13 @@ namespace Project.Games.Module
             {
                 case NavAction.Next:
                     _index = (_index + 1) % _items.Length;
+                    RefreshVa(VaListMoveDirection.Next);
                     PlayCurrent();
                     break;
 
                 case NavAction.Previous:
                     _index = (_index - 1 + _items.Length) % _items.Length;
+                    RefreshVa(VaListMoveDirection.Previous);
                     PlayCurrent();
                     break;
 
@@ -84,6 +95,8 @@ namespace Project.Games.Module
         {
             if (_items == null || _items.Length == 0) return;
             if (_flow.IsTransitioning) return;
+
+            RefreshVa(VaListMoveDirection.None);
             PlayPrompt();
         }
 
@@ -117,6 +130,21 @@ namespace Project.Games.Module
 
             _items[modeCount] = new MenuItem { Kind = MenuItemKind.Settings };
             _items[modeCount + 1] = new MenuItem { Kind = MenuItemKind.Back };
+        }
+
+        private void RefreshVa(VaListMoveDirection pulse)
+        {
+            if (_va == null) return;
+
+            _va.SetHeaderKey("va.screen.game_menu", _game != null ? _game.displayName : "—");
+            _va.SetSubHeaderText(DescribeItem(_items[_index]));
+
+            _va.SetIdleHintKey(ResolveControlHintKey());
+
+            _va.ClearTransitioning();
+
+            if (pulse != VaListMoveDirection.None)
+                _va.PulseListMove(pulse);
         }
 
         private void PlayPrompt()
@@ -171,10 +199,15 @@ namespace Project.Games.Module
                     _session.SelectMode(item.Mode.modeId);
 
                     _uiAudio.CancelCurrent();
+                    _va?.NotifyTransitioning();
 
                     _uiAudio.Play(
                         UiAudioScope.GameModule,
-                        ctx => NavigateToSequence.Run(ctx, "nav.to_gameplay", _game.displayName, item.Mode.displayName),
+                        ctx => NavigateToSequence.Run(
+                            ctx,
+                            "nav.to_gameplay",
+                            _game.displayName,
+                            ResolveModeName(item.Mode)),
                         SpeechPriority.High,
                         interruptible: false
                     );
@@ -183,6 +216,8 @@ namespace Project.Games.Module
                     break;
 
                 case MenuItemKind.Settings:
+                    _va?.NotifyTransitioning();
+
                     _uiAudio.PlayGated(
                         UiAudioScope.GameModule,
                         "nav.to_game_settings",
@@ -204,6 +239,8 @@ namespace Project.Games.Module
             if (_flow.IsTransitioning)
                 return;
 
+            _va?.NotifyTransitioning();
+
             _uiAudio.PlayGated(
                 UiAudioScope.GameModule,
                 "exit.to_game_select",
@@ -217,13 +254,32 @@ namespace Project.Games.Module
 
         private string DescribeItem(MenuItem item)
         {
+            if (item == null) return "Unknown";
+
             return item.Kind switch
             {
-                MenuItemKind.Mode => item.Mode != null ? item.Mode.displayName : "Unknown",
-                MenuItemKind.Settings => AppContext.Services.Resolve<ILocalizationService>().Get("common.settings"),
-                MenuItemKind.Back => AppContext.Services.Resolve<ILocalizationService>().Get("common.back"),
+                MenuItemKind.Mode => ResolveModeName(item.Mode),
+                MenuItemKind.Settings => SafeGet("common.settings"),
+                MenuItemKind.Back => SafeGet("common.back"),
                 _ => "Unknown"
             };
+        }
+
+        private string ResolveModeName(GameModeDefinition mode)
+        {
+            if (mode == null) return "Unknown";
+
+            var id = mode.modeId;
+            if (!string.IsNullOrWhiteSpace(id) && _loc != null)
+            {
+                var key = $"mode.{id}";
+                var localized = _loc.Get(key);
+
+                if (!string.IsNullOrWhiteSpace(localized) && localized != key)
+                    return localized;
+            }
+
+            return !string.IsNullOrWhiteSpace(mode.displayName) ? mode.displayName : "Unknown";
         }
 
         private int ResolveInitialIndex()
@@ -252,6 +308,13 @@ namespace Project.Games.Module
             return mode == ControlHintMode.Touch
                 ? "hint.game_menu.touch"
                 : "hint.game_menu.keyboard";
+        }
+
+        private string SafeGet(string key)
+        {
+            if (_loc == null || string.IsNullOrWhiteSpace(key)) return key ?? "";
+            var s = _loc.Get(key);
+            return string.IsNullOrWhiteSpace(s) ? key : s;
         }
     }
 }

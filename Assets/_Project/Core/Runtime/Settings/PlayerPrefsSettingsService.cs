@@ -1,12 +1,20 @@
+using System;
 using UnityEngine;
 using Project.Core.Visual;
 using Project.Core.Input;
+using Project.Core.VisualAssist;
 
 namespace Project.Core.Settings
 {
     public sealed class PlayerPrefsSettingsService : ISettingsService
     {
         private const string Key = "app_settings_v2";
+
+        private const string VaInitMarkerKey = "app_settings_v2_va_init";
+
+        private const string RepeatInitMarkerKey = "app_settings_v2_repeat_init";
+
+        public event Action Changed;
 
         public AppSettingsData Current { get; private set; }
         public AppSettingsData Defaults { get; }
@@ -22,6 +30,7 @@ namespace Project.Core.Settings
             if (!PlayerPrefs.HasKey(Key))
             {
                 Current = Clone(Defaults);
+                PostLoadNormalizeAndMigrate();
                 return;
             }
 
@@ -29,6 +38,7 @@ namespace Project.Core.Settings
             if (string.IsNullOrWhiteSpace(json))
             {
                 Current = Clone(Defaults);
+                PostLoadNormalizeAndMigrate();
                 return;
             }
 
@@ -42,8 +52,7 @@ namespace Project.Core.Settings
                 Current = Clone(Defaults);
             }
 
-            Current.repeatIdleSeconds = Mathf.Clamp(Current.repeatIdleSeconds, 1f, 15f);
-            Current.sfxVolume = Mathf.Clamp01(Current.sfxVolume);
+            PostLoadNormalizeAndMigrate();
         }
 
         public void Save()
@@ -51,12 +60,52 @@ namespace Project.Core.Settings
             var json = JsonUtility.ToJson(Current);
             PlayerPrefs.SetString(Key, json);
             PlayerPrefs.Save();
+
+            Changed?.Invoke();
         }
 
         public void ResetToDefaults()
         {
             Current = Clone(Defaults);
+
+            Current.hasUserSelectedLanguage = false;
+
+            ApplyAutomaticDefaultsAfterReset();
+            NormalizeAfterReset();
+
             Save();
+        }
+
+        private void ApplyAutomaticDefaultsAfterReset()
+        {
+            var sys = StartupDefaultsResolver.ResolveSystemLanguageCode();
+            if (string.IsNullOrWhiteSpace(sys))
+                sys = Defaults.languageCode;
+
+            if (string.IsNullOrWhiteSpace(sys))
+                sys = "en";
+
+            Current.languageCode = sys;
+
+            if (string.IsNullOrWhiteSpace(Current.languageCode))
+                Current.languageCode = "en";
+        }
+
+        private void NormalizeAfterReset()
+        {
+            Current.repeatIdleSeconds = Mathf.Clamp(Current.repeatIdleSeconds, 1f, 15f);
+            Current.sfxVolume = Mathf.Clamp01(Current.sfxVolume);
+
+            if (!Enum.IsDefined(typeof(VisualAssistTextSizePreset), Current.vaTextSizePreset))
+                Current.vaTextSizePreset = Defaults.vaTextSizePreset;
+
+            Current.vaMarqueeSpeedScale = Mathf.Clamp(Current.vaMarqueeSpeedScale, 0.5f, 2.0f);
+            Current.vaMarqueeSpeedScale = Quantize(Current.vaMarqueeSpeedScale, 0.1f);
+
+            Current.vaDimmerStrength01 = Mathf.Clamp01(Current.vaDimmerStrength01);
+            Current.vaDimmerStrength01 = Quantize(Current.vaDimmerStrength01, 0.1f);
+
+            NormalizeRepeatCoherence();
         }
 
         public void SetLanguage(string languageCode, bool userSelected)
@@ -83,6 +132,30 @@ namespace Project.Core.Settings
         public void SetRepeatIdleSeconds(float seconds)
         {
             Current.repeatIdleSeconds = Mathf.Clamp(seconds, 1f, 15f);
+
+            float minAuto = Mathf.Max(10f, Current.repeatIdleSeconds);
+            Current.autoRepeatIdleSeconds = Mathf.Clamp(Current.autoRepeatIdleSeconds, 10f, 30f);
+            if (Current.autoRepeatIdleSeconds < minAuto)
+                Current.autoRepeatIdleSeconds = minAuto;
+
+            Save();
+        }
+
+        public void SetAutoRepeatEnabled(bool enabled)
+        {
+            Current.autoRepeatEnabled = enabled;
+            Save();
+        }
+
+        public void SetAutoRepeatIdleSeconds(float seconds)
+        {
+            seconds = Mathf.Clamp(seconds, 10f, 30f);
+
+            float minAuto = Mathf.Max(10f, Current.repeatIdleSeconds);
+            if (seconds < minAuto)
+                seconds = minAuto;
+
+            Current.autoRepeatIdleSeconds = seconds;
             Save();
         }
 
@@ -98,15 +171,109 @@ namespace Project.Core.Settings
             Save();
         }
 
+        public void SetVaTextSizePreset(VisualAssistTextSizePreset preset)
+        {
+            Current.vaTextSizePreset = preset;
+            Save();
+        }
+
+        public void SetVaMarqueeSpeedScale(float scale)
+        {
+            scale = Mathf.Clamp(scale, 0.5f, 2.0f);
+            scale = Quantize(scale, 0.1f);
+            Current.vaMarqueeSpeedScale = scale;
+            Save();
+        }
+
+        public void SetVaDimmerStrength01(float strength01)
+        {
+            strength01 = Mathf.Clamp01(strength01);
+            strength01 = Quantize(strength01, 0.1f);
+            Current.vaDimmerStrength01 = strength01;
+            Save();
+        }
+
+        private void PostLoadNormalizeAndMigrate()
+        {
+            Current.repeatIdleSeconds = Mathf.Clamp(Current.repeatIdleSeconds, 1f, 15f);
+            Current.sfxVolume = Mathf.Clamp01(Current.sfxVolume);
+
+            if (!Enum.IsDefined(typeof(VisualAssistTextSizePreset), Current.vaTextSizePreset))
+                Current.vaTextSizePreset = Defaults.vaTextSizePreset;
+
+            Current.vaMarqueeSpeedScale = Mathf.Clamp(Current.vaMarqueeSpeedScale, 0.5f, 2.0f);
+            Current.vaMarqueeSpeedScale = Quantize(Current.vaMarqueeSpeedScale, 0.1f);
+
+            Current.vaDimmerStrength01 = Mathf.Clamp01(Current.vaDimmerStrength01);
+            Current.vaDimmerStrength01 = Quantize(Current.vaDimmerStrength01, 0.1f);
+
+            if (!PlayerPrefs.HasKey(RepeatInitMarkerKey))
+            {
+                Current.autoRepeatEnabled = Defaults.autoRepeatEnabled;
+                Current.autoRepeatIdleSeconds = Defaults.autoRepeatIdleSeconds;
+
+                PlayerPrefs.SetInt(RepeatInitMarkerKey, 1);
+                PlayerPrefs.Save();
+
+                NormalizeRepeatCoherence();
+                Save();
+                return;
+            }
+
+            NormalizeRepeatCoherence();
+
+            if (!PlayerPrefs.HasKey(VaInitMarkerKey))
+            {
+                Current.vaTextSizePreset = Defaults.vaTextSizePreset;
+
+                Current.vaMarqueeSpeedScale = Defaults.vaMarqueeSpeedScale;
+                Current.vaDimmerStrength01 = Defaults.vaDimmerStrength01;
+
+                PlayerPrefs.SetInt(VaInitMarkerKey, 1);
+                PlayerPrefs.Save();
+
+                Save();
+            }
+        }
+
+        private void NormalizeRepeatCoherence()
+        {
+            if (Current.autoRepeatIdleSeconds <= 0.0001f)
+                Current.autoRepeatIdleSeconds = Defaults.autoRepeatIdleSeconds;
+
+            Current.autoRepeatIdleSeconds = Mathf.Clamp(Current.autoRepeatIdleSeconds, 10f, 30f);
+
+            float minAuto = Mathf.Max(10f, Current.repeatIdleSeconds);
+            if (Current.autoRepeatIdleSeconds < minAuto)
+                Current.autoRepeatIdleSeconds = minAuto;
+        }
+
+        private static float Quantize(float value, float step)
+        {
+            if (step <= 0.00001f) return value;
+            return Mathf.Round(value / step) * step;
+        }
+
         private static AppSettingsData Clone(AppSettingsData src)
         {
             return new AppSettingsData
             {
                 languageCode = src.languageCode,
                 hasUserSelectedLanguage = src.hasUserSelectedLanguage,
+
                 visualMode = src.visualMode,
+
+                vaTextSizePreset = src.vaTextSizePreset,
+                vaMarqueeSpeedScale = src.vaMarqueeSpeedScale,
+                vaDimmerStrength01 = src.vaDimmerStrength01,
+
                 controlHintMode = src.controlHintMode,
+
                 repeatIdleSeconds = src.repeatIdleSeconds,
+
+                autoRepeatEnabled = src.autoRepeatEnabled,
+                autoRepeatIdleSeconds = src.autoRepeatIdleSeconds,
+
                 sfxVolume = src.sfxVolume,
                 cuesEnabled = src.cuesEnabled
             };

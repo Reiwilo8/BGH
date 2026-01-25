@@ -4,6 +4,7 @@ using Project.Core.Activity;
 using Project.Core.Input;
 using Project.Core.Settings;
 using Project.Core.Visual;
+using Project.Core.VisualAssist;
 using UnityEngine;
 
 namespace Project.Hub.Settings
@@ -88,8 +89,15 @@ namespace Project.Hub.Settings
 
     public sealed class HubSettingsRange : HubSettingsItem
     {
-        public readonly float Min;
-        public readonly float Max;
+        private readonly float _min;
+        private readonly float _max;
+
+        private readonly Func<float> _minProvider;
+        private readonly Func<float> _maxProvider;
+
+        public float Min => _minProvider != null ? _minProvider() : _min;
+        public float Max => _maxProvider != null ? _maxProvider() : _max;
+
         public readonly float Step;
 
         public readonly Func<float> GetValue;
@@ -105,8 +113,31 @@ namespace Project.Hub.Settings
             string descriptionKey = null)
             : base(HubSettingsItemType.Range, labelKey, descriptionKey)
         {
-            Min = min;
-            Max = max;
+            _min = min;
+            _max = max;
+            _minProvider = null;
+            _maxProvider = null;
+
+            Step = step;
+            GetValue = getValue;
+            SetValue = setValue;
+        }
+
+        public HubSettingsRange(
+            string labelKey,
+            Func<float> minProvider,
+            Func<float> maxProvider,
+            float step,
+            Func<float> getValue,
+            Action<float> setValue,
+            string descriptionKey = null)
+            : base(HubSettingsItemType.Range, labelKey, descriptionKey)
+        {
+            _min = 0f;
+            _max = 0f;
+            _minProvider = minProvider;
+            _maxProvider = maxProvider;
+
             Step = step;
             GetValue = getValue;
             SetValue = setValue;
@@ -139,13 +170,13 @@ namespace Project.Hub.Settings
             {
                 BuildLanguageItem(settings, loc, speech),
 
-                BuildVisualAssistItem(settings, visual),
-
                 BuildControlsFolder(settings),
 
-                BuildRepeatIdleItem(settings, repeat),
-
                 BuildAudioFolder(settings),
+
+                BuildRepeatFolder(settings, repeat),
+
+                BuildVisualModeFolder(settings, visual),
 
                 BuildResetAction(settings, loc, speech, repeat, visual),
 
@@ -186,13 +217,35 @@ namespace Project.Hub.Settings
             );
         }
 
-        private static HubSettingsToggle BuildVisualAssistItem(
+        private static HubSettingsFolder BuildVisualModeFolder(
+            ISettingsService settings,
+            IVisualModeService visual)
+        {
+            return new HubSettingsFolder(
+                labelKey: "settings.visual_mode",
+                descriptionKey: "settings.visual_mode.desc",
+                buildChildren: () => new List<HubSettingsItem>
+                {
+                    BuildVisualModeEnabledToggle(settings, visual),
+
+                    BuildVaTextSizeItem(settings),
+
+                    BuildVaMarqueeSpeedItem(settings),
+
+                    BuildVaDimmerStrengthItem(settings),
+
+                    new HubSettingsAction("common.back", execute: () => { })
+                }
+            );
+        }
+
+        private static HubSettingsToggle BuildVisualModeEnabledToggle(
             ISettingsService settings,
             IVisualModeService visual)
         {
             return new HubSettingsToggle(
-                labelKey: "settings.visual_assist",
-                descriptionKey: "settings.visual_assist.desc",
+                labelKey: "settings.visual_mode.enabled",
+                descriptionKey: "settings.visual_mode.enabled.desc",
                 getValue: () => settings.Current.visualMode == VisualMode.VisualAssist,
                 setValue: enabled =>
                 {
@@ -200,6 +253,67 @@ namespace Project.Hub.Settings
                     settings.SetVisualMode(mode);
                     visual.SetMode(mode);
                 }
+            );
+        }
+
+        private static HubSettingsList BuildVaTextSizeItem(ISettingsService settings)
+        {
+            return new HubSettingsList(
+                labelKey: "settings.visual_mode.text_size",
+                descriptionKey: "settings.visual_mode.text_size.desc",
+                getOptions: () => new List<ListOption>
+                {
+                    new ListOption("small", "settings.small"),
+                    new ListOption("medium", "settings.medium"),
+                    new ListOption("large", "settings.large"),
+                    new ListOption("extra_large", "settings.extra_large"),
+                },
+                getIndex: () => settings.Current.vaTextSizePreset switch
+                {
+                    VisualAssistTextSizePreset.Small => 0,
+                    VisualAssistTextSizePreset.Medium => 1,
+                    VisualAssistTextSizePreset.Large => 2,
+                    VisualAssistTextSizePreset.ExtraLarge => 3,
+                    _ => 1
+                },
+                setIndex: idx =>
+                {
+                    var preset = idx switch
+                    {
+                        0 => VisualAssistTextSizePreset.Small,
+                        2 => VisualAssistTextSizePreset.Large,
+                        3 => VisualAssistTextSizePreset.ExtraLarge,
+                        _ => VisualAssistTextSizePreset.Medium
+                    };
+
+                    settings.SetVaTextSizePreset(preset);
+                }
+            );
+        }
+
+        private static HubSettingsRange BuildVaMarqueeSpeedItem(ISettingsService settings)
+        {
+            return new HubSettingsRange(
+                labelKey: "settings.visual_mode.marquee_speed",
+                descriptionKey: "settings.visual_mode.marquee_speed.desc",
+                min: 0.5f,
+                max: 2.0f,
+                step: 0.1f,
+                getValue: () => settings.Current.vaMarqueeSpeedScale,
+                setValue: v => settings.SetVaMarqueeSpeedScale(v)
+            );
+        }
+
+        private static HubSettingsRange BuildVaDimmerStrengthItem(ISettingsService settings)
+        {
+            return new HubSettingsRange(
+                labelKey: "settings.visual_mode.dimmer_strength",
+                descriptionKey: "settings.visual_mode.dimmer_strength.desc",
+                min: 0.0f,
+                max: 1.0f,
+                step: 0.1f,
+                getValue: () => settings.Current.vaDimmerStrength01,
+                setValue: v => settings.SetVaDimmerStrength01(v)
             );
         }
 
@@ -226,7 +340,7 @@ namespace Project.Hub.Settings
                 {
                     new ListOption("auto", "settings.control_hints.auto"),
                     new ListOption("touch", "settings.control_hints.touch"),
-                    new ListOption("keyboard", "settings.control_hints.keyboard_mouse"),
+                    new ListOption("keyboard", "settings.control_hints.keyboard"),
                 },
                 getIndex: () => settings.Current.controlHintMode switch
                 {
@@ -264,11 +378,27 @@ namespace Project.Hub.Settings
             );
         }
 
-        private static HubSettingsRange BuildRepeatIdleItem(ISettingsService settings, IRepeatService repeat)
+        private static HubSettingsFolder BuildRepeatFolder(ISettingsService settings, IRepeatService repeat)
+        {
+            return new HubSettingsFolder(
+                labelKey: "settings.repeat",
+                descriptionKey: "settings.repeat.desc",
+                buildChildren: () => new List<HubSettingsItem>
+                {
+                    BuildRepeatManualDelayItem(settings, repeat),
+                    BuildRepeatAutoEnabledItem(settings),
+                    BuildRepeatAutoDelayItem(settings),
+
+                    new HubSettingsAction("common.back", execute: () => { })
+                }
+            );
+        }
+
+        private static HubSettingsRange BuildRepeatManualDelayItem(ISettingsService settings, IRepeatService repeat)
         {
             return new HubSettingsRange(
-                labelKey: "settings.repeat_idle_seconds",
-                descriptionKey: "settings.repeat_idle_seconds.desc",
+                labelKey: "settings.repeat.manual_delay",
+                descriptionKey: "settings.repeat.manual_delay.desc",
                 min: 1f,
                 max: 15f,
                 step: 1f,
@@ -277,7 +407,48 @@ namespace Project.Hub.Settings
                 {
                     var clamped = Mathf.Clamp(v, 1f, 15f);
                     settings.SetRepeatIdleSeconds(clamped);
+
                     repeat.IdleThresholdSeconds = clamped;
+
+                    float minAuto = Mathf.Max(10f, clamped);
+                    if (settings.Current.autoRepeatIdleSeconds < minAuto)
+                        settings.SetAutoRepeatIdleSeconds(minAuto);
+                }
+            );
+        }
+
+        private static HubSettingsToggle BuildRepeatAutoEnabledItem(ISettingsService settings)
+        {
+            return new HubSettingsToggle(
+                labelKey: "settings.repeat.auto_enabled",
+                descriptionKey: "settings.repeat.auto_enabled.desc",
+                getValue: () => settings.Current.autoRepeatEnabled,
+                setValue: enabled =>
+                {
+                    settings.SetAutoRepeatEnabled(enabled);
+                }
+            );
+        }
+
+        private static HubSettingsRange BuildRepeatAutoDelayItem(ISettingsService settings)
+        {
+            float MinAuto() => Mathf.Max(10f, settings.Current.repeatIdleSeconds);
+            float MaxAuto() => 30f;
+
+            return new HubSettingsRange(
+                labelKey: "settings.repeat.auto_delay",
+                descriptionKey: "settings.repeat.auto_delay.desc",
+                minProvider: MinAuto,
+                maxProvider: MaxAuto,
+                step: 1f,
+                getValue: () => settings.Current.autoRepeatIdleSeconds,
+                setValue: v =>
+                {
+                    var min = MinAuto();
+                    var max = MaxAuto();
+
+                    var clamped = Mathf.Clamp(v, min, max);
+                    settings.SetAutoRepeatIdleSeconds(clamped);
                 }
             );
         }
