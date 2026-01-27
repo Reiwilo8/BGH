@@ -1,6 +1,7 @@
 using Project.Core.App;
 using Project.Core.Audio;
 using Project.Core.Audio.Sequences.Common;
+using Project.Core.AudioFx;
 using Project.Core.Input;
 using Project.Core.Settings;
 using Project.Core.Speech;
@@ -14,6 +15,7 @@ namespace Project.Hub.Start
 {
     public sealed class StartController : MonoBehaviour
     {
+        private IAudioFxService _audioFx;
         private IUiAudioOrchestrator _uiAudio;
         private IAppFlowService _flow;
         private ISettingsService _settings;
@@ -26,6 +28,7 @@ namespace Project.Hub.Start
         {
             var services = AppContext.Services;
 
+            _audioFx = services.Resolve<IAudioFxService>();
             _uiAudio = services.Resolve<IUiAudioOrchestrator>();
             _flow = services.Resolve<IAppFlowService>();
             _settings = services.Resolve<ISettingsService>();
@@ -52,6 +55,7 @@ namespace Project.Hub.Start
             if (_isTransitioning) return;
             if (_flow != null && _flow.IsTransitioning) return;
 
+            _audioFx?.PlayUiCue(UiCueId.Repeat);
             PlayStandardPrompt();
         }
 
@@ -61,6 +65,8 @@ namespace Project.Hub.Start
             if (_flow != null && _flow.IsTransitioning) return;
 
             _isTransitioning = true;
+
+            _audioFx?.PlayUiCue(UiCueId.Confirm);
 
             _uiAudio.CancelCurrent();
 
@@ -90,6 +96,8 @@ namespace Project.Hub.Start
             if (_flow != null && _flow.IsTransitioning) return;
 
             _isTransitioning = true;
+
+            _audioFx?.PlayUiCue(UiCueId.ExitChime);
 
             _uiAudio.CancelCurrent();
 
@@ -131,6 +139,8 @@ namespace Project.Hub.Start
         {
             if (_isTransitioning) return;
             if (_flow != null && _flow.IsTransitioning) return;
+
+            _audioFx?.PlayUiCue(UiCueId.Toggle);
 
             _uiAudio.CancelCurrent();
 

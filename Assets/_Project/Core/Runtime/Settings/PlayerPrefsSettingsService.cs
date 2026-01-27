@@ -8,11 +8,11 @@ namespace Project.Core.Settings
 {
     public sealed class PlayerPrefsSettingsService : ISettingsService
     {
-        private const string Key = "app_settings_v2";
+        private const string Key = "app_settings_v3";
 
-        private const string VaInitMarkerKey = "app_settings_v2_va_init";
+        private const string VaInitMarkerKey = "app_settings_v3_va_init";
 
-        private const string RepeatInitMarkerKey = "app_settings_v2_repeat_init";
+        private const string RepeatInitMarkerKey = "app_settings_v3_repeat_init";
 
         public event Action Changed;
 
@@ -93,8 +93,10 @@ namespace Project.Core.Settings
 
         private void NormalizeAfterReset()
         {
+            Current.cuesVolume = Mathf.Clamp01(Current.cuesVolume);
+            Current.gameVolume = Mathf.Clamp01(Current.gameVolume);
+
             Current.repeatIdleSeconds = Mathf.Clamp(Current.repeatIdleSeconds, 1f, 15f);
-            Current.sfxVolume = Mathf.Clamp01(Current.sfxVolume);
 
             if (!Enum.IsDefined(typeof(VisualAssistTextSizePreset), Current.vaTextSizePreset))
                 Current.vaTextSizePreset = Defaults.vaTextSizePreset;
@@ -159,9 +161,15 @@ namespace Project.Core.Settings
             Save();
         }
 
-        public void SetSfxVolume01(float volume01)
+        public void SetCuesVolume01(float volume01)
         {
-            Current.sfxVolume = Mathf.Clamp01(volume01);
+            Current.cuesVolume = Mathf.Clamp01(volume01);
+            Save();
+        }
+
+        public void SetGameVolume01(float volume01)
+        {
+            Current.gameVolume = Mathf.Clamp01(volume01);
             Save();
         }
 
@@ -195,8 +203,10 @@ namespace Project.Core.Settings
 
         private void PostLoadNormalizeAndMigrate()
         {
+            Current.cuesVolume = Mathf.Clamp01(Current.cuesVolume);
+            Current.gameVolume = Mathf.Clamp01(Current.gameVolume);
+
             Current.repeatIdleSeconds = Mathf.Clamp(Current.repeatIdleSeconds, 1f, 15f);
-            Current.sfxVolume = Mathf.Clamp01(Current.sfxVolume);
 
             if (!Enum.IsDefined(typeof(VisualAssistTextSizePreset), Current.vaTextSizePreset))
                 Current.vaTextSizePreset = Defaults.vaTextSizePreset;
@@ -261,21 +271,22 @@ namespace Project.Core.Settings
                 languageCode = src.languageCode,
                 hasUserSelectedLanguage = src.hasUserSelectedLanguage,
 
-                visualMode = src.visualMode,
-
-                vaTextSizePreset = src.vaTextSizePreset,
-                vaMarqueeSpeedScale = src.vaMarqueeSpeedScale,
-                vaDimmerStrength01 = src.vaDimmerStrength01,
-
                 controlHintMode = src.controlHintMode,
+
+                cuesEnabled = src.cuesEnabled,
+                cuesVolume = src.cuesVolume,
+                gameVolume = src.gameVolume,
 
                 repeatIdleSeconds = src.repeatIdleSeconds,
 
                 autoRepeatEnabled = src.autoRepeatEnabled,
                 autoRepeatIdleSeconds = src.autoRepeatIdleSeconds,
 
-                sfxVolume = src.sfxVolume,
-                cuesEnabled = src.cuesEnabled
+                visualMode = src.visualMode,
+
+                vaTextSizePreset = src.vaTextSizePreset,
+                vaMarqueeSpeedScale = src.vaMarqueeSpeedScale,
+                vaDimmerStrength01 = src.vaDimmerStrength01
             };
         }
     }

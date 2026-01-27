@@ -2,6 +2,7 @@ using System.Collections;
 using Project.Core.Audio;
 using Project.Core.Audio.Sequences.Common;
 using Project.Core.Audio.Steps;
+using Project.Core.AudioFx;
 
 namespace Project.Hub.Settings.Sequences
 {
@@ -20,6 +21,8 @@ namespace Project.Hub.Settings.Sequences
 
             if (!string.IsNullOrWhiteSpace(descriptionKey))
                 yield return UiAudioSteps.SpeakKeyAndWait(ctx, descriptionKey);
+
+            UiAudioSteps.PlayUiCue(ctx, UiCueId.SequenceEnd);
         }
 
         public static IEnumerator Current(
@@ -48,6 +51,8 @@ namespace Project.Hub.Settings.Sequences
 
             if (!string.IsNullOrWhiteSpace(descriptionKey))
                 yield return UiAudioSteps.SpeakKeyAndWait(ctx, descriptionKey);
+
+            UiAudioSteps.PlayUiCue(ctx, UiCueId.SequenceEnd);
         }
 
         public static IEnumerator ConfirmAction(
@@ -63,6 +68,8 @@ namespace Project.Hub.Settings.Sequences
 
             if (!string.IsNullOrWhiteSpace(descriptionKey))
                 yield return UiAudioSteps.SpeakKeyAndWait(ctx, descriptionKey);
+
+            UiAudioSteps.PlayUiCue(ctx, UiCueId.SequenceEnd);
         }
     }
 }

@@ -1,6 +1,7 @@
 using Project.Core.App;
 using Project.Core.Audio;
 using Project.Core.Audio.Sequences.Common;
+using Project.Core.AudioFx;
 using Project.Core.Input;
 using Project.Core.Localization;
 using Project.Core.Settings;
@@ -14,6 +15,7 @@ namespace Project.Games.Module
 {
     public sealed class GameModuleController : MonoBehaviour
     {
+        private IAudioFxService _audioFx;
         private IUiAudioOrchestrator _uiAudio;
         private IAppFlowService _flow;
         private ISettingsService _settings;
@@ -40,6 +42,7 @@ namespace Project.Games.Module
         {
             var services = AppContext.Services;
 
+            _audioFx = services.Resolve<IAudioFxService>();
             _uiAudio = services.Resolve<IUiAudioOrchestrator>();
             _flow = services.Resolve<IAppFlowService>();
             _settings = services.Resolve<ISettingsService>();
@@ -70,22 +73,27 @@ namespace Project.Games.Module
             switch (action)
             {
                 case NavAction.Next:
+                    _audioFx?.PlayUiCue(UiCueId.NavigateNext);
                     _index = (_index + 1) % _items.Length;
                     RefreshVa(VaListMoveDirection.Next);
                     PlayCurrent();
                     break;
 
                 case NavAction.Previous:
+                    _audioFx?.PlayUiCue(UiCueId.NavigatePrevious);
                     _index = (_index - 1 + _items.Length) % _items.Length;
                     RefreshVa(VaListMoveDirection.Previous);
                     PlayCurrent();
                     break;
 
                 case NavAction.Confirm:
+                    var item = _items[_index];
+                    _audioFx?.PlayUiCue(item != null && item.Kind == MenuItemKind.Back ? UiCueId.Back : UiCueId.Confirm);
                     _ = ConfirmAsync();
                     break;
 
                 case NavAction.Back:
+                    _audioFx?.PlayUiCue(UiCueId.Back);
                     _ = BackAsync();
                     break;
             }
@@ -95,6 +103,8 @@ namespace Project.Games.Module
         {
             if (_items == null || _items.Length == 0) return;
             if (_flow.IsTransitioning) return;
+
+            _audioFx?.PlayUiCue(UiCueId.Repeat);
 
             RefreshVa(VaListMoveDirection.None);
             PlayPrompt();

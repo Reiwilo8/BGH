@@ -1,6 +1,7 @@
 using Project.Core.App;
 using Project.Core.Audio;
 using Project.Core.Audio.Sequences.Common;
+using Project.Core.AudioFx;
 using Project.Core.Input;
 using Project.Core.Settings;
 using Project.Core.Speech;
@@ -192,6 +193,8 @@ namespace Project.Hub.States
 
         private async Task QuitAsync()
         {
+            _sm.AudioFx?.PlayUiCue(UiCueId.ExitChime);
+
             _sm.UiAudio.CancelCurrent();
             _va?.NotifyTransitioning();
 

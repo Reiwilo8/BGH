@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 53891176}
   - component: {fileID: 53891178}
   - component: {fileID: 53891179}
+  - component: {fileID: 53891180}
   m_Layer: 0
   m_Name: AppRoot
   m_TagString: Untagged
@@ -152,8 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startSceneName: StartScene
   hubSceneName: HubScene
-  visualAssistOverlayPrefab: {fileID: 1613230977}
-  visualAssistOverlayParent: {fileID: 1982699434}
+  audioFxCatalog: {fileID: 11400000, guid: 4a2bbd4462038894294a22e380b4e36f, type: 2}
   speakOnBoot: 0
 --- !u!4 &53891177
 Transform:
@@ -195,6 +195,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f07a32e33ffc9a43a9ea742f45464c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &53891180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53891175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b34aa91c832ae342bce0192c7230756, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  catalog: {fileID: 11400000, guid: 4a2bbd4462038894294a22e380b4e36f, type: 2}
+  uiPoolSize: 8
+  gamePoolSize: 16
 --- !u!1 &913697826
 GameObject:
   m_ObjectHideFlags: 0
@@ -471,11 +486,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1613230977 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4588787779348560090, guid: 4f6a357e5612ece468115296396e088b, type: 3}
-  m_PrefabInstance: {fileID: 1982699433}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1846955392
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,6 +496,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1846955393}
   - component: {fileID: 1846955394}
+  - component: {fileID: 1846955395}
   m_Layer: 0
   m_Name: VisualAssistUI
   m_TagString: Untagged
@@ -524,6 +535,21 @@ MonoBehaviour:
   overlayPrefab: {fileID: 1982699435}
   dontDestroyOnLoad: 1
   sortingOrder: 5000
+  ensureIdleDriver: 1
+  idleCheckIntervalSeconds: 0.15
+--- !u!114 &1846955395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1846955392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74629b4265beca441ba9ba40b8f9e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkIntervalSeconds: 0.15
 --- !u!1001 &1982699433
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -591,7 +617,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5113202660104834229, guid: 4f6a357e5612ece468115296396e088b, type: 3}
   m_PrefabInstance: {fileID: 1982699433}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1613230977}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ee02080bb26f5114fa7da64540f726e4, type: 3}

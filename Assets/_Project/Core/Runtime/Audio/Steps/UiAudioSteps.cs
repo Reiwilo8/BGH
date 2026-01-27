@@ -1,4 +1,5 @@
 using System.Collections;
+using Project.Core.AudioFx;
 using Project.Core.VisualAssist;
 using UnityEngine;
 
@@ -73,6 +74,16 @@ namespace Project.Core.Audio.Steps
                     yield break;
                 }
             }
+        }
+
+        public static void PlayUiCue(
+            UiAudioContext ctx,
+            UiCueId cueId)
+        {
+            if (ctx == null) return;
+            if (ctx.Handle == null || ctx.Handle.IsCancelled) return;
+
+            ctx.AudioFx?.PlayUiCue(cueId);
         }
 
         public static IEnumerator PauseSeconds(

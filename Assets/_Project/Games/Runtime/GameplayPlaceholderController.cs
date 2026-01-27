@@ -1,5 +1,6 @@
 using Project.Core.App;
 using Project.Core.Audio;
+using Project.Core.AudioFx;
 using Project.Core.Input;
 using Project.Core.Settings;
 using Project.Core.Speech;
@@ -12,6 +13,7 @@ namespace Project.Games.Gameplay
 {
     public sealed class GameplayPlaceholderController : MonoBehaviour
     {
+        private IAudioFxService _audioFx;
         private IUiAudioOrchestrator _uiAudio;
         private IAppFlowService _flow;
         private ISettingsService _settings;
@@ -27,6 +29,7 @@ namespace Project.Games.Gameplay
         private void Awake()
         {
             var services = AppContext.Services;
+            _audioFx = services.Resolve<IAudioFxService>();
             _uiAudio = services.Resolve<IUiAudioOrchestrator>();
             _flow = services.Resolve<IAppFlowService>();
             _settings = services.Resolve<ISettingsService>();
@@ -47,11 +50,15 @@ namespace Project.Games.Gameplay
         public void Handle(NavAction action)
         {
             if (action == NavAction.Back)
+            {
+                _audioFx?.PlayUiCue(UiCueId.Back);
                 _ = ReturnAsync();
+            }
         }
 
         public void OnRepeatRequested()
         {
+            _audioFx?.PlayUiCue(UiCueId.Repeat);
             RefreshVa();
             PlayPrompt();
         }

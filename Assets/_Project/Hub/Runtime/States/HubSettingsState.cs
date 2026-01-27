@@ -2,6 +2,7 @@ using Project.Core.Activity;
 using Project.Core.Audio;
 using Project.Core.Audio.Sequences.Common;
 using Project.Core.Audio.Steps;
+using Project.Core.AudioFx;
 using Project.Core.Input;
 using Project.Core.Localization;
 using Project.Core.Settings;
@@ -23,6 +24,7 @@ namespace Project.Hub.States
 
         private readonly ILocalizationService _loc;
         private readonly ISpeechService _speech;
+        private readonly IAudioFxService _audioFx;
         private readonly IRepeatService _repeat;
         private readonly IVisualModeService _visual;
         private readonly IVisualAssistService _va;
@@ -66,6 +68,7 @@ namespace Project.Hub.States
             _sm = sm;
             _loc = Core.App.AppContext.Services.Resolve<ILocalizationService>();
             _speech = Core.App.AppContext.Services.Resolve<ISpeechService>();
+            _audioFx = Core.App.AppContext.Services.Resolve<IAudioFxService>();
             _repeat = Core.App.AppContext.Services.Resolve<IRepeatService>();
             _visual = Core.App.AppContext.Services.Resolve<IVisualModeService>();
             _va = Core.App.AppContext.Services.Resolve<IVisualAssistService>();
@@ -84,7 +87,12 @@ namespace Project.Hub.States
 
         public void Exit() { }
         public void OnFocusGained() { RefreshVa(); PlayPrompt(); }
-        public void OnRepeatRequested() { RefreshVa(); PlayPrompt(); }
+        public void OnRepeatRequested()
+        {
+            _audioFx?.PlayUiCue(UiCueId.Repeat);
+            RefreshVa();
+            PlayPrompt();
+        }
 
         public void Handle(NavAction action)
         {
@@ -172,6 +180,7 @@ namespace Project.Hub.States
             switch (action)
             {
                 case NavAction.Next:
+                    _audioFx?.PlayUiCue(UiCueId.NavigateNext);
                     _index = (_index + 1) % _items.Count;
 
                     _va?.PulseListMove(VaListMoveDirection.Next);
@@ -181,6 +190,7 @@ namespace Project.Hub.States
                     break;
 
                 case NavAction.Previous:
+                    _audioFx?.PlayUiCue(UiCueId.NavigatePrevious);
                     _index = (_index - 1 + _items.Count) % _items.Count;
 
                     _va?.PulseListMove(VaListMoveDirection.Previous);
@@ -190,10 +200,13 @@ namespace Project.Hub.States
                     break;
 
                 case NavAction.Confirm:
+                    var it = _items[_index];
+                    _audioFx?.PlayUiCue(IsBackItem(it) ? UiCueId.Back : UiCueId.Confirm);
                     ConfirmCurrent();
                     break;
 
                 case NavAction.Back:
+                    _audioFx?.PlayUiCue(UiCueId.Back);
                     BackFromBrowse();
                     break;
             }
@@ -346,6 +359,8 @@ namespace Project.Hub.States
         {
             if (t == null) return;
 
+            _audioFx?.PlayUiCue(UiCueId.Toggle);
+
             if (t.LabelKey == "settings.visual_mode.enabled")
             {
                 _sm.UiAudio.CancelCurrent();
@@ -407,6 +422,7 @@ namespace Project.Hub.States
             switch (action)
             {
                 case NavAction.Next:
+                    _audioFx?.PlayUiCue(UiCueId.NavigateNext);
                     _listIndex = (_listIndex + 1) % _listOptions.Count;
 
                     RefreshVa();
@@ -414,6 +430,7 @@ namespace Project.Hub.States
                     break;
 
                 case NavAction.Previous:
+                    _audioFx?.PlayUiCue(UiCueId.NavigatePrevious);
                     _listIndex = (_listIndex - 1 + _listOptions.Count) % _listOptions.Count;
 
                     RefreshVa();
@@ -421,6 +438,7 @@ namespace Project.Hub.States
                     break;
 
                 case NavAction.Confirm:
+                    _audioFx?.PlayUiCue(UiCueId.Confirm);
                     _editingList.SetIndex?.Invoke(_listIndex);
                     string selectedText = ResolveListOptionText(_listOptions[_listIndex]);
 
@@ -438,6 +456,7 @@ namespace Project.Hub.States
                     break;
 
                 case NavAction.Back:
+                    _audioFx?.PlayUiCue(UiCueId.Back);
                     _mode = Mode.Browse;
                     _editingList = null;
                     _listOptions = null;
@@ -472,18 +491,21 @@ namespace Project.Hub.States
             switch (action)
             {
                 case NavAction.Next:
+                    _audioFx?.PlayUiCue(UiCueId.Increase);
                     _rangeValue = Clamp(_rangeValue + _editingRange.Step, _editingRange.Min, _editingRange.Max);
                     RefreshVa();
                     PlayCurrentValue();
                     break;
 
                 case NavAction.Previous:
+                    _audioFx?.PlayUiCue(UiCueId.Decrease);
                     _rangeValue = Clamp(_rangeValue - _editingRange.Step, _editingRange.Min, _editingRange.Max);
                     RefreshVa();
                     PlayCurrentValue();
                     break;
 
                 case NavAction.Confirm:
+                    _audioFx?.PlayUiCue(UiCueId.Confirm);
                     _editingRange.SetValue?.Invoke(_rangeValue);
                     string selectedText = FormatRangeValue(_editingRange, _rangeValue);
 
@@ -500,6 +522,7 @@ namespace Project.Hub.States
                     break;
 
                 case NavAction.Back:
+                    _audioFx?.PlayUiCue(UiCueId.Back);
                     _mode = Mode.Browse;
                     _editingRange = null;
 
@@ -514,6 +537,7 @@ namespace Project.Hub.States
             switch (action)
             {
                 case NavAction.Confirm:
+                    _audioFx?.PlayUiCue(UiCueId.Confirm);
                     _sm.UiAudio.CancelCurrent();
 
                     _pendingAction?.Execute?.Invoke();
@@ -535,6 +559,7 @@ namespace Project.Hub.States
                     break;
 
                 case NavAction.Back:
+                    _audioFx?.PlayUiCue(UiCueId.Back);
                     _sm.UiAudio.CancelCurrent();
 
                     _pendingAction = null;
@@ -836,12 +861,15 @@ namespace Project.Hub.States
 
         private string FormatRangeValue(HubSettingsRange range, float value)
         {
+            if (range.LabelKey == "settings.cues_volume")
+                return $"{(int)Math.Round(value * 100f)}%";
+
+            if (range.LabelKey == "settings.game_volume")
+                return $"{(int)Math.Round(value * 100f)}%";
+
             if (range.LabelKey == "settings.repeat.manual_delay"
                 || range.LabelKey == "settings.repeat.auto_delay")
                 return $"{(int)Math.Round(value)}s";
-
-            if (range.LabelKey == "settings.sfx_volume")
-                return $"{(int)Math.Round(value * 100f)}%";
 
             if (range.LabelKey == "settings.visual_mode.dimmer_strength")
                 return $"{(int)Math.Round(value * 100f)}%";

@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62ad51bbe5244b44ca15450fc5a92532, type: 3}
+  m_Name: AudioFxCatalog
+  m_EditorClassIdentifier: 
+  uiCues:
+  - id: 0
+    clip: {fileID: 8300000, guid: 666273e1376fca94fbefcea1e7bba710, type: 3}
+    defaultVolume01: 1
+  - id: 1
+    clip: {fileID: 8300000, guid: 224f929dc251a024680625553c28f925, type: 3}
+    defaultVolume01: 1
+  - id: 2
+    clip: {fileID: 8300000, guid: 2d2117db013fa884c97e269d30a59ba8, type: 3}
+    defaultVolume01: 1
+  - id: 3
+    clip: {fileID: 8300000, guid: 360591c42ddacdf48af7c78d73172e88, type: 3}
+    defaultVolume01: 1
+  - id: 4
+    clip: {fileID: 8300000, guid: bc7add699cd09964a95cce3ed1557dcc, type: 3}
+    defaultVolume01: 1
+  - id: 5
+    clip: {fileID: 8300000, guid: 4633d757c6db9d24a9c4db244912b9ec, type: 3}
+    defaultVolume01: 1
+  - id: 6
+    clip: {fileID: 8300000, guid: 798b57311eea0bb429f8ba15c51417e3, type: 3}
+    defaultVolume01: 1
+  - id: 7
+    clip: {fileID: 8300000, guid: d273b7c0dfdba874e9c8cb055cf2c8d1, type: 3}
+    defaultVolume01: 1
+  - id: 8
+    clip: {fileID: 8300000, guid: 8d10ca329fad66c4fbf27952b1b7c687, type: 3}
+    defaultVolume01: 1
+  - id: 9
+    clip: {fileID: 8300000, guid: efab307a3062a624f915b970fc55bec4, type: 3}
+    defaultVolume01: 1
+  - id: 10
+    clip: {fileID: 8300000, guid: 3bf9333c6f9dc2642b09c213a4613061, type: 3}
+    defaultVolume01: 1

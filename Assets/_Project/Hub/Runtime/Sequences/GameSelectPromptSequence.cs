@@ -2,6 +2,7 @@ using System.Collections;
 using Project.Core.Audio;
 using Project.Core.Audio.Sequences.Common;
 using Project.Core.Audio.Steps;
+using Project.Core.AudioFx;
 
 namespace Project.Hub.Sequences
 {
@@ -12,6 +13,8 @@ namespace Project.Hub.Sequences
             yield return UiAudioSteps.SpeakKeyAndWait(ctx, "enter.game_select");
             yield return CurrentItemSequence.Run(ctx, "current.game", currentText);
             yield return UiAudioSteps.SpeakKeyAndWait(ctx, hintKey);
+
+            UiAudioSteps.PlayUiCue(ctx, UiCueId.SequenceEnd);
         }
     }
 }

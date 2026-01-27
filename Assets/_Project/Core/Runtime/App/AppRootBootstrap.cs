@@ -1,6 +1,6 @@
 using Project.Core.Activity;
 using Project.Core.Audio;
-using Project.Core.Audio.Cues;
+using Project.Core.AudioFx;
 using Project.Core.Input;
 using Project.Core.Localization;
 using Project.Core.Services;
@@ -21,6 +21,9 @@ namespace Project.Core.App
         [SerializeField] private string startSceneName = "StartScene";
         [SerializeField] private string hubSceneName = "HubScene";
 
+        [Header("AudioFx")]
+        [SerializeField] private AudioFxCatalog audioFxCatalog;
+
         [Header("Diagnostics")]
         [SerializeField] private bool speakOnBoot = false;
 
@@ -29,6 +32,9 @@ namespace Project.Core.App
 
         private SpeechLanguageBinder _speechLanguageBinder;
 
+        private ISettingsService _settings;
+        private AudioFxService _audioFx;
+
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
@@ -36,7 +42,6 @@ namespace Project.Core.App
             AppContext.ResetCacheForDomainReload();
 
             _services = new ServiceRegistry();
-
             _services.Register(new AppSession());
 
             var visualModeService = new VisualModeService();
@@ -49,8 +54,9 @@ namespace Project.Core.App
 
                 controlHintMode = Project.Core.Input.ControlHintMode.Auto,
 
-                sfxVolume = 1f,
                 cuesEnabled = true,
+                cuesVolume = 1f,
+                gameVolume = 1f,
 
                 repeatIdleSeconds = 10f,
 
@@ -66,9 +72,8 @@ namespace Project.Core.App
 
             var settings = new PlayerPrefsSettingsService(defaults);
             settings.Load();
+            _settings = settings;
             _services.Register<ISettingsService>(settings);
-
-            _services.Register<IAudioCueService>(new NullAudioCueService());
 
             var speech = SpeechServiceFactory.Create();
             _services.Register<ISpeechService>(speech);
@@ -87,15 +92,24 @@ namespace Project.Core.App
             var va = new VisualAssistService(localization);
             _services.Register<IVisualAssistService>(va);
 
-            var uiAudio = FindFirstObjectByType<UiAudioOrchestrator>();
-            if (uiAudio == null)
-            {
-                var go = new GameObject("UiAudioOrchestrator");
-                go.transform.SetParent(transform, worldPositionStays: false);
-                uiAudio = go.AddComponent<UiAudioOrchestrator>();
-            }
+            _audioFx = GetComponent<AudioFxService>();
+            if (_audioFx == null)
+                _audioFx = gameObject.AddComponent<AudioFxService>();
 
-            uiAudio.Init(speech, localization, va);
+            _audioFx.SetCatalog(audioFxCatalog);
+
+            ApplyAudioSettings(settings.Current, _audioFx);
+
+            _services.Register<IAudioFxService>(_audioFx);
+
+            settings.Changed -= OnSettingsChanged;
+            settings.Changed += OnSettingsChanged;
+
+            var uiAudio = GetComponent<UiAudioOrchestrator>();
+            if (uiAudio == null)
+                uiAudio = gameObject.AddComponent<UiAudioOrchestrator>();
+
+            uiAudio.Init(speech, localization, va, _audioFx);
             _services.Register<IUiAudioOrchestrator>(uiAudio);
 
             var appFlow = new AppFlowService(
@@ -121,6 +135,21 @@ namespace Project.Core.App
                 speech.Speak("Speech system initialized.", SpeechPriority.High);
         }
 
+        private void OnSettingsChanged()
+        {
+            if (_settings == null || _audioFx == null) return;
+            ApplyAudioSettings(_settings.Current, _audioFx);
+        }
+
+        private static void ApplyAudioSettings(AppSettingsData s, AudioFxService audioFx)
+        {
+            if (s == null || audioFx == null) return;
+
+            audioFx.SetUiCuesEnabled(s.cuesEnabled);
+            audioFx.SetBusVolume01(AudioFxBus.UiCues, Mathf.Clamp01(s.cuesVolume));
+            audioFx.SetBusVolume01(AudioFxBus.GameSounds, Mathf.Clamp01(s.gameVolume));
+        }
+
         private void EnsureRepeatAutoDriver(float intervalSeconds)
         {
             var driver = GetComponent<RepeatAutoDriver>();
@@ -128,7 +157,6 @@ namespace Project.Core.App
                 driver = gameObject.AddComponent<RepeatAutoDriver>();
 
             driver.enabled = true;
-
             driver.Init(intervalSeconds);
         }
 
@@ -147,6 +175,9 @@ namespace Project.Core.App
                 var uiAudio = services.Resolve<IUiAudioOrchestrator>();
 
                 await Task.Yield();
+
+                var audioFx = services.Resolve<IAudioFxService>();
+                audioFx?.PlayUiCue(UiCueId.WelcomeChime);
 
                 var h = uiAudio.Play(
                     UiAudioScope.Start,
@@ -181,6 +212,9 @@ namespace Project.Core.App
 
         private void OnDestroy()
         {
+            if (_settings != null)
+                _settings.Changed -= OnSettingsChanged;
+
             _speechLanguageBinder?.Dispose();
         }
 
