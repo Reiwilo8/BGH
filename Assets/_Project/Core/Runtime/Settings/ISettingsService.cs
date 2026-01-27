@@ -27,8 +27,9 @@ namespace Project.Core.Settings
         void SetAutoRepeatEnabled(bool enabled);
         void SetAutoRepeatIdleSeconds(float seconds);
 
-        void SetSfxVolume01(float volume01);
         void SetCuesEnabled(bool enabled);
+        void SetCuesVolume01(float volume01);
+        void SetGameVolume01(float volume01);
 
         void SetVaTextSizePreset(VisualAssistTextSizePreset preset);
         void SetVaMarqueeSpeedScale(float scale);

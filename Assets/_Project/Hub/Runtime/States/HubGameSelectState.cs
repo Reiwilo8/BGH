@@ -99,6 +99,13 @@ namespace Project.Hub.States
             }
         }
 
+        public bool IsConfirmingBackItem()
+        {
+            var games = _catalog.games;
+            if (games == null) return true;
+            return IsBackItem(games);
+        }
+
         private void RefreshVa()
         {
             _va?.SetHeaderKey("va.screen.game_select");

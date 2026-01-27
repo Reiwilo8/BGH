@@ -11,20 +11,21 @@ namespace Project.Core.Settings
         public string languageCode = "en";
         public bool hasUserSelectedLanguage = false;
 
-        public VisualMode visualMode = VisualMode.AudioOnly;
-
-        public VisualAssistTextSizePreset vaTextSizePreset = VisualAssistTextSizePreset.Medium;
-        public float vaMarqueeSpeedScale = 1f;
-        public float vaDimmerStrength01 = 0.7f;
-
         public ControlHintMode controlHintMode = ControlHintMode.Auto;
+
+        public bool cuesEnabled = true;
+        public float cuesVolume = 1f;
+        public float gameVolume = 1f;
 
         public float repeatIdleSeconds = 10f;
 
         public bool autoRepeatEnabled = true;
         public float autoRepeatIdleSeconds = 20f;
 
-        public float sfxVolume = 1f;
-        public bool cuesEnabled = true;
+        public VisualMode visualMode = VisualMode.AudioOnly;
+
+        public VisualAssistTextSizePreset vaTextSizePreset = VisualAssistTextSizePreset.Medium;
+        public float vaMarqueeSpeedScale = 1f;
+        public float vaDimmerStrength01 = 0.7f;
     }
 }

@@ -5,6 +5,7 @@ using Project.Core.Localization;
 using Project.Core.Speech;
 using Project.Core.Audio.Sequences.Common;
 using Project.Core.VisualAssist;
+using Project.Core.AudioFx;
 
 namespace Project.Core.Audio
 {
@@ -18,6 +19,7 @@ namespace Project.Core.Audio
         private ISpeechService _speech;
         private ILocalizationService _localization;
         private IVisualAssistService _visualAssist;
+        private IAudioFxService _audioFx;
 
         private Coroutine _gate;
         private PendingRequest _pending;
@@ -31,11 +33,16 @@ namespace Project.Core.Audio
             public UiAudioSequenceHandle Handle;
         }
 
-        public void Init(ISpeechService speech, ILocalizationService localization, IVisualAssistService visualAssist)
+        public void Init(
+            ISpeechService speech,
+            ILocalizationService localization,
+            IVisualAssistService visualAssist,
+            IAudioFxService audioFx)
         {
             _speech = speech;
             _localization = localization;
             _visualAssist = visualAssist;
+            _audioFx = audioFx;
         }
 
         public UiAudioSequenceHandle Play(
@@ -201,7 +208,7 @@ namespace Project.Core.Audio
             if (handle == null || handle.IsCancelled)
                 yield break;
 
-            var ctx = new UiAudioContext(_speech, _localization, _visualAssist, handle);
+            var ctx = new UiAudioContext(_speech, _localization, _visualAssist, _audioFx, handle);
 
             yield return sequence(ctx);
 

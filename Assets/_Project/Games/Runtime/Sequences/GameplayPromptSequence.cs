@@ -1,6 +1,7 @@
 using System.Collections;
 using Project.Core.Audio;
 using Project.Core.Audio.Steps;
+using Project.Core.AudioFx;
 
 namespace Project.Games.Sequences
 {
@@ -14,6 +15,8 @@ namespace Project.Games.Sequences
         {
             yield return UiAudioSteps.SpeakKeyAndWait(ctx, "enter.gameplay", gameName, modeName);
             yield return UiAudioSteps.SpeakKeyAndWait(ctx, hintKey);
+
+            UiAudioSteps.PlayUiCue(ctx, UiCueId.SequenceEnd);
         }
     }
 }

@@ -396,11 +396,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1501026914824192
-    m_Localized: "G\u0142o\u015Bno\u015B\u0107 efekt\xF3w d\u017Awi\u0119kowych"
+    m_Localized: "G\u0142o\u015Bno\u015B\u0107 sygna\u0142\xF3w"
     m_Metadata:
       m_Items: []
   - m_Id: 1501481111810048
-    m_Localized: "Ustaw g\u0142o\u015Bno\u015B\u0107 efekt\xF3w d\u017Awi\u0119kowych."
+    m_Localized: "Ustaw g\u0142o\u015Bno\u015B\u0107 sygna\u0142\xF3w d\u017Awi\u0119kowych."
     m_Metadata:
       m_Items: []
   - m_Id: 1504083610333184
@@ -590,6 +590,14 @@ MonoBehaviour:
   - m_Id: 5184834906255360
     m_Localized: "Trzymaj urz\u0105dzenie poziomo dla najlepszego do\u015Bwiadczenia
       z gry."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5859978997821440
+    m_Localized: "G\u0142o\u015Bno\u015B\u0107 gier"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5860307994832896
+    m_Localized: "Ustaw g\u0142o\u015Bno\u015B\u0107 gier."
     m_Metadata:
       m_Items: []
   references:

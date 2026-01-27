@@ -328,11 +328,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1501026914824192
-    m_Key: settings.sfx_volume
+    m_Key: settings.cues_volume
     m_Metadata:
       m_Items: []
   - m_Id: 1501481111810048
-    m_Key: settings.sfx_volume.desc
+    m_Key: settings.cues_volume.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5859978997821440
+    m_Key: settings.game_volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5860307994832896
+    m_Key: settings.game_volume.desc
     m_Metadata:
       m_Items: []
   - m_Id: 4643841337356288

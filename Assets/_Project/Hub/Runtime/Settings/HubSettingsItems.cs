@@ -460,24 +460,34 @@ namespace Project.Hub.Settings
                 descriptionKey: "settings.audio.desc",
                 buildChildren: () => new List<HubSettingsItem>
                 {
-                    new HubSettingsRange(
-                        labelKey: "settings.sfx_volume",
-                        descriptionKey: "settings.sfx_volume.desc",
-                        min: 0f,
-                        max: 1f,
-                        step: 0.05f,
-                        getValue: () => settings.Current.sfxVolume,
-                        setValue: v => settings.SetSfxVolume01(v)
-                    ),
+            new HubSettingsToggle(
+                labelKey: "settings.enable_cues",
+                descriptionKey: "settings.enable_cues.desc",
+                getValue: () => settings.Current.cuesEnabled,
+                setValue: enabled => settings.SetCuesEnabled(enabled)
+            ),
 
-                    new HubSettingsToggle(
-                        labelKey: "settings.enable_cues",
-                        descriptionKey: "settings.enable_cues.desc",
-                        getValue: () => settings.Current.cuesEnabled,
-                        setValue: enabled => settings.SetCuesEnabled(enabled)
-                    ),
+            new HubSettingsRange(
+                labelKey: "settings.cues_volume",
+                descriptionKey: "settings.cues_volume.desc",
+                min: 0f,
+                max: 1f,
+                step: 0.05f,
+                getValue: () => settings.Current.cuesVolume,
+                setValue: v => settings.SetCuesVolume01(v)
+            ),
 
-                    new HubSettingsAction("common.back", execute: () => { })
+            new HubSettingsRange(
+                labelKey: "settings.game_volume",
+                descriptionKey: "settings.game_volume.desc",
+                min: 0f,
+                max: 1f,
+                step: 0.05f,
+                getValue: () => settings.Current.gameVolume,
+                setValue: v => settings.SetGameVolume01(v)
+            ),
+
+            new HubSettingsAction("common.back", execute: () => { })
                 }
             );
         }

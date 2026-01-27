@@ -1,5 +1,6 @@
 using System.Collections;
 using Project.Core.Audio.Steps;
+using Project.Core.AudioFx;
 
 namespace Project.Core.Audio.Sequences.Common
 {
@@ -13,6 +14,8 @@ namespace Project.Core.Audio.Sequences.Common
 
             yield return UiAudioSteps.SpeakKeyAndWait(ctx, statusKey);
             yield return UiAudioSteps.SpeakKeyAndWait(ctx, "hint.visual_mode.settings");
+
+            UiAudioSteps.PlayUiCue(ctx, UiCueId.SequenceEnd);
         }
     }
 }
