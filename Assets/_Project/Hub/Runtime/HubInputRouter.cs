@@ -53,9 +53,6 @@ namespace Project.Hub
             if (hub == null) return;
             if (_focus.Current != InputScope.Hub) return;
 
-            if (action == NavAction.ToggleVisualAssist)
-                return;
-
             hub.Handle(action);
         }
 

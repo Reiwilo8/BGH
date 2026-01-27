@@ -34,7 +34,7 @@ namespace Project.Hub.Settings
             _visual = visual;
         }
 
-        public List<SettingsItem> BuildRoot()
+        public List<SettingsItem> BuildRoot(SettingsBuildContext context)
         {
             return new List<SettingsItem>
             {

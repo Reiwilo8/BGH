@@ -3,23 +3,25 @@ using Project.Core.Audio;
 using Project.Core.AudioFx;
 using Project.Core.Input;
 using Project.Core.Settings;
+using Project.Games.Module.States;
 
-namespace Project.Hub
+namespace Project.Games.Module
 {
-    public sealed class HubStateMachine
+    public sealed class GameModuleStateMachine
     {
         public readonly IUiAudioOrchestrator UiAudio;
         public readonly IAppFlowService Flow;
         public readonly ISettingsService Settings;
         public readonly IAudioFxService AudioFx;
 
-        public readonly HubTransitionGate Transitions = new HubTransitionGate();
+        public readonly GameModuleTransitionGate Transitions = new GameModuleTransitionGate();
 
-        private IHubState _current;
+        private IGameModuleState _current;
 
-        public States.HubMainOption HubMainSelection { get; set; } = States.HubMainOption.GameSelect;
-
-        public HubStateMachine(IUiAudioOrchestrator uiAudio, IAppFlowService flow, ISettingsService settings)
+        public GameModuleStateMachine(
+            IUiAudioOrchestrator uiAudio,
+            IAppFlowService flow,
+            ISettingsService settings)
         {
             UiAudio = uiAudio;
             Flow = flow;
@@ -28,7 +30,7 @@ namespace Project.Hub
             AudioFx = AppContext.Services.Resolve<IAudioFxService>();
         }
 
-        public void SetState(IHubState next)
+        public void SetState(IGameModuleState next)
         {
             _current?.Exit();
             _current = next;
@@ -37,27 +39,17 @@ namespace Project.Hub
 
         public void Dispatch(NavAction action)
         {
-            if (action == NavAction.ToggleVisualAssist && _current is not States.HubSettingsState)
+            if (action == NavAction.ToggleVisualAssist)
                 return;
 
-            if (_current is States.HubSettingsState)
+            if (_current is GameMenuState menu && action == NavAction.Confirm)
             {
+                AudioFx?.PlayUiCue(menu.IsConfirmingBackItem() ? UiCueId.Back : UiCueId.Confirm);
                 _current.Handle(action);
                 return;
             }
 
-            if (_current is States.HubGameSelectState gs && action == NavAction.Confirm)
-            {
-                if (gs.IsConfirmingBackItem())
-                    AudioFx?.PlayUiCue(UiCueId.Back);
-                else
-                    AudioFx?.PlayUiCue(UiCueId.Confirm);
-
-                _current.Handle(action);
-                return;
-            }
-
-            PlayNavCueForHub(action);
+            PlayNavCue(action);
             _current?.Handle(action);
         }
 
@@ -69,7 +61,7 @@ namespace Project.Hub
             _current?.OnRepeatRequested();
         }
 
-        private void PlayNavCueForHub(NavAction action)
+        private void PlayNavCue(NavAction action)
         {
             switch (action)
             {
@@ -92,7 +84,7 @@ namespace Project.Hub
         }
     }
 
-    public interface IHubState
+    public interface IGameModuleState
     {
         string Name { get; }
         void Enter();

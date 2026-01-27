@@ -12,6 +12,8 @@ namespace Project.Core.Settings.Ui
             public int IndexInParent;
         }
 
+        private SettingsBuildContext _buildContext = SettingsBuildContext.Default;
+
         private readonly ISettingsRootBuilder _rootBuilder;
 
         private readonly Stack<FolderFrame> _stack = new();
@@ -470,10 +472,15 @@ namespace Project.Core.Settings.Ui
             }
         }
 
+        public void SetBuildContext(SettingsBuildContext context)
+        {
+            _buildContext = context;
+        }
+
         private void BuildRoot()
         {
             _stack.Clear();
-            _items = _rootBuilder.BuildRoot() ?? new List<SettingsItem>();
+            _items = _rootBuilder.BuildRoot(_buildContext) ?? new List<SettingsItem>();
             EnsureBackAtEnd();
         }
 

@@ -423,6 +423,14 @@ MonoBehaviour:
     m_Key: settings.reset_defaults.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 6226820610289664
+    m_Key: settings.dev_mode.enabled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6227169974841344
+    m_Key: settings.dev_mode.disabled
+    m_Metadata:
+      m_Items: []
   - m_Id: 1512580779503616
     m_Key: settings.on
     m_Metadata:

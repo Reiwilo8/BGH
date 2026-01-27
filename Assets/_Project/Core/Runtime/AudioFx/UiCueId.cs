@@ -18,6 +18,8 @@ namespace Project.Core.AudioFx
         SequenceEnd,
 
         Repeat,
-        Error
+        Error,
+
+        DeveloperMode
     }
 }

@@ -600,6 +600,14 @@ MonoBehaviour:
     m_Localized: "Ustaw g\u0142o\u015Bno\u015B\u0107 gier."
     m_Metadata:
       m_Items: []
+  - m_Id: 6226820610289664
+    m_Localized: "Tryb deweloperski w\u0142\u0105czony."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6227169974841344
+    m_Localized: "Tryb deweloperski wy\u0142\u0105czony."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

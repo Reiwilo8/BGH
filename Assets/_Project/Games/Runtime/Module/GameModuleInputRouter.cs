@@ -53,12 +53,14 @@ namespace Project.Games.Module
             if (_focus.Current != InputScope.GameModule) return;
 
             if (action == NavAction.ToggleVisualAssist) return;
+
             controller?.Handle(action);
         }
 
         private void HandleRepeat()
         {
             if (_focus.Current != InputScope.GameModule) return;
+
             _va?.FlashRepeat(0.25f);
             controller?.OnRepeatRequested();
         }

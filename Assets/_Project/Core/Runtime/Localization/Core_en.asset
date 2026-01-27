@@ -568,6 +568,14 @@ MonoBehaviour:
     m_Localized: Adjust volume of games.
     m_Metadata:
       m_Items: []
+  - m_Id: 6226820610289664
+    m_Localized: Developer mode enabled.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6227169974841344
+    m_Localized: Developer mode disabled.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

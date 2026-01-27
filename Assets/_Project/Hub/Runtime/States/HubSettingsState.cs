@@ -31,6 +31,8 @@ namespace Project.Hub.States
 
         private bool _isHelpPlaying;
 
+        private bool _developerModeEnabled;
+
         public string Name => "Hub.Settings";
 
         public HubSettingsState(HubStateMachine sm)
@@ -46,7 +48,7 @@ namespace Project.Hub.States
             var rootBuilder = new HubSettingsRootBuilder(
                 _sm.Settings,
                 _loc,
-                Core.App.AppContext.Services.Resolve<Project.Core.Speech.ISpeechService>(),
+                Core.App.AppContext.Services.Resolve<ISpeechService>(),
                 _repeat,
                 _visual
             );
@@ -56,7 +58,11 @@ namespace Project.Hub.States
 
         public void Enter()
         {
+            _developerModeEnabled = false;
+
+            _ui.SetBuildContext(new SettingsBuildContext(developerMode: false));
             _ui.Enter();
+
             _isHelpPlaying = false;
 
             RefreshVa();
@@ -80,6 +86,12 @@ namespace Project.Hub.States
 
         public void Handle(NavAction action)
         {
+            if (action == NavAction.ToggleVisualAssist)
+            {
+                //ToggleDeveloperMode();
+                return;
+            }
+
             if (_isHelpPlaying && IsInterruptingAction(action))
             {
                 _sm.UiAudio.CancelCurrent();
@@ -105,6 +117,35 @@ namespace Project.Hub.States
 
             RefreshVa();
             HandleUiResult(action, result);
+        }
+
+        private void ToggleDeveloperMode()
+        {
+            _developerModeEnabled = !_developerModeEnabled;
+
+            _sm.UiAudio.CancelCurrent();
+            _audioFx?.PlayUiCue(UiCueId.DeveloperMode);
+
+            string key = _developerModeEnabled
+                ? "settings.dev_mode.enabled"
+                : "settings.dev_mode.disabled";
+
+            _sm.UiAudio.Play(
+                UiAudioScope.Hub,
+                ctx => UiAudioSteps.SpeakKeyAndWait(ctx, key),
+                SpeechPriority.Normal,
+                interruptible: false
+            );
+
+            _ui.SetBuildContext(
+                new SettingsBuildContext(developerMode: _developerModeEnabled)
+            );
+
+            _ui.Enter();
+            _isHelpPlaying = false;
+
+            RefreshVa();
+            PlayBrowsePrompt();
         }
 
         private void HandleUiResult(NavAction action, SettingsUiResult result)
@@ -183,6 +224,9 @@ namespace Project.Hub.States
 
         private void PlayUiCueForAction(NavAction action)
         {
+            if (action == NavAction.ToggleVisualAssist)
+                return;
+
             var isBackItem = _ui.CurrentItem != null && _ui.CurrentItem.LabelKey == "common.back";
 
             if (_ui.Mode == SettingsUiMode.EditRange)
