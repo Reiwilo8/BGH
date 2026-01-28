@@ -10,6 +10,9 @@ namespace Project.Core.Localization
         string Get(string key);
         string Get(string key, params object[] args);
 
+        string GetFromTable(string table, string key);
+        string GetFromTable(string table, string key, params object[] args);
+
         void SetLanguage(string languageCode);
     }
 }

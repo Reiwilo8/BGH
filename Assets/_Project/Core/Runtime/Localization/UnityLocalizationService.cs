@@ -23,14 +23,19 @@ namespace Project.Core.Localization
         public string Get(string key, params object[] args)
         {
             var raw = Get(key);
-            if (args == null || args.Length == 0) return raw;
+            return SafeFormat(raw, table: CoreTable, key: key, args);
+        }
 
-            try { return string.Format(raw, args); }
-            catch (FormatException)
-            {
-                Debug.LogWarning($"[Localization] Bad format for '{key}': '{raw}'");
-                return raw;
-            }
+        public string GetFromTable(string table, string key)
+        {
+            if (string.IsNullOrWhiteSpace(table)) table = CoreTable;
+            return LocalizationSettings.StringDatabase.GetLocalizedString(table, key);
+        }
+
+        public string GetFromTable(string table, string key, params object[] args)
+        {
+            var raw = GetFromTable(table, key);
+            return SafeFormat(raw, table, key, args);
         }
 
         public void SetLanguage(string languageCode)
@@ -49,6 +54,18 @@ namespace Project.Core.Localization
 
             LocalizationSettings.SelectedLocale = locale;
             LanguageChanged?.Invoke(locale.Identifier.Code);
+        }
+
+        private static string SafeFormat(string raw, string table, string key, object[] args)
+        {
+            if (args == null || args.Length == 0) return raw;
+
+            try { return string.Format(raw, args); }
+            catch (FormatException)
+            {
+                Debug.LogWarning($"[Localization] Bad format for '{table}:{key}': '{raw}'");
+                return raw;
+            }
         }
 
         private static Locale FindLocale(string code)

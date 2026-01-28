@@ -660,10 +660,6 @@ MonoBehaviour:
     m_Localized: Nigdy
     m_Metadata:
       m_Items: []
-  - m_Id: 6295903083065344
-    m_Localized: "Domy\u015Blny"
-    m_Metadata:
-      m_Items: []
   - m_Id: 6327680522678272
     m_Localized: Brak danych dla tego trybu.
     m_Metadata:
@@ -735,6 +731,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 6371749605044224
     m_Localized: wpisy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6611808413446144
+    m_Localized: '{0}'
     m_Metadata:
       m_Items: []
   references:

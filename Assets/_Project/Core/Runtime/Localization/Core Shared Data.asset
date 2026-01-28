@@ -251,6 +251,10 @@ MonoBehaviour:
     m_Key: hint.gameplay.keyboard
     m_Metadata:
       m_Items: []
+  - m_Id: 6611808413446144
+    m_Key: common.text
+    m_Metadata:
+      m_Items: []
   - m_Id: 153419705643041
     m_Key: common.back
     m_Metadata:
@@ -577,10 +581,6 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 6295672354402304
     m_Key: stats.never
-    m_Metadata:
-      m_Items: []
-  - m_Id: 6295903083065344
-    m_Key: stats.mode.default
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643056

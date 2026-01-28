@@ -21,6 +21,24 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c11ffb8e1ac2d334ba4c8a8b72d8795d
+    m_Address: Game_Memory_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c69121c79718c4847ac9ef1111dde37f
+    m_Address: Game_SteamRush_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e89d80abd9c3fb042b3cfdcde37fe14d
+    m_Address: Game_Fishing_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: db17864d4291beb4fade0f3045b80d2e, type: 2}
   m_SchemaSet:

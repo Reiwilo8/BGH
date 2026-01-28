@@ -626,10 +626,6 @@ MonoBehaviour:
     m_Localized: Never
     m_Metadata:
       m_Items: []
-  - m_Id: 6295903083065344
-    m_Localized: Default
-    m_Metadata:
-      m_Items: []
   - m_Id: 6327680522678272
     m_Localized: No data for this mode.
     m_Metadata:
@@ -700,6 +696,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 6371749605044224
     m_Localized: entries
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6611808413446144
+    m_Localized: '{0}'
     m_Metadata:
       m_Items: []
   references:

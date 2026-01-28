@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Game_Fishing_pl
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: pl
+  m_SharedData: {fileID: 11400000, guid: bb9a0df9e3e800944a66294bd3e47672, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 13166866432
+    m_Localized: "\u0141owienie ryb"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 67625709568
+    m_Localized: "\u0141\xF3w ryby poprzez wci\u0105ganie i kontrowanie ich ruch\xF3w."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

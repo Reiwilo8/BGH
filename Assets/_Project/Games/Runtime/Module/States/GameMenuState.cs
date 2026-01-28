@@ -8,6 +8,7 @@ using Project.Core.Speech;
 using Project.Core.VisualAssist;
 using Project.Games.Catalog;
 using Project.Games.Definitions;
+using Project.Games.Localization;
 using Project.Games.Sequences;
 using UnityEngine;
 
@@ -169,7 +170,7 @@ namespace Project.Games.Module.States
         {
             if (_va == null) return;
 
-            _va.SetHeaderKey("va.screen.game_menu", _game != null ? _game.displayName : "—");
+            _va.SetHeaderKey("va.screen.game_menu", GameLocalization.GetGameName(_loc, _game));
             _va.SetSubHeaderText(DescribeItem(_items[_index]));
             _va.SetIdleHintKey(ResolveControlHintKey());
 
@@ -205,7 +206,7 @@ namespace Project.Games.Module.States
                 UiAudioScope.GameModule,
                 ctx => GameMenuPromptSequence.Run(
                     ctx,
-                    _game.displayName,
+                    GameLocalization.GetGameName(ctx.Localization, _game),
                     currentKey,
                     currentText,
                     hintKey),
@@ -254,8 +255,8 @@ namespace Project.Games.Module.States
                         ctx => NavigateToSequence.Run(
                             ctx,
                             "nav.to_gameplay",
-                            _game.displayName,
-                            ResolveModeName(item.Mode)),
+                            GameLocalization.GetGameName(ctx.Localization, _game),
+                            GameLocalization.GetModeName(ctx.Localization, item.Mode)),
                         SpeechPriority.High,
                         interruptible: false
                     );
@@ -275,7 +276,7 @@ namespace Project.Games.Module.States
                         stillTransitioning: () => _sm.Transitions.IsTransitioning,
                         delaySeconds: 0.5f,
                         priority: SpeechPriority.High,
-                        _game.displayName
+                        GameLocalization.GetGameName(_loc, _game)
                     );
 
                     _sm.Transitions.RunInstant(() =>
@@ -296,7 +297,7 @@ namespace Project.Games.Module.States
                         stillTransitioning: () => _sm.Transitions.IsTransitioning,
                         delaySeconds: 0.5f,
                         priority: SpeechPriority.High,
-                        _game.displayName
+                        GameLocalization.GetGameName(_loc, _game)
                     );
 
                     _sm.Transitions.RunInstant(() =>
@@ -335,29 +336,12 @@ namespace Project.Games.Module.States
 
             return item.Kind switch
             {
-                MenuItemKind.Mode => ResolveModeName(item.Mode),
+                MenuItemKind.Mode => GameLocalization.GetModeName(_loc, item.Mode),
                 MenuItemKind.Settings => SafeGet("common.settings"),
                 MenuItemKind.Stats => SafeGet("common.stats"),
                 MenuItemKind.Back => SafeGet("common.back"),
                 _ => "Unknown"
             };
-        }
-
-        private string ResolveModeName(GameModeDefinition mode)
-        {
-            if (mode == null) return "Unknown";
-
-            var id = mode.modeId;
-            if (!string.IsNullOrWhiteSpace(id) && _loc != null)
-            {
-                var key = $"mode.{id}";
-                var localized = _loc.Get(key);
-
-                if (!string.IsNullOrWhiteSpace(localized) && localized != key)
-                    return localized;
-            }
-
-            return !string.IsNullOrWhiteSpace(mode.displayName) ? mode.displayName : "Unknown";
         }
 
         private int ResolveInitialIndexWithMemory()

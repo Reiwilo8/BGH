@@ -13,32 +13,25 @@ MonoBehaviour:
   m_Name: Memory
   m_EditorClassIdentifier: 
   gameId: memory
+  localizationTable: Game_Memory
+  nameKey: name
+  descriptionKey: description
   displayName: Memory
-  description: Memory
+  description: Find and match identical pairs of cards.
   gameplaySceneName: MemoryScene
   modes:
   - modeId: tutorial
     kind: 0
-    displayName: Tutorial
-    description: Tutorial mode
     modeConfig: {fileID: 0}
   - modeId: easy
     kind: 1
-    displayName: Easy
-    description: Easy mode
     modeConfig: {fileID: 0}
   - modeId: medium
     kind: 1
-    displayName: Medium
-    description: Medium difficulty
     modeConfig: {fileID: 0}
   - modeId: hard
     kind: 1
-    displayName: Hard
-    description: Hard difficulty
     modeConfig: {fileID: 0}
   - modeId: custom
     kind: 3
-    displayName: Custom
-    description: Custom mode
     modeConfig: {fileID: 0}

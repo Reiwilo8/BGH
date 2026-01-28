@@ -20,6 +20,24 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 53146c19d1360284d95f20aedf9198b2
+    m_Address: Assets/_Project/Core/Runtime/Localization/Games/Memory/Game_Memory
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7552dfb682a3b8b48b8f226c9aa1b1d4
+    m_Address: Assets/_Project/Core/Runtime/Localization/Games/SteamRush/Game_SteamRush
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bb9a0df9e3e800944a66294bd3e47672
+    m_Address: Assets/_Project/Core/Runtime/Localization/Games/Fishing/Game_Fishing
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: db17864d4291beb4fade0f3045b80d2e, type: 2}
   m_SchemaSet:

@@ -2,10 +2,12 @@ using Project.Core.App;
 using Project.Core.Audio;
 using Project.Core.AudioFx;
 using Project.Core.Input;
+using Project.Core.Localization;
 using Project.Core.Settings;
 using Project.Core.Speech;
 using Project.Core.VisualAssist;
 using Project.Games.Catalog;
+using Project.Games.Localization;
 using Project.Games.Sequences;
 using Project.Games.Stats;
 using System;
@@ -20,15 +22,16 @@ namespace Project.Games.Gameplay
         private IAppFlowService _flow;
         private ISettingsService _settings;
 
+        private ILocalizationService _loc;
+
         private AppSession _session;
         private GameCatalog _catalog;
 
         private IVisualAssistService _va;
+        private IGameStatsService _stats;
 
         private string _gameName = "Unknown";
         private string _modeName = "Unknown";
-
-        private IGameStatsService _stats;
 
         private DateTime _runStartUtc;
         private bool _runStarted;
@@ -36,10 +39,13 @@ namespace Project.Games.Gameplay
         private void Awake()
         {
             var services = Core.App.AppContext.Services;
+
             _audioFx = services.Resolve<IAudioFxService>();
             _uiAudio = services.Resolve<IUiAudioOrchestrator>();
             _flow = services.Resolve<IAppFlowService>();
             _settings = services.Resolve<ISettingsService>();
+
+            _loc = services.Resolve<ILocalizationService>();
 
             _session = services.Resolve<AppSession>();
             _catalog = services.Resolve<GameCatalog>();
@@ -90,40 +96,18 @@ namespace Project.Games.Gameplay
 
         private void ResolveContextNames()
         {
-            if (string.IsNullOrWhiteSpace(_session.SelectedGameId) || _catalog == null)
+            if (_session == null || _catalog == null)
+                return;
+
+            if (string.IsNullOrWhiteSpace(_session.SelectedGameId))
                 return;
 
             var game = _catalog.GetById(_session.SelectedGameId);
             if (game == null)
                 return;
 
-            if (!string.IsNullOrWhiteSpace(game.displayName))
-                _gameName = game.displayName;
-
-            if (string.IsNullOrWhiteSpace(_session.SelectedModeId))
-                return;
-
-            var modeId = _session.SelectedModeId;
-
-            Project.Core.Localization.ILocalizationService loc = null;
-            try { loc = Core.App.AppContext.Services.Resolve<Project.Core.Localization.ILocalizationService>(); }
-            catch { }
-
-            if (loc != null && !string.IsNullOrWhiteSpace(modeId))
-            {
-                var key = $"mode.{modeId}";
-                var localized = loc.Get(key);
-
-                if (!string.IsNullOrWhiteSpace(localized) && localized != key)
-                {
-                    _modeName = localized;
-                    return;
-                }
-            }
-
-            var mode = game.GetMode(modeId);
-            if (mode != null && !string.IsNullOrWhiteSpace(mode.displayName))
-                _modeName = mode.displayName;
+            _gameName = GameLocalization.GetGameName(_loc, game);
+            _modeName = GameLocalization.GetModeName(_loc, _session.SelectedModeId);
         }
 
         private void RefreshVa()
