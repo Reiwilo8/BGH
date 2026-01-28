@@ -1,4 +1,3 @@
-using Project.Core.Activity;
 using Project.Core.App;
 using Project.Core.Audio;
 using Project.Core.Audio.Sequences.Common;
@@ -32,7 +31,7 @@ namespace Project.Games.Module.States
         private int _index;
         private MenuItem[] _items;
 
-        private enum MenuItemKind { Mode, Settings, Back }
+        private enum MenuItemKind { Mode, Settings, Stats, Back }
 
         private sealed class MenuItem
         {
@@ -66,7 +65,6 @@ namespace Project.Games.Module.States
             BuildMenu();
 
             _index = ResolveInitialIndexWithMemory();
-
             _sm.GameMenuSelectionIndex = _index;
 
             RefreshVa();
@@ -157,13 +155,14 @@ namespace Project.Games.Module.States
             var modes = _game != null ? _game.modes : null;
             int modeCount = modes != null ? modes.Length : 0;
 
-            _items = new MenuItem[modeCount + 2];
+            _items = new MenuItem[modeCount + 3];
 
             for (int i = 0; i < modeCount; i++)
                 _items[i] = new MenuItem { Kind = MenuItemKind.Mode, Mode = modes[i] };
 
             _items[modeCount] = new MenuItem { Kind = MenuItemKind.Settings };
-            _items[modeCount + 1] = new MenuItem { Kind = MenuItemKind.Back };
+            _items[modeCount + 1] = new MenuItem { Kind = MenuItemKind.Stats };
+            _items[modeCount + 2] = new MenuItem { Kind = MenuItemKind.Back };
         }
 
         private void RefreshVa()
@@ -285,6 +284,27 @@ namespace Project.Games.Module.States
                     });
                     break;
 
+                case MenuItemKind.Stats:
+                    _sm.GameMenuSelectionIndex = _index;
+
+                    _uiAudio.CancelCurrent();
+                    _va?.NotifyTransitioning();
+
+                    _uiAudio.PlayGated(
+                        UiAudioScope.GameModule,
+                        "nav.to_game_stats",
+                        stillTransitioning: () => _sm.Transitions.IsTransitioning,
+                        delaySeconds: 0.5f,
+                        priority: SpeechPriority.High,
+                        _game.displayName
+                    );
+
+                    _sm.Transitions.RunInstant(() =>
+                    {
+                        _sm.SetState(new GameStatsState(_sm));
+                    });
+                    break;
+
                 case MenuItemKind.Back:
                     await BackAsync();
                     break;
@@ -317,6 +337,7 @@ namespace Project.Games.Module.States
             {
                 MenuItemKind.Mode => ResolveModeName(item.Mode),
                 MenuItemKind.Settings => SafeGet("common.settings"),
+                MenuItemKind.Stats => SafeGet("common.stats"),
                 MenuItemKind.Back => SafeGet("common.back"),
                 _ => "Unknown"
             };

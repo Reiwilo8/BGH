@@ -7,6 +7,8 @@ using Project.Core.Speech;
 using Project.Core.VisualAssist;
 using Project.Games.Catalog;
 using Project.Games.Sequences;
+using Project.Games.Stats;
+using System;
 using UnityEngine;
 
 namespace Project.Games.Gameplay
@@ -26,9 +28,14 @@ namespace Project.Games.Gameplay
         private string _gameName = "Unknown";
         private string _modeName = "Unknown";
 
+        private IGameStatsService _stats;
+
+        private DateTime _runStartUtc;
+        private bool _runStarted;
+
         private void Awake()
         {
-            var services = AppContext.Services;
+            var services = Core.App.AppContext.Services;
             _audioFx = services.Resolve<IAudioFxService>();
             _uiAudio = services.Resolve<IUiAudioOrchestrator>();
             _flow = services.Resolve<IAppFlowService>();
@@ -37,14 +44,32 @@ namespace Project.Games.Gameplay
             _session = services.Resolve<AppSession>();
             _catalog = services.Resolve<GameCatalog>();
 
+            _stats = services.Resolve<IGameStatsService>();
             _va = services.Resolve<IVisualAssistService>();
         }
 
         private void Start()
         {
             ResolveContextNames();
+
+            StartStatsRun();
+
             RefreshVa();
             PlayPrompt();
+        }
+
+        private void StartStatsRun()
+        {
+            if (_stats == null || _session == null)
+                return;
+
+            _runStartUtc = DateTime.UtcNow;
+            _runStarted = true;
+
+            _stats.RecordRunStarted(
+                _session.SelectedGameId,
+                _session.SelectedModeId
+            );
         }
 
         public void Handle(NavAction action)
@@ -81,7 +106,7 @@ namespace Project.Games.Gameplay
             var modeId = _session.SelectedModeId;
 
             Project.Core.Localization.ILocalizationService loc = null;
-            try { loc = AppContext.Services.Resolve<Project.Core.Localization.ILocalizationService>(); }
+            try { loc = Core.App.AppContext.Services.Resolve<Project.Core.Localization.ILocalizationService>(); }
             catch { }
 
             if (loc != null && !string.IsNullOrWhiteSpace(modeId))
@@ -149,7 +174,26 @@ namespace Project.Games.Gameplay
                 SpeechPriority.High
             );
 
+            FinishStatsRun(completed: false);
             await _flow.ReturnToGameModuleAsync();
+        }
+
+        private void FinishStatsRun(bool completed)
+        {
+            if (!_runStarted || _stats == null || _session == null)
+                return;
+
+            var duration = DateTime.UtcNow - _runStartUtc;
+
+            _stats.RecordRunFinished(
+                _session.SelectedGameId,
+                _session.SelectedModeId,
+                duration,
+                score: 0,
+                completed: completed
+            );
+
+            _runStarted = false;
         }
     }
 }

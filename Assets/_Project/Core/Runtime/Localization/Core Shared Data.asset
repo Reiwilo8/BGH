@@ -39,6 +39,10 @@ MonoBehaviour:
     m_Key: hint.audio.stereo
     m_Metadata:
       m_Items: []
+  - m_Id: 5184834906255360
+    m_Key: hint.mobile.landscape
+    m_Metadata:
+      m_Items: []
   - m_Id: 504174996254720
     m_Key: hint.visual_mode.settings
     m_Metadata:
@@ -61,6 +65,14 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 153419705643016
     m_Key: enter.game_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6272110335782912
+    m_Key: enter.game_settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6278482007846912
+    m_Key: enter.game_stats
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643017
@@ -87,12 +99,16 @@ MonoBehaviour:
     m_Key: nav.to_game_menu
     m_Metadata:
       m_Items: []
-  - m_Id: 1152678731083776
-    m_Key: nav.to_gameplay
-    m_Metadata:
-      m_Items: []
   - m_Id: 1153700899745792
     m_Key: nav.to_game_settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6278023130017792
+    m_Key: nav.to_game_stats
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1152678731083776
+    m_Key: nav.to_gameplay
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643021
@@ -219,6 +235,14 @@ MonoBehaviour:
     m_Key: hint.game_menu.keyboard
     m_Metadata:
       m_Items: []
+  - m_Id: 6280635896197120
+    m_Key: hint.game_stats.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6280890511421440
+    m_Key: hint.game_stats.keyboard
+    m_Metadata:
+      m_Items: []
   - m_Id: 153419705643039
     m_Key: hint.gameplay.touch
     m_Metadata:
@@ -233,6 +257,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 153419705643042
     m_Key: common.settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6277641347690496
+    m_Key: common.stats
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643043
@@ -415,6 +443,42 @@ MonoBehaviour:
     m_Key: settings.visual_mode.dimmer_strength.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 6341833492688896
+    m_Key: settings.stats
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6342083821334528
+    m_Key: settings.stats.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6342394464071680
+    m_Key: settings.stats.recent_capacity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6342812384522240
+    m_Key: settings.stats.recent_capacity.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6367012461637632
+    m_Key: settings.stats.recent_capacity.suffix.plural
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6371749605044224
+    m_Key: settings.stats.recent_capacity.suffix.plural_few
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6371290458779648
+    m_Key: settings.stats.recent_capacity.suffix.singular
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6343120279990272
+    m_Key: settings.stats.reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6343353420378112
+    m_Key: settings.stats.reset.desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 1511885540061184
     m_Key: settings.reset_defaults
     m_Metadata:
@@ -461,6 +525,62 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 1513647764303872
     m_Key: settings.lang.pl
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6293288601415680
+    m_Key: stats.view.overall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6294185821761536
+    m_Key: stats.view.recent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6294356676734976
+    m_Key: stats.switched
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6327680522678272
+    m_Key: stats.desc.no_data
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6327879114584064
+    m_Key: stats.desc.no_recent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6296071077523456
+    m_Key: stats.desc.overall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6329228644478976
+    m_Key: stats.desc.recent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6329448258236416
+    m_Key: stats.recent.prefix
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6329808527978496
+    m_Key: stats.recent.completed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6330011532292096
+    m_Key: stats.best_time.shortest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6330246652391424
+    m_Key: stats.best_time.longest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6330397844467712
+    m_Key: stats.na
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6295672354402304
+    m_Key: stats.never
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6295903083065344
+    m_Key: stats.mode.default
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643056
@@ -515,6 +635,10 @@ MonoBehaviour:
     m_Key: va.screen.game_settings
     m_Metadata:
       m_Items: []
+  - m_Id: 6281246259703808
+    m_Key: va.screen.game_stats
+    m_Metadata:
+      m_Items: []
   - m_Id: 1785121976774656
     m_Key: va.screen.gameplay
     m_Metadata:
@@ -545,10 +669,6 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 1785926679162880
     m_Key: va.repeat
-    m_Metadata:
-      m_Items: []
-  - m_Id: 5184834906255360
-    m_Key: hint.mobile.landscape
     m_Metadata:
       m_Items: []
   m_Metadata:

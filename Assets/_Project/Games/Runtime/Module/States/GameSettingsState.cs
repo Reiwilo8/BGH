@@ -28,9 +28,9 @@ namespace Project.Games.Module.States
         private readonly GameCatalog _catalog;
 
         private readonly SettingsUiSession _ui;
+        private readonly ISettingsUiHooks _hooks;
 
         private bool _developerModeEnabled;
-
         private GameDefinition _game;
 
         public string Name => "GameModule.Settings";
@@ -50,6 +50,8 @@ namespace Project.Games.Module.States
 
             var rootBuilder = new GameSettingsRootBuilder();
             _ui = new SettingsUiSession(rootBuilder);
+
+            _hooks = new GameSettingsHooks();
         }
 
         public void Enter()
@@ -90,7 +92,7 @@ namespace Project.Games.Module.States
 
             PlayUiCueForAction(action);
 
-            var result = _ui.Handle(action, hooks: null);
+            var result = _ui.Handle(action, hooks: _hooks);
 
             if (result.BackFromRoot)
             {
@@ -284,7 +286,9 @@ namespace Project.Games.Module.States
 
             var text = ResolveItemDisplayText(it);
 
-            if (_ui.Mode == SettingsUiMode.EditList || _ui.Mode == SettingsUiMode.EditRange || _ui.Mode == SettingsUiMode.ConfirmAction)
+            if (_ui.Mode == SettingsUiMode.EditList
+                || _ui.Mode == SettingsUiMode.EditRange
+                || _ui.Mode == SettingsUiMode.ConfirmAction)
                 return SafeGet("va.setting", text);
 
             return SafeGet("va.current", text);
@@ -312,6 +316,7 @@ namespace Project.Games.Module.States
         private void PlayBrowsePrompt()
         {
             var item = _ui.CurrentItem;
+            if (item == null) return;
 
             string currentKey = CurrentKeyForItem(item);
 
@@ -349,7 +354,11 @@ namespace Project.Games.Module.States
 
             _sm.UiAudio.Play(
                 UiAudioScope.GameModule,
-                ctx => GameSettingsPromptSequence.Current(ctx, currentKey, currentText, descKey),
+                ctx => GameSettingsPromptSequence.Current(
+                    ctx,
+                    currentKey,
+                    currentText,
+                    descKey),
                 SpeechPriority.Normal,
                 interruptible: true
             );
@@ -374,7 +383,13 @@ namespace Project.Games.Module.States
 
             _sm.UiAudio.Play(
                 UiAudioScope.GameModule,
-                ctx => GameSettingsPromptSequence.Edit(ctx, currentKey, currentText, valueText, hintKey, descKey),
+                ctx => GameSettingsPromptSequence.Edit(
+                    ctx,
+                    currentKey,
+                    currentText,
+                    valueText,
+                    hintKey,
+                    descKey),
                 SpeechPriority.Normal,
                 interruptible: true
             );
@@ -411,7 +426,12 @@ namespace Project.Games.Module.States
 
             _sm.UiAudio.Play(
                 UiAudioScope.GameModule,
-                ctx => GameSettingsPromptSequence.ConfirmAction(ctx, currentKey, currentText, hintKey, descKey),
+                ctx => GameSettingsPromptSequence.ConfirmAction(
+                    ctx,
+                    currentKey,
+                    currentText,
+                    hintKey,
+                    descKey),
                 SpeechPriority.Normal,
                 interruptible: true
             );
@@ -440,14 +460,71 @@ namespace Project.Games.Module.States
         private string ResolveItemDisplayText(SettingsItem item)
         {
             if (item == null) return "Unknown";
-            return SafeGet(item.LabelKey);
+
+            var label = SafeGet(item.LabelKey);
+
+            switch (item.Type)
+            {
+                case SettingsItemType.Toggle:
+                    {
+                        if (item is SettingsToggle t)
+                        {
+                            bool v = false;
+                            try { v = t.GetValue(); } catch { }
+                            var vt = v ? SafeGet("settings.on") : SafeGet("settings.off");
+                            return $"{label}: {vt}";
+                        }
+                        return label;
+                    }
+
+                case SettingsItemType.Range:
+                    {
+                        if (item is SettingsRange r)
+                        {
+                            float v = 0f;
+                            try { v = Mathf.Clamp(r.GetValue(), r.Min, r.Max); } catch { }
+
+                            var formatted = FormatRangeValue(r, v);
+                            return $"{label}: {formatted}";
+                        }
+                        return label;
+                    }
+
+                case SettingsItemType.List:
+                    {
+                        if (item is SettingsList l)
+                        {
+                            var opts = l.GetOptions?.Invoke();
+                            if (opts == null || opts.Count == 0) return label;
+
+                            int idx = ClampInt(l.GetIndex(), 0, opts.Count - 1);
+                            return $"{label}: {ResolveListOptionText(opts[idx])}";
+                        }
+                        return label;
+                    }
+
+                default:
+                    return label;
+            }
         }
 
-        private string GetCurrentValueTextLive() => "—";
+        private string GetCurrentValueTextLive()
+        {
+            if (_ui.Mode == SettingsUiMode.EditList && _ui.ListOptions != null && _ui.ListOptions.Count > 0)
+                return ResolveListOptionText(_ui.ListOptions[_ui.ListIndex]);
+
+            if (_ui.Mode == SettingsUiMode.EditRange && _ui.EditingRange != null)
+                return FormatRangeValue(_ui.EditingRange, _ui.RangeValue);
+
+            return "—";
+        }
 
         private string ResolveCommittedValueText(SettingsUiResult r)
         {
-            if (r.AffectedItem != null)
+            if (r.AffectedItemType == SettingsItemType.Toggle)
+                return r.ToggleValue ? SafeGet("settings.on") : SafeGet("settings.off");
+
+            if (r.AffectedItem != null && (r.AffectedItemType == SettingsItemType.Range || r.AffectedItemType == SettingsItemType.List))
                 return ResolveItemDisplayText(r.AffectedItem);
 
             return SafeGet("selected.value");
@@ -460,26 +537,73 @@ namespace Project.Games.Module.States
             return item.DescriptionKey;
         }
 
-        private string SafeGet(string key, string arg0 = null)
-        {
-            if (_loc == null || string.IsNullOrWhiteSpace(key)) return key ?? "";
-
-            if (arg0 != null)
-                return _loc.Get(key, arg0);
-
-            var s = _loc.Get(key);
-            return string.IsNullOrWhiteSpace(s) ? key : s;
-        }
-
-        private static bool IsFolder(SettingsItem it) => it != null && it.Type == SettingsItemType.Folder;
-
         private static string CurrentKeyForItem(SettingsItem it)
         {
             if (it == null) return "current.option";
             if (it.LabelKey == "common.back") return "current.option";
             if (IsFolder(it)) return "current.option";
-            return "current.option";
+
+            return IsRealSetting(it) ? "current.setting" : "current.option";
         }
+
+        private static bool IsFolder(SettingsItem it) => it != null && it.Type == SettingsItemType.Folder;
+
+        private static bool IsRealSetting(SettingsItem it)
+        {
+            if (it == null) return false;
+
+            if (it.Type == SettingsItemType.Toggle
+                || it.Type == SettingsItemType.List
+                || it.Type == SettingsItemType.Range)
+                return true;
+
+            return false;
+        }
+
+        private string FormatRangeValue(SettingsRange range, float value)
+        {
+            if (range != null && range.LabelKey == "settings.stats.recent_capacity")
+            {
+                int v = Mathf.RoundToInt(value);
+
+                if (v < 1) v = 1;
+                if (v > 10) v = 10;
+
+                string suffixKey = ResolveRecentCapacitySuffixKey(v);
+
+                string suffix = SafeGet(suffixKey);
+                if (string.IsNullOrWhiteSpace(suffix) || suffix == suffixKey)
+                    suffix = "entries";
+
+                return $"{v} {suffix}";
+            }
+
+            return SettingsUiValueFormat.Number(value, maxDecimals: 2);
+        }
+
+        private static string ResolveRecentCapacitySuffixKey(int v)
+        {
+
+            if (v == 1)
+                return "settings.stats.recent_capacity.suffix.singular";
+
+            int mod10 = v % 10;
+            int mod100 = v % 100;
+
+            bool few = (mod10 >= 2 && mod10 <= 4) && !(mod100 >= 12 && mod100 <= 14);
+
+            return few
+                ? "settings.stats.recent_capacity.suffix.plural_few"
+                : "settings.stats.recent_capacity.suffix.plural";
+        }
+
+        private string ResolveListOptionText(SettingsListOption opt)
+        {
+            var s = SafeGet(opt.LabelKey);
+            return string.IsNullOrWhiteSpace(s) || s == opt.LabelKey ? opt.Id : s;
+        }
+
+        private static int ClampInt(int v, int min, int max) => v < min ? min : (v > max ? max : v);
 
         private static ControlHintMode ResolveEffectiveHintMode(AppSettingsData settings)
         {
@@ -487,6 +611,39 @@ namespace Project.Games.Module.States
             if (mode == ControlHintMode.Auto)
                 mode = StartupDefaultsResolver.ResolvePlatformPreferredHintMode();
             return mode;
+        }
+
+        private string SafeGet(string key, params object[] args)
+        {
+            if (_loc == null || string.IsNullOrWhiteSpace(key))
+                return key ?? "";
+
+            if (args == null || args.Length == 0)
+            {
+                var s = _loc.Get(key);
+                return string.IsNullOrWhiteSpace(s) ? key : s;
+            }
+
+            try
+            {
+                var s = _loc.Get(key, args);
+                return string.IsNullOrWhiteSpace(s) ? key : s;
+            }
+            catch
+            {
+                return key;
+            }
+        }
+
+        private sealed class GameSettingsHooks : ISettingsUiHooks
+        {
+            public bool RequiresConfirmation(SettingsAction action)
+            {
+                return action != null && action.LabelKey == "settings.stats.reset";
+            }
+
+            public bool TryHandleToggle(SettingsToggle toggle) => false;
+            public bool TryHandleAction(SettingsAction action) => false;
         }
     }
 }
