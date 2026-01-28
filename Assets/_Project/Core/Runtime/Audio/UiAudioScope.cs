@@ -5,7 +5,6 @@ namespace Project.Core.Audio
         Start,
         Hub,
         GameModule,
-        Gameplay,
-        Settings
+        Gameplay
     }
 }

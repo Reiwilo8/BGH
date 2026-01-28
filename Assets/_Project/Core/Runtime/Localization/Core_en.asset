@@ -568,6 +568,140 @@ MonoBehaviour:
     m_Localized: Adjust volume of games.
     m_Metadata:
       m_Items: []
+  - m_Id: 6226820610289664
+    m_Localized: Developer mode enabled.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6227169974841344
+    m_Localized: Developer mode disabled.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6265602696966144
+    m_Localized: '{0} settings'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6272110335782912
+    m_Localized: '{0} settings.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6277641347690496
+    m_Localized: Statistics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6278023130017792
+    m_Localized: Opening {0} statistics.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6278482007846912
+    m_Localized: '{0} statistics.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6281246259703808
+    m_Localized: '{0} statistics'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6280635896197120
+    m_Localized: Swipe to move through statistics. Double-tap to switch between recent
+      and overall statistics. Press and hold the screen to go back.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6280890511421440
+    m_Localized: Use the arrow keys to move through statistics. Press Enter to switch
+      between recent and overall statistics. Press Backspace to go back.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6293288601415680
+    m_Localized: Overall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6294185821761536
+    m_Localized: Recent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6294356676734976
+    m_Localized: Switched to {0} statistics for {1} mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6295672354402304
+    m_Localized: Never
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6295903083065344
+    m_Localized: Default
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6327680522678272
+    m_Localized: No data for this mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6327879114584064
+    m_Localized: No recent runs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6296071077523456
+    m_Localized: 'Total runs: {0}; Completed: {1}; {2}: {3}; Last played: {4}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6329228644478976
+    m_Localized: '{0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6329448258236416
+    m_Localized: 'Recent runs: '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6329808527978496
+    m_Localized: completed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6330011532292096
+    m_Localized: Shortest time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6330246652391424
+    m_Localized: Longest time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6330397844467712
+    m_Localized: Not available
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6341833492688896
+    m_Localized: Statistics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6342083821334528
+    m_Localized: Settings related to game statistics.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6342394464071680
+    m_Localized: Recent runs number
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6342812384522240
+    m_Localized: How many recent runs are shown in stats.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6343120279990272
+    m_Localized: Reset statistics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6343353420378112
+    m_Localized: Deletes all saved statistics for this game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6367012461637632
+    m_Localized: entries
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6371290458779648
+    m_Localized: entry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6371749605044224
+    m_Localized: entries
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

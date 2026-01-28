@@ -1,7 +1,6 @@
 using Project.Core.App;
 using Project.Core.Audio;
 using Project.Core.Audio.Sequences.Common;
-using Project.Core.AudioFx;
 using Project.Core.Input;
 using Project.Core.Localization;
 using Project.Core.Settings;
@@ -9,28 +8,30 @@ using Project.Core.Speech;
 using Project.Core.VisualAssist;
 using Project.Games.Catalog;
 using Project.Games.Definitions;
+using Project.Games.Sequences;
 using UnityEngine;
 
-namespace Project.Games.Module
+namespace Project.Games.Module.States
 {
-    public sealed class GameModuleController : MonoBehaviour
+    public sealed class GameMenuState : IGameModuleState
     {
-        private IAudioFxService _audioFx;
-        private IUiAudioOrchestrator _uiAudio;
-        private IAppFlowService _flow;
-        private ISettingsService _settings;
-        private AppSession _session;
-        private GameCatalog _catalog;
-        private ILocalizationService _loc;
+        private readonly GameModuleStateMachine _sm;
 
-        private IVisualAssistService _va;
+        private readonly IUiAudioOrchestrator _uiAudio;
+        private readonly IAppFlowService _flow;
+        private readonly ISettingsService _settings;
+
+        private readonly AppSession _session;
+        private readonly GameCatalog _catalog;
+        private readonly ILocalizationService _loc;
+        private readonly IVisualAssistService _va;
 
         private GameDefinition _game;
 
         private int _index;
         private MenuItem[] _items;
 
-        private enum MenuItemKind { Mode, Settings, Back }
+        private enum MenuItemKind { Mode, Settings, Stats, Back }
 
         private sealed class MenuItem
         {
@@ -38,30 +39,52 @@ namespace Project.Games.Module
             public GameModeDefinition Mode;
         }
 
-        private void Awake()
+        public string Name => "GameModule.Menu";
+
+        public GameMenuState(GameModuleStateMachine sm)
         {
+            _sm = sm;
+
             var services = AppContext.Services;
 
-            _audioFx = services.Resolve<IAudioFxService>();
             _uiAudio = services.Resolve<IUiAudioOrchestrator>();
             _flow = services.Resolve<IAppFlowService>();
             _settings = services.Resolve<ISettingsService>();
+
             _session = services.Resolve<AppSession>();
             _catalog = services.Resolve<GameCatalog>();
             _loc = services.Resolve<ILocalizationService>();
-
             _va = services.Resolve<IVisualAssistService>();
         }
 
-        private void Start()
+        public void Enter()
         {
             if (!LoadSelectedGameOrFail())
                 return;
 
             BuildMenu();
-            _index = ResolveInitialIndex();
 
-            RefreshVa(pulse: VaListMoveDirection.None);
+            _index = ResolveInitialIndexWithMemory();
+            _sm.GameMenuSelectionIndex = _index;
+
+            RefreshVa();
+            PlayPrompt();
+        }
+
+        public void Exit() { }
+
+        public void OnFocusGained()
+        {
+            RefreshVa();
+            PlayPrompt();
+        }
+
+        public void OnRepeatRequested()
+        {
+            if (_items == null || _items.Length == 0) return;
+            if (_flow.IsTransitioning) return;
+
+            RefreshVa();
             PlayPrompt();
         }
 
@@ -73,41 +96,40 @@ namespace Project.Games.Module
             switch (action)
             {
                 case NavAction.Next:
-                    _audioFx?.PlayUiCue(UiCueId.NavigateNext);
                     _index = (_index + 1) % _items.Length;
-                    RefreshVa(VaListMoveDirection.Next);
+                    _sm.GameMenuSelectionIndex = _index;
+
+                    _va?.PulseListMove(VaListMoveDirection.Next);
+
+                    RefreshVa();
                     PlayCurrent();
                     break;
 
                 case NavAction.Previous:
-                    _audioFx?.PlayUiCue(UiCueId.NavigatePrevious);
                     _index = (_index - 1 + _items.Length) % _items.Length;
-                    RefreshVa(VaListMoveDirection.Previous);
+                    _sm.GameMenuSelectionIndex = _index;
+
+                    _va?.PulseListMove(VaListMoveDirection.Previous);
+
+                    RefreshVa();
                     PlayCurrent();
                     break;
 
                 case NavAction.Confirm:
-                    var item = _items[_index];
-                    _audioFx?.PlayUiCue(item != null && item.Kind == MenuItemKind.Back ? UiCueId.Back : UiCueId.Confirm);
                     _ = ConfirmAsync();
                     break;
 
                 case NavAction.Back:
-                    _audioFx?.PlayUiCue(UiCueId.Back);
                     _ = BackAsync();
                     break;
             }
         }
 
-        public void OnRepeatRequested()
+        public bool IsConfirmingBackItem()
         {
-            if (_items == null || _items.Length == 0) return;
-            if (_flow.IsTransitioning) return;
-
-            _audioFx?.PlayUiCue(UiCueId.Repeat);
-
-            RefreshVa(VaListMoveDirection.None);
-            PlayPrompt();
+            if (_items == null || _items.Length == 0) return true;
+            var it = _items[_index];
+            return it != null && it.Kind == MenuItemKind.Back;
         }
 
         private bool LoadSelectedGameOrFail()
@@ -133,28 +155,42 @@ namespace Project.Games.Module
             var modes = _game != null ? _game.modes : null;
             int modeCount = modes != null ? modes.Length : 0;
 
-            _items = new MenuItem[modeCount + 2];
+            _items = new MenuItem[modeCount + 3];
 
             for (int i = 0; i < modeCount; i++)
                 _items[i] = new MenuItem { Kind = MenuItemKind.Mode, Mode = modes[i] };
 
             _items[modeCount] = new MenuItem { Kind = MenuItemKind.Settings };
-            _items[modeCount + 1] = new MenuItem { Kind = MenuItemKind.Back };
+            _items[modeCount + 1] = new MenuItem { Kind = MenuItemKind.Stats };
+            _items[modeCount + 2] = new MenuItem { Kind = MenuItemKind.Back };
         }
 
-        private void RefreshVa(VaListMoveDirection pulse)
+        private void RefreshVa()
         {
             if (_va == null) return;
 
             _va.SetHeaderKey("va.screen.game_menu", _game != null ? _game.displayName : "—");
             _va.SetSubHeaderText(DescribeItem(_items[_index]));
-
             _va.SetIdleHintKey(ResolveControlHintKey());
 
-            _va.ClearTransitioning();
+            ScheduleClearTransitioning();
+        }
 
-            if (pulse != VaListMoveDirection.None)
-                _va.PulseListMove(pulse);
+        private void ScheduleClearTransitioning()
+        {
+            if (_va == null) return;
+            if (!_va.IsTransitioning) return;
+
+            if (_uiAudio is MonoBehaviour mb)
+                mb.StartCoroutine(ClearTransitioningNextFrame());
+            else
+                _va.ClearTransitioning();
+        }
+
+        private System.Collections.IEnumerator ClearTransitioningNextFrame()
+        {
+            yield return null;
+            _va?.ClearTransitioning();
         }
 
         private void PlayPrompt()
@@ -167,7 +203,7 @@ namespace Project.Games.Module
 
             _uiAudio.Play(
                 UiAudioScope.GameModule,
-                ctx => Project.Games.Sequences.GameMenuPromptSequence.Run(
+                ctx => GameMenuPromptSequence.Run(
                     ctx,
                     _game.displayName,
                     currentKey,
@@ -199,6 +235,8 @@ namespace Project.Games.Module
                 return;
 
             var item = _items[_index];
+            if (item == null)
+                return;
 
             switch (item.Kind)
             {
@@ -226,16 +264,45 @@ namespace Project.Games.Module
                     break;
 
                 case MenuItemKind.Settings:
+                    _sm.GameMenuSelectionIndex = _index;
+
+                    _uiAudio.CancelCurrent();
                     _va?.NotifyTransitioning();
 
                     _uiAudio.PlayGated(
                         UiAudioScope.GameModule,
                         "nav.to_game_settings",
-                        () => _flow.IsTransitioning,
-                        0.5f,
-                        SpeechPriority.High,
+                        stillTransitioning: () => _sm.Transitions.IsTransitioning,
+                        delaySeconds: 0.5f,
+                        priority: SpeechPriority.High,
                         _game.displayName
                     );
+
+                    _sm.Transitions.RunInstant(() =>
+                    {
+                        _sm.SetState(new GameSettingsState(_sm));
+                    });
+                    break;
+
+                case MenuItemKind.Stats:
+                    _sm.GameMenuSelectionIndex = _index;
+
+                    _uiAudio.CancelCurrent();
+                    _va?.NotifyTransitioning();
+
+                    _uiAudio.PlayGated(
+                        UiAudioScope.GameModule,
+                        "nav.to_game_stats",
+                        stillTransitioning: () => _sm.Transitions.IsTransitioning,
+                        delaySeconds: 0.5f,
+                        priority: SpeechPriority.High,
+                        _game.displayName
+                    );
+
+                    _sm.Transitions.RunInstant(() =>
+                    {
+                        _sm.SetState(new GameStatsState(_sm));
+                    });
                     break;
 
                 case MenuItemKind.Back:
@@ -270,6 +337,7 @@ namespace Project.Games.Module
             {
                 MenuItemKind.Mode => ResolveModeName(item.Mode),
                 MenuItemKind.Settings => SafeGet("common.settings"),
+                MenuItemKind.Stats => SafeGet("common.stats"),
                 MenuItemKind.Back => SafeGet("common.back"),
                 _ => "Unknown"
             };
@@ -292,6 +360,18 @@ namespace Project.Games.Module
             return !string.IsNullOrWhiteSpace(mode.displayName) ? mode.displayName : "Unknown";
         }
 
+        private int ResolveInitialIndexWithMemory()
+        {
+            if (_items == null || _items.Length == 0) return 0;
+
+            int remembered = _sm.GameMenuSelectionIndex;
+
+            if (remembered >= 0 && remembered < _items.Length)
+                return remembered;
+
+            return ResolveInitialIndex();
+        }
+
         private int ResolveInitialIndex()
         {
             if (_items == null) return 0;
@@ -301,10 +381,12 @@ namespace Project.Games.Module
                 return 0;
 
             for (int i = 0; i < _items.Length; i++)
-                if (_items[i].Kind == MenuItemKind.Mode &&
-                    _items[i].Mode != null &&
-                    _items[i].Mode.modeId == modeId)
+            {
+                if (_items[i].Kind == MenuItemKind.Mode
+                    && _items[i].Mode != null
+                    && _items[i].Mode.modeId == modeId)
                     return i;
+            }
 
             return 0;
         }

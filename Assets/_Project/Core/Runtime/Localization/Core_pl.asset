@@ -600,6 +600,143 @@ MonoBehaviour:
     m_Localized: "Ustaw g\u0142o\u015Bno\u015B\u0107 gier."
     m_Metadata:
       m_Items: []
+  - m_Id: 6226820610289664
+    m_Localized: "Tryb deweloperski w\u0142\u0105czony."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6227169974841344
+    m_Localized: "Tryb deweloperski wy\u0142\u0105czony."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6265602696966144
+    m_Localized: Ustawienia {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6272110335782912
+    m_Localized: Ustawienia {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6277641347690496
+    m_Localized: Statystyki
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6278023130017792
+    m_Localized: Otwieram statystyki {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6278482007846912
+    m_Localized: Statystyki {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6281246259703808
+    m_Localized: Statystyki {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6280635896197120
+    m_Localized: "Przeci\u0105gaj palcem, aby przemieszcza\u0107 si\u0119 po statystykach.
+      Podw\xF3jnym stukni\u0119ciem przechodzisz pomi\u0119dzy nowymi i og\xF3lnymi
+      statystykami. Przytrzymaj palec na ekranie, \u017Ceby si\u0119 cofn\u0105\u0107."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6280890511421440
+    m_Localized: "U\u017Cyj strza\u0142ek do przemieszczania si\u0119 po statystykach.
+      Wci\u015Bnij Enter, aby przechodzi\u0107 pomi\u0119dzy nowymi i og\xF3lnymi
+      statystykami. Wci\u015Bnij Backspace, \u017Ceby si\u0119 cofn\u0105\u0107."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6293288601415680
+    m_Localized: "Og\xF3lne"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6294185821761536
+    m_Localized: Ostatnie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6294356676734976
+    m_Localized: "Prze\u0142\u0105czono na {0} statystyki, tryb: {1}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6295672354402304
+    m_Localized: Nigdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6295903083065344
+    m_Localized: "Domy\u015Blny"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6327680522678272
+    m_Localized: Brak danych dla tego trybu.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6327879114584064
+    m_Localized: "Brak ostatnich podej\u015B\u0107."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6296071077523456
+    m_Localized: "Liczba podej\u015B\u0107: {0}; Uko\u0144czono: {1}; {2}: {3}; Ostatnia
+      gra: {4}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6329228644478976
+    m_Localized: '{0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6329448258236416
+    m_Localized: "Ostatnie podej\u015Bcia: "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6329808527978496
+    m_Localized: "uko\u0144czono"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6330011532292096
+    m_Localized: "Najkr\xF3tszy czas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6330246652391424
+    m_Localized: "Najd\u0142u\u017Cszy czas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6330397844467712
+    m_Localized: Nie dotyczy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6341833492688896
+    m_Localized: Statystyki
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6342083821334528
+    m_Localized: "Ustawienia zwi\u0105zane z statystykami gry."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6342394464071680
+    m_Localized: "Ilo\u015B\u0107 ostatnich podej\u015B\u0107"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6342812384522240
+    m_Localized: "Ile ostatnich podej\u015B\u0107 ma by\u0107 pokazywanych w statystykach."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6343120279990272
+    m_Localized: Zresetuj statystyki
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6343353420378112
+    m_Localized: Usuwa wszystkie zapisane statystyki dla tej gry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6367012461637632
+    m_Localized: "wpis\xF3w"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6371290458779648
+    m_Localized: wpis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6371749605044224
+    m_Localized: wpisy
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

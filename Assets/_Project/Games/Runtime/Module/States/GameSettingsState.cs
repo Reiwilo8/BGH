@@ -1,6 +1,5 @@
-using Project.Core.Activity;
+using Project.Core.App;
 using Project.Core.Audio;
-using Project.Core.Audio.Sequences.Common;
 using Project.Core.Audio.Steps;
 using Project.Core.AudioFx;
 using Project.Core.Input;
@@ -8,62 +7,62 @@ using Project.Core.Localization;
 using Project.Core.Settings;
 using Project.Core.Settings.Ui;
 using Project.Core.Speech;
-using Project.Core.Visual;
 using Project.Core.VisualAssist;
-using Project.Hub.Settings;
-using Project.Hub.Settings.Sequences;
-using System.Collections;
+using Project.Games.Catalog;
+using Project.Games.Definitions;
+using Project.Games.Module.Settings;
+using Project.Games.Module.Settings.Sequences;
 using UnityEngine;
 
-namespace Project.Hub.States
+namespace Project.Games.Module.States
 {
-    public sealed class HubSettingsState : IHubState
+    public sealed class GameSettingsState : IGameModuleState
     {
-        private readonly HubStateMachine _sm;
+        private readonly GameModuleStateMachine _sm;
 
         private readonly ILocalizationService _loc;
         private readonly IAudioFxService _audioFx;
-        private readonly IRepeatService _repeat;
-        private readonly IVisualModeService _visual;
         private readonly IVisualAssistService _va;
 
-        private readonly SettingsUiSession _ui;
+        private readonly AppSession _session;
+        private readonly GameCatalog _catalog;
 
-        private bool _isHelpPlaying;
+        private readonly SettingsUiSession _ui;
+        private readonly ISettingsUiHooks _hooks;
 
         private bool _developerModeEnabled;
+        private GameDefinition _game;
 
-        public string Name => "Hub.Settings";
+        public string Name => "GameModule.Settings";
 
-        public HubSettingsState(HubStateMachine sm)
+        public GameSettingsState(GameModuleStateMachine sm)
         {
             _sm = sm;
 
-            _loc = Core.App.AppContext.Services.Resolve<ILocalizationService>();
-            _audioFx = Core.App.AppContext.Services.Resolve<IAudioFxService>();
-            _repeat = Core.App.AppContext.Services.Resolve<IRepeatService>();
-            _visual = Core.App.AppContext.Services.Resolve<IVisualModeService>();
-            _va = Core.App.AppContext.Services.Resolve<IVisualAssistService>();
+            var services = AppContext.Services;
 
-            var rootBuilder = new HubSettingsRootBuilder(
-                _sm.Settings,
-                _loc,
-                Core.App.AppContext.Services.Resolve<ISpeechService>(),
-                _repeat,
-                _visual
-            );
+            _loc = services.Resolve<ILocalizationService>();
+            _audioFx = services.Resolve<IAudioFxService>();
+            _va = services.Resolve<IVisualAssistService>();
 
+            _session = services.Resolve<AppSession>();
+            _catalog = services.Resolve<GameCatalog>();
+
+            var rootBuilder = new GameSettingsRootBuilder();
             _ui = new SettingsUiSession(rootBuilder);
+
+            _hooks = new GameSettingsHooks();
         }
 
         public void Enter()
         {
+            if (!LoadSelectedGameOrFail())
+                return;
+
             _developerModeEnabled = false;
 
             _ui.SetBuildContext(new SettingsBuildContext(developerMode: false));
             _ui.Enter();
-
-            _isHelpPlaying = false;
 
             RefreshVa();
             PlayBrowsePrompt();
@@ -79,7 +78,6 @@ namespace Project.Hub.States
 
         public void OnRepeatRequested()
         {
-            _audioFx?.PlayUiCue(UiCueId.Repeat);
             RefreshVa();
             PlayPrompt();
         }
@@ -88,31 +86,18 @@ namespace Project.Hub.States
         {
             if (action == NavAction.ToggleVisualAssist)
             {
-                //ToggleDeveloperMode();
+                ToggleDeveloperMode();
                 return;
-            }
-
-            if (_isHelpPlaying && IsInterruptingAction(action))
-            {
-                _sm.UiAudio.CancelCurrent();
-                _isHelpPlaying = false;
             }
 
             PlayUiCueForAction(action);
 
-            var result = _ui.Handle(action, new HubHooks(this));
+            var result = _ui.Handle(action, hooks: _hooks);
 
             if (result.BackFromRoot)
             {
-                ExitToMainMenu();
+                ExitToGameMenu();
                 return;
-            }
-
-            if (!result.HandledByHooks
-                && result.ValueChanged
-                && result.AffectedItemType == SettingsItemType.Toggle)
-            {
-                _audioFx?.PlayUiCue(UiCueId.Toggle);
             }
 
             RefreshVa();
@@ -131,21 +116,35 @@ namespace Project.Hub.States
                 : "settings.dev_mode.disabled";
 
             _sm.UiAudio.Play(
-                UiAudioScope.Hub,
+                UiAudioScope.GameModule,
                 ctx => UiAudioSteps.SpeakKeyAndWait(ctx, key),
                 SpeechPriority.Normal,
                 interruptible: false
             );
 
-            _ui.SetBuildContext(
-                new SettingsBuildContext(developerMode: _developerModeEnabled)
-            );
-
+            _ui.SetBuildContext(new SettingsBuildContext(developerMode: _developerModeEnabled));
             _ui.Enter();
-            _isHelpPlaying = false;
 
             RefreshVa();
             PlayBrowsePrompt();
+        }
+
+        private bool LoadSelectedGameOrFail()
+        {
+            if (string.IsNullOrWhiteSpace(_session.SelectedGameId))
+            {
+                _ = _sm.Flow.ReturnToHubAsync();
+                return false;
+            }
+
+            _game = _catalog.GetById(_session.SelectedGameId);
+            if (_game == null)
+            {
+                _ = _sm.Flow.ReturnToHubAsync();
+                return false;
+            }
+
+            return true;
         }
 
         private void HandleUiResult(NavAction action, SettingsUiResult result)
@@ -181,14 +180,15 @@ namespace Project.Hub.States
 
                 if (result.CommittedEdit)
                 {
-                    if (result.HandledByHooks)
-                        return;
-
-                    SpeakSelectedThenQueueBrowsePrompt(
-                        selectedKey: "selected.value",
-                        selectedValueText: ResolveCommittedValueText(result),
-                        selectedNonInterruptible: true
+                    _sm.UiAudio.Play(
+                        UiAudioScope.GameModule,
+                        ctx => UiAudioSteps.SpeakKeyAndWait(ctx, "selected.value", ResolveCommittedValueText(result)),
+                        SpeechPriority.High,
+                        interruptible: false
                     );
+
+                    RefreshVa();
+                    PlayBrowsePrompt();
                     return;
                 }
 
@@ -207,7 +207,7 @@ namespace Project.Hub.States
                 if (result.ConfirmedAction)
                 {
                     _sm.UiAudio.Play(
-                        UiAudioScope.Hub,
+                        UiAudioScope.GameModule,
                         ctx => UiAudioSteps.SpeakKeyAndWait(ctx, "settings.action.applied"),
                         SpeechPriority.High,
                         interruptible: false
@@ -244,21 +244,20 @@ namespace Project.Hub.States
             _audioFx?.PlayUiCue(SettingsUiCues.ForNavAction(action, isBackItem));
         }
 
-        private static bool IsInterruptingAction(NavAction a)
-            => a == NavAction.Next || a == NavAction.Previous || a == NavAction.Back || a == NavAction.Confirm;
-
         private void RefreshVa()
         {
-            _va?.SetHeaderKey("va.screen.settings");
+            if (_va == null) return;
+
+            _va.SetHeaderKey("va.screen.game_settings", _game != null ? _game.displayName : "—");
 
             var sub = ResolveVaSubHeader();
-            _va?.SetSubHeaderText(sub);
+            _va.SetSubHeaderText(sub);
 
             var hintKey = SettingsUiHintKeys.Resolve(
                 _ui.Mode,
                 ResolveEffectiveHintMode(_sm.Settings.Current));
 
-            _va?.SetIdleHintKey(hintKey);
+            _va.SetIdleHintKey(hintKey);
 
             ScheduleClearTransitioning();
         }
@@ -274,7 +273,7 @@ namespace Project.Hub.States
                 _va.ClearTransitioning();
         }
 
-        private IEnumerator ClearTransitioningNextFrame()
+        private System.Collections.IEnumerator ClearTransitioningNextFrame()
         {
             yield return null;
             _va?.ClearTransitioning();
@@ -287,10 +286,12 @@ namespace Project.Hub.States
 
             var text = ResolveItemDisplayText(it);
 
-            if (_ui.Mode == SettingsUiMode.EditList || _ui.Mode == SettingsUiMode.EditRange || _ui.Mode == SettingsUiMode.ConfirmAction)
-                return _loc.Get("va.setting", text);
+            if (_ui.Mode == SettingsUiMode.EditList
+                || _ui.Mode == SettingsUiMode.EditRange
+                || _ui.Mode == SettingsUiMode.ConfirmAction)
+                return SafeGet("va.setting", text);
 
-            return _loc.Get("va.current", text);
+            return SafeGet("va.current", text);
         }
 
         private void PlayPrompt()
@@ -315,8 +316,10 @@ namespace Project.Hub.States
         private void PlayBrowsePrompt()
         {
             var item = _ui.CurrentItem;
+            if (item == null) return;
 
             string currentKey = CurrentKeyForItem(item);
+
             string hintKey = SettingsUiHintKeys.Resolve(
                 SettingsUiMode.Browse,
                 ResolveEffectiveHintMode(_sm.Settings.Current));
@@ -327,8 +330,14 @@ namespace Project.Hub.States
             _va?.SetIdleHintKey(hintKey);
 
             _sm.UiAudio.Play(
-                UiAudioScope.Hub,
-                ctx => SettingsPromptSequence.Browse(ctx, currentKey, currentText, hintKey, descKey),
+                UiAudioScope.GameModule,
+                ctx => GameSettingsPromptSequence.Browse(
+                    ctx,
+                    _game != null ? _game.displayName : "—",
+                    currentKey,
+                    currentText,
+                    hintKey,
+                    descKey),
                 SpeechPriority.Normal,
                 interruptible: true
             );
@@ -344,8 +353,12 @@ namespace Project.Hub.States
             string descKey = ResolveDescriptionKey(item);
 
             _sm.UiAudio.Play(
-                UiAudioScope.Hub,
-                ctx => SettingsPromptSequence.Current(ctx, currentKey, currentText, descKey),
+                UiAudioScope.GameModule,
+                ctx => GameSettingsPromptSequence.Current(
+                    ctx,
+                    currentKey,
+                    currentText,
+                    descKey),
                 SpeechPriority.Normal,
                 interruptible: true
             );
@@ -357,6 +370,7 @@ namespace Project.Hub.States
             if (item == null) return;
 
             string currentKey = "current.setting";
+
             string hintKey = SettingsUiHintKeys.Resolve(
                 _ui.Mode,
                 ResolveEffectiveHintMode(_sm.Settings.Current));
@@ -368,8 +382,14 @@ namespace Project.Hub.States
             _va?.SetIdleHintKey(hintKey);
 
             _sm.UiAudio.Play(
-                UiAudioScope.Hub,
-                ctx => SettingsPromptSequence.Edit(ctx, currentKey, currentText, valueText, hintKey, descKey),
+                UiAudioScope.GameModule,
+                ctx => GameSettingsPromptSequence.Edit(
+                    ctx,
+                    currentKey,
+                    currentText,
+                    valueText,
+                    hintKey,
+                    descKey),
                 SpeechPriority.Normal,
                 interruptible: true
             );
@@ -378,7 +398,7 @@ namespace Project.Hub.States
         private void PlayCurrentValue()
         {
             _sm.UiAudio.Play(
-                UiAudioScope.Hub,
+                UiAudioScope.GameModule,
                 ctx => UiAudioSteps.SpeakKeyAndWait(ctx, "current.value", GetCurrentValueTextLive()),
                 SpeechPriority.Normal,
                 interruptible: true
@@ -388,7 +408,7 @@ namespace Project.Hub.States
         private void PlayConfirmActionPrompt(SettingsItem item)
         {
             _sm.UiAudio.Play(
-                UiAudioScope.Hub,
+                UiAudioScope.GameModule,
                 ctx => UiAudioSteps.SpeakKeyAndWait(ctx, "settings.action.confirm"),
                 SpeechPriority.High,
                 interruptible: false
@@ -405,73 +425,36 @@ namespace Project.Hub.States
             _va?.SetIdleHintKey(hintKey);
 
             _sm.UiAudio.Play(
-                UiAudioScope.Hub,
-                ctx => SettingsPromptSequence.ConfirmAction(ctx, currentKey, currentText, hintKey, descKey),
+                UiAudioScope.GameModule,
+                ctx => GameSettingsPromptSequence.ConfirmAction(
+                    ctx,
+                    currentKey,
+                    currentText,
+                    hintKey,
+                    descKey),
                 SpeechPriority.Normal,
                 interruptible: true
             );
         }
 
-        private void SpeakSelectedThenQueueBrowsePrompt(string selectedKey, string selectedValueText, bool selectedNonInterruptible)
-        {
-            _sm.UiAudio.Play(
-                UiAudioScope.Hub,
-                ctx => UiAudioSteps.SpeakKeyAndWait(ctx, selectedKey, selectedValueText),
-                SpeechPriority.High,
-                interruptible: !selectedNonInterruptible
-            );
-
-            PlayBrowsePrompt();
-        }
-
-        private void ExitToMainMenu()
+        private void ExitToGameMenu()
         {
             _sm.UiAudio.CancelCurrent();
             _va?.NotifyTransitioning();
 
             _sm.UiAudio.PlayGated(
-                UiAudioScope.Hub,
-                "exit.to_main_menu",
+                UiAudioScope.GameModule,
+                "exit.to_game_menu",
                 stillTransitioning: () => _sm.Transitions.IsTransitioning,
                 delaySeconds: 0.5f,
-                priority: SpeechPriority.High
+                priority: SpeechPriority.High,
+                _game != null ? _game.displayName : null
             );
 
             _sm.Transitions.RunInstant(() =>
             {
-                _sm.SetState(new HubMainState(_sm));
+                _sm.SetState(new GameMenuState(_sm));
             });
-        }
-
-        private bool IsControlsHelpAction(SettingsAction action)
-        {
-            if (action == null) return false;
-            return action.LabelKey == "settings.controls_help.touch"
-                || action.LabelKey == "settings.controls_help.keyboard"
-                || action.LabelKey == "settings.controls_help.mouse";
-        }
-
-        private void PlayControlsHelpFor(string labelKey)
-        {
-            string helpKey = labelKey switch
-            {
-                "settings.controls_help.touch" => "hint.actions.touch",
-                "settings.controls_help.keyboard" => "hint.actions.keyboard",
-                "settings.controls_help.mouse" => "hint.actions.mouse",
-                _ => null
-            };
-
-            if (string.IsNullOrWhiteSpace(helpKey))
-                return;
-
-            _isHelpPlaying = true;
-
-            _sm.UiAudio.Play(
-                UiAudioScope.Hub,
-                ctx => UiAudioSteps.SpeakKeyAndWait(ctx, helpKey),
-                SpeechPriority.Normal,
-                interruptible: true
-            );
         }
 
         private string ResolveItemDisplayText(SettingsItem item)
@@ -484,25 +467,42 @@ namespace Project.Hub.States
             {
                 case SettingsItemType.Toggle:
                     {
-                        var t = (SettingsToggle)item;
-                        var v = ResolveToggleValueText(t.GetValue());
-                        return $"{label}: {v}";
+                        if (item is SettingsToggle t)
+                        {
+                            bool v = false;
+                            try { v = t.GetValue(); } catch { }
+                            var vt = v ? SafeGet("settings.on") : SafeGet("settings.off");
+                            return $"{label}: {vt}";
+                        }
+                        return label;
                     }
+
                 case SettingsItemType.Range:
                     {
-                        var r = (SettingsRange)item;
-                        var v = FormatRangeValue(r, Clamp(r.GetValue(), r.Min, r.Max));
-                        return $"{label}: {v}";
+                        if (item is SettingsRange r)
+                        {
+                            float v = 0f;
+                            try { v = Mathf.Clamp(r.GetValue(), r.Min, r.Max); } catch { }
+
+                            var formatted = FormatRangeValue(r, v);
+                            return $"{label}: {formatted}";
+                        }
+                        return label;
                     }
+
                 case SettingsItemType.List:
                     {
-                        var l = (SettingsList)item;
-                        var opts = l.GetOptions?.Invoke();
-                        if (opts == null || opts.Count == 0) return label;
+                        if (item is SettingsList l)
+                        {
+                            var opts = l.GetOptions?.Invoke();
+                            if (opts == null || opts.Count == 0) return label;
 
-                        var idx = ClampInt(l.GetIndex(), 0, opts.Count - 1);
-                        return $"{label}: {ResolveListOptionText(opts[idx])}";
+                            int idx = ClampInt(l.GetIndex(), 0, opts.Count - 1);
+                            return $"{label}: {ResolveListOptionText(opts[idx])}";
+                        }
+                        return label;
                     }
+
                 default:
                     return label;
             }
@@ -522,44 +522,12 @@ namespace Project.Hub.States
         private string ResolveCommittedValueText(SettingsUiResult r)
         {
             if (r.AffectedItemType == SettingsItemType.Toggle)
-                return ResolveToggleValueText(r.ToggleValue);
+                return r.ToggleValue ? SafeGet("settings.on") : SafeGet("settings.off");
 
-            if (r.AffectedItem != null && (r.AffectedItemType == SettingsItemType.List || r.AffectedItemType == SettingsItemType.Range))
+            if (r.AffectedItem != null && (r.AffectedItemType == SettingsItemType.Range || r.AffectedItemType == SettingsItemType.List))
                 return ResolveItemDisplayText(r.AffectedItem);
 
             return SafeGet("selected.value");
-        }
-
-        private string ResolveToggleValueText(bool value)
-        {
-            return value ? SafeGet("settings.on") : SafeGet("settings.off");
-        }
-
-        private string ResolveListOptionText(SettingsListOption opt)
-        {
-            var s = SafeGet(opt.LabelKey);
-            return string.IsNullOrWhiteSpace(s) || s == opt.LabelKey ? opt.Id : s;
-        }
-
-        private string FormatRangeValue(SettingsRange range, float value)
-        {
-            if (range.LabelKey == "settings.cues_volume")
-                return SettingsUiValueFormat.Percent01(value);
-
-            if (range.LabelKey == "settings.game_volume")
-                return SettingsUiValueFormat.Percent01(value);
-
-            if (range.LabelKey == "settings.repeat.manual_delay"
-                || range.LabelKey == "settings.repeat.auto_delay")
-                return SettingsUiValueFormat.Seconds(value);
-
-            if (range.LabelKey == "settings.visual_mode.dimmer_strength")
-                return SettingsUiValueFormat.Percent01(value);
-
-            if (range.LabelKey == "settings.visual_mode.marquee_speed")
-                return SettingsUiValueFormat.Multiplier(value, decimals: 1);
-
-            return SettingsUiValueFormat.Number(value, maxDecimals: 2);
         }
 
         private string ResolveDescriptionKey(SettingsItem item)
@@ -569,24 +537,16 @@ namespace Project.Hub.States
             return item.DescriptionKey;
         }
 
-        private string SafeGet(string key)
+        private static string CurrentKeyForItem(SettingsItem it)
         {
-            if (string.IsNullOrWhiteSpace(key)) return "";
-            var s = _loc.Get(key);
-            return string.IsNullOrWhiteSpace(s) ? key : s;
+            if (it == null) return "current.option";
+            if (it.LabelKey == "common.back") return "current.option";
+            if (IsFolder(it)) return "current.option";
+
+            return IsRealSetting(it) ? "current.setting" : "current.option";
         }
 
         private static bool IsFolder(SettingsItem it) => it != null && it.Type == SettingsItemType.Folder;
-
-        private static bool IsInformationalAction(SettingsItem it)
-        {
-            if (it == null) return false;
-            if (it.Type != SettingsItemType.Action) return false;
-
-            return it.LabelKey == "settings.controls_help.touch"
-                || it.LabelKey == "settings.controls_help.keyboard"
-                || it.LabelKey == "settings.controls_help.mouse";
-        }
 
         private static bool IsRealSetting(SettingsItem it)
         {
@@ -597,23 +557,52 @@ namespace Project.Hub.States
                 || it.Type == SettingsItemType.Range)
                 return true;
 
-            if (it.Type == SettingsItemType.Action && it.LabelKey == "settings.reset_defaults")
-                return true;
-
             return false;
         }
 
-        private static string CurrentKeyForItem(SettingsItem it)
+        private string FormatRangeValue(SettingsRange range, float value)
         {
-            if (it == null) return "current.option";
-            if (it.LabelKey == "common.back") return "current.option";
-            if (IsFolder(it)) return "current.option";
-            if (IsInformationalAction(it)) return "current.option";
+            if (range != null && range.LabelKey == "settings.stats.recent_capacity")
+            {
+                int v = Mathf.RoundToInt(value);
 
-            return IsRealSetting(it) ? "current.setting" : "current.option";
+                if (v < 1) v = 1;
+                if (v > 10) v = 10;
+
+                string suffixKey = ResolveRecentCapacitySuffixKey(v);
+
+                string suffix = SafeGet(suffixKey);
+                if (string.IsNullOrWhiteSpace(suffix) || suffix == suffixKey)
+                    suffix = "entries";
+
+                return $"{v} {suffix}";
+            }
+
+            return SettingsUiValueFormat.Number(value, maxDecimals: 2);
         }
 
-        private static float Clamp(float v, float min, float max) => v < min ? min : (v > max ? max : v);
+        private static string ResolveRecentCapacitySuffixKey(int v)
+        {
+
+            if (v == 1)
+                return "settings.stats.recent_capacity.suffix.singular";
+
+            int mod10 = v % 10;
+            int mod100 = v % 100;
+
+            bool few = (mod10 >= 2 && mod10 <= 4) && !(mod100 >= 12 && mod100 <= 14);
+
+            return few
+                ? "settings.stats.recent_capacity.suffix.plural_few"
+                : "settings.stats.recent_capacity.suffix.plural";
+        }
+
+        private string ResolveListOptionText(SettingsListOption opt)
+        {
+            var s = SafeGet(opt.LabelKey);
+            return string.IsNullOrWhiteSpace(s) || s == opt.LabelKey ? opt.Id : s;
+        }
+
         private static int ClampInt(int v, int min, int max) => v < min ? min : (v > max ? max : v);
 
         private static ControlHintMode ResolveEffectiveHintMode(AppSettingsData settings)
@@ -624,57 +613,37 @@ namespace Project.Hub.States
             return mode;
         }
 
-        private sealed class HubHooks : ISettingsUiHooks
+        private string SafeGet(string key, params object[] args)
         {
-            private readonly HubSettingsState _s;
+            if (_loc == null || string.IsNullOrWhiteSpace(key))
+                return key ?? "";
 
-            public HubHooks(HubSettingsState s) { _s = s; }
+            if (args == null || args.Length == 0)
+            {
+                var s = _loc.Get(key);
+                return string.IsNullOrWhiteSpace(s) ? key : s;
+            }
 
+            try
+            {
+                var s = _loc.Get(key, args);
+                return string.IsNullOrWhiteSpace(s) ? key : s;
+            }
+            catch
+            {
+                return key;
+            }
+        }
+
+        private sealed class GameSettingsHooks : ISettingsUiHooks
+        {
             public bool RequiresConfirmation(SettingsAction action)
             {
-                return action != null && action.LabelKey == "settings.reset_defaults";
+                return action != null && action.LabelKey == "settings.stats.reset";
             }
 
-            public bool TryHandleToggle(SettingsToggle toggle)
-            {
-                if (toggle == null) return false;
-
-                if (toggle.LabelKey == "settings.visual_mode.enabled")
-                {
-                    _s._sm.UiAudio.CancelCurrent();
-
-                    _s._visual.ToggleVisualAssist();
-                    _s._sm.Settings.SetVisualMode(_s._visual.Mode);
-
-                    bool enabled = _s._visual.Mode == VisualMode.VisualAssist;
-
-                    _s._sm.UiAudio.Play(
-                        UiAudioScope.Hub,
-                        ctx => ToggleVisualAssistSequence.Run(ctx, enabled),
-                        SpeechPriority.Normal,
-                        interruptible: true
-                    );
-
-                    _s.RefreshVa();
-                    _s.PlayBrowsePrompt();
-                    return true;
-                }
-
-                return false;
-            }
-
-            public bool TryHandleAction(SettingsAction action)
-            {
-                if (action == null) return false;
-
-                if (_s.IsControlsHelpAction(action))
-                {
-                    _s.PlayControlsHelpFor(action.LabelKey);
-                    return true;
-                }
-
-                return false;
-            }
+            public bool TryHandleToggle(SettingsToggle toggle) => false;
+            public bool TryHandleAction(SettingsAction action) => false;
         }
     }
 }

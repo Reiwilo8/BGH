@@ -11,7 +11,6 @@ namespace Project.Core.Settings
         private const string Key = "app_settings_v3";
 
         private const string VaInitMarkerKey = "app_settings_v3_va_init";
-
         private const string RepeatInitMarkerKey = "app_settings_v3_repeat_init";
 
         public event Action Changed;
