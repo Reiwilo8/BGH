@@ -608,6 +608,10 @@ MonoBehaviour:
     m_Localized: "Tryb deweloperski wy\u0142\u0105czony."
     m_Metadata:
       m_Items: []
+  - m_Id: 6265602696966144
+    m_Localized: Ustawienia {0}
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

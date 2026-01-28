@@ -18,6 +18,8 @@ namespace Project.Games.Module
 
         private IGameModuleState _current;
 
+        public int GameMenuSelectionIndex { get; set; } = -1;
+
         public GameModuleStateMachine(
             IUiAudioOrchestrator uiAudio,
             IAppFlowService flow,
@@ -39,7 +41,7 @@ namespace Project.Games.Module
 
         public void Dispatch(NavAction action)
         {
-            if (action == NavAction.ToggleVisualAssist)
+            if (action == NavAction.ToggleVisualAssist && _current is not GameSettingsState)
                 return;
 
             if (_current is GameMenuState menu && action == NavAction.Confirm)

@@ -64,7 +64,10 @@ namespace Project.Games.Module.States
                 return;
 
             BuildMenu();
-            _index = ResolveInitialIndex();
+
+            _index = ResolveInitialIndexWithMemory();
+
+            _sm.GameMenuSelectionIndex = _index;
 
             RefreshVa();
             PlayPrompt();
@@ -96,6 +99,7 @@ namespace Project.Games.Module.States
             {
                 case NavAction.Next:
                     _index = (_index + 1) % _items.Length;
+                    _sm.GameMenuSelectionIndex = _index;
 
                     _va?.PulseListMove(VaListMoveDirection.Next);
 
@@ -105,6 +109,7 @@ namespace Project.Games.Module.States
 
                 case NavAction.Previous:
                     _index = (_index - 1 + _items.Length) % _items.Length;
+                    _sm.GameMenuSelectionIndex = _index;
 
                     _va?.PulseListMove(VaListMoveDirection.Previous);
 
@@ -260,16 +265,24 @@ namespace Project.Games.Module.States
                     break;
 
                 case MenuItemKind.Settings:
+                    _sm.GameMenuSelectionIndex = _index;
+
+                    _uiAudio.CancelCurrent();
                     _va?.NotifyTransitioning();
 
                     _uiAudio.PlayGated(
                         UiAudioScope.GameModule,
                         "nav.to_game_settings",
-                        () => _flow.IsTransitioning,
-                        0.5f,
-                        SpeechPriority.High,
+                        stillTransitioning: () => _sm.Transitions.IsTransitioning,
+                        delaySeconds: 0.5f,
+                        priority: SpeechPriority.High,
                         _game.displayName
                     );
+
+                    _sm.Transitions.RunInstant(() =>
+                    {
+                        _sm.SetState(new GameSettingsState(_sm));
+                    });
                     break;
 
                 case MenuItemKind.Back:
@@ -324,6 +337,18 @@ namespace Project.Games.Module.States
             }
 
             return !string.IsNullOrWhiteSpace(mode.displayName) ? mode.displayName : "Unknown";
+        }
+
+        private int ResolveInitialIndexWithMemory()
+        {
+            if (_items == null || _items.Length == 0) return 0;
+
+            int remembered = _sm.GameMenuSelectionIndex;
+
+            if (remembered >= 0 && remembered < _items.Length)
+                return remembered;
+
+            return ResolveInitialIndex();
         }
 
         private int ResolveInitialIndex()

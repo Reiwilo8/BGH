@@ -576,6 +576,10 @@ MonoBehaviour:
     m_Localized: Developer mode disabled.
     m_Metadata:
       m_Items: []
+  - m_Id: 6265602696966144
+    m_Localized: '{0} settings'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

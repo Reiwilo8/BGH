@@ -51,9 +51,6 @@ namespace Project.Games.Module
         private void HandleNav(NavAction action)
         {
             if (_focus.Current != InputScope.GameModule) return;
-
-            if (action == NavAction.ToggleVisualAssist) return;
-
             controller?.Handle(action);
         }
 

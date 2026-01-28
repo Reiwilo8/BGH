@@ -511,6 +511,10 @@ MonoBehaviour:
     m_Key: va.screen.game_menu
     m_Metadata:
       m_Items: []
+  - m_Id: 6265602696966144
+    m_Key: va.screen.game_settings
+    m_Metadata:
+      m_Items: []
   - m_Id: 1785121976774656
     m_Key: va.screen.gameplay
     m_Metadata:
