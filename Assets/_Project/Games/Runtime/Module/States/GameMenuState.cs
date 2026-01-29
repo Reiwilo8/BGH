@@ -258,21 +258,29 @@ namespace Project.Games.Module.States
                     _session.SelectMode(item.Mode.modeId);
 
                     int? seed = null;
-                    bool customized = false;
+                    bool useRandomSeed = true;
 
                     try
                     {
                         if (_runParams != null)
                         {
+                            useRandomSeed = _runParams.GetUseRandomSeed(_session.SelectedGameId);
                             seed = _runParams.ResolveSeedForNewRun(_session.SelectedGameId);
-                            customized = !_runParams.GetUseRandomSeed(_session.SelectedGameId);
                         }
                     }
                     catch
                     {
+                        useRandomSeed = true;
                         seed = null;
-                        customized = false;
                     }
+
+                    bool wereRunSettingsCustomized = !useRandomSeed;
+
+                    var initialParams = GameRunInitialParametersBuilder.Build(
+                        settings: _settings,
+                        useRandomSeed: useRandomSeed,
+                        seedValue: seed
+                    );
 
                     try
                     {
@@ -280,8 +288,8 @@ namespace Project.Games.Module.States
                             gameId: _session.SelectedGameId,
                             modeId: _session.SelectedModeId,
                             seed: seed,
-                            initialParameters: null,
-                            wereRunSettingsCustomized: customized
+                            initialParameters: initialParams,
+                            wereRunSettingsCustomized: wereRunSettingsCustomized
                         );
                     }
                     catch { }
