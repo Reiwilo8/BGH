@@ -447,6 +447,34 @@ MonoBehaviour:
     m_Key: settings.visual_mode.dimmer_strength.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 6913720912343040
+    m_Key: settings.run_params
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914324351053824
+    m_Key: settings.run_params.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914792171139072
+    m_Key: settings.run_params.random_seed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6915083419414528
+    m_Key: settings.run_params.random_seed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6915608009404416
+    m_Key: settings.run_params.seed_list
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6915794404274176
+    m_Key: settings.run_params.seed_list.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6916139612270592
+    m_Key: settings.run_params.seed.none
+    m_Metadata:
+      m_Items: []
   - m_Id: 6341833492688896
     m_Key: settings.stats
     m_Metadata:

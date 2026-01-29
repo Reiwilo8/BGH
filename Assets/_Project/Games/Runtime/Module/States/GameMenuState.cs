@@ -9,6 +9,7 @@ using Project.Core.VisualAssist;
 using Project.Games.Catalog;
 using Project.Games.Definitions;
 using Project.Games.Localization;
+using Project.Games.Run;
 using Project.Games.Sequences;
 using UnityEngine;
 
@@ -28,6 +29,7 @@ namespace Project.Games.Module.States
         private readonly IVisualAssistService _va;
 
         private readonly IGameRunContextService _runs;
+        private readonly IGameRunParametersService _runParams;
 
         private GameDefinition _game;
 
@@ -61,6 +63,9 @@ namespace Project.Games.Module.States
 
             try { _runs = services.Resolve<IGameRunContextService>(); }
             catch { _runs = null; }
+
+            try { _runParams = services.Resolve<IGameRunParametersService>(); }
+            catch { _runParams = null; }
         }
 
         public void Enter()
@@ -252,14 +257,31 @@ namespace Project.Games.Module.States
 
                     _session.SelectMode(item.Mode.modeId);
 
+                    int? seed = null;
+                    bool customized = false;
+
+                    try
+                    {
+                        if (_runParams != null)
+                        {
+                            seed = _runParams.ResolveSeedForNewRun(_session.SelectedGameId);
+                            customized = !_runParams.GetUseRandomSeed(_session.SelectedGameId);
+                        }
+                    }
+                    catch
+                    {
+                        seed = null;
+                        customized = false;
+                    }
+
                     try
                     {
                         _runs?.PrepareRun(
                             gameId: _session.SelectedGameId,
                             modeId: _session.SelectedModeId,
-                            seed: null,
+                            seed: seed,
                             initialParameters: null,
-                            wereRunSettingsCustomized: false
+                            wereRunSettingsCustomized: customized
                         );
                     }
                     catch { }

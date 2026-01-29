@@ -6,7 +6,7 @@ namespace Project.Games.Persistence
     [Serializable]
     public sealed class GamesUserData
     {
-        public int schemaVersion = 2;
+        public int schemaVersion = 3;
         public List<GameUserEntry> games = new List<GameUserEntry>();
     }
 
@@ -25,6 +25,13 @@ namespace Project.Games.Persistence
     public sealed class GamePreferencesData
     {
         public int recentCapacity = 5;
+
+        public bool useRandomSeed = true;
+
+        public bool hasSelectedSeed = false;
+        public int selectedSeed = 0;
+
+        public List<int> knownSeeds = new List<int>();
     }
 
     [Serializable]
@@ -42,7 +49,6 @@ namespace Project.Games.Persistence
         public int completions;
 
         public long bestCompletedTimeTicks;
-
         public long bestSurvivalTimeTicks;
 
         public long lastPlayedUtcTicks;

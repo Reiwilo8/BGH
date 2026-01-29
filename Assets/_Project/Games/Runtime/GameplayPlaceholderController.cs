@@ -8,6 +8,7 @@ using Project.Core.Speech;
 using Project.Core.VisualAssist;
 using Project.Games.Catalog;
 using Project.Games.Localization;
+using Project.Games.Run;
 using Project.Games.Sequences;
 using UnityEngine;
 
@@ -28,6 +29,7 @@ namespace Project.Games.Gameplay
         private IVisualAssistService _va;
 
         private IGameRunContextService _runs;
+        private IGameRunParametersService _runParams;
 
         private string _gameName = "Unknown";
         private string _modeName = "Unknown";
@@ -52,6 +54,9 @@ namespace Project.Games.Gameplay
 
             try { _runs = services.Resolve<IGameRunContextService>(); }
             catch { _runs = null; }
+
+            try { _runParams = services.Resolve<IGameRunParametersService>(); }
+            catch { _runParams = null; }
         }
 
         private void Start()
@@ -76,14 +81,31 @@ namespace Project.Games.Gameplay
             if (string.IsNullOrWhiteSpace(_session.SelectedGameId) || string.IsNullOrWhiteSpace(_session.SelectedModeId))
                 return;
 
+            int? seed = null;
+            bool customized = false;
+
+            try
+            {
+                if (_runParams != null)
+                {
+                    seed = _runParams.ResolveSeedForNewRun(_session.SelectedGameId);
+                    customized = !_runParams.GetUseRandomSeed(_session.SelectedGameId);
+                }
+            }
+            catch
+            {
+                seed = null;
+                customized = false;
+            }
+
             try
             {
                 _runs.PrepareRun(
                     gameId: _session.SelectedGameId,
                     modeId: _session.SelectedModeId,
-                    seed: null,
+                    seed: seed,
                     initialParameters: null,
-                    wereRunSettingsCustomized: false
+                    wereRunSettingsCustomized: customized
                 );
             }
             catch { }

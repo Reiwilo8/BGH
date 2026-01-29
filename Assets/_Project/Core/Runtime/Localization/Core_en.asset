@@ -702,6 +702,35 @@ MonoBehaviour:
     m_Localized: '{0}'
     m_Metadata:
       m_Items: []
+  - m_Id: 6913720912343040
+    m_Localized: Gameplay run parameters
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914324351053824
+    m_Localized: Settings that affect how gameplay is initialized.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914792171139072
+    m_Localized: Random seed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6915083419414528
+    m_Localized: Enable to generate random seed for gameplay or disable to set it
+      manually.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6915608009404416
+    m_Localized: Seed list
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6915794404274176
+    m_Localized: Choose a seed from previous runs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6916139612270592
+    m_Localized: No seeds recorded
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

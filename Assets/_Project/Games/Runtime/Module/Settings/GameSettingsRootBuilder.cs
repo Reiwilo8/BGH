@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Project.Core.App;
 using Project.Core.Settings.Ui;
+using Project.Games.Run;
 using Project.Games.Stats;
 
 namespace Project.Games.Module.Settings
@@ -11,6 +12,8 @@ namespace Project.Games.Module.Settings
         private readonly IGameStatsService _stats;
         private readonly AppSession _session;
 
+        private readonly IGameRunParametersService _runParams;
+
         public GameSettingsRootBuilder()
         {
             var services = AppContext.Services;
@@ -19,17 +22,132 @@ namespace Project.Games.Module.Settings
 
             _prefs = services.Resolve<IGameStatsPreferencesService>();
             _stats = services.Resolve<IGameStatsService>();
+
+            try { _runParams = services.Resolve<IGameRunParametersService>(); }
+            catch { _runParams = null; }
         }
 
         public List<SettingsItem> BuildRoot(SettingsBuildContext context)
         {
-            var root = new List<SettingsItem>
-            {
-                BuildStatsFolder(),
-                new SettingsAction("common.back", execute: () => { })
-            };
+            var root = new List<SettingsItem>();
+
+            if (IsDeveloperMode(context))
+                root.Add(BuildRunParametersFolder());
+
+            root.Add(BuildStatsFolder());
+            root.Add(new SettingsAction("common.back", execute: () => { }));
 
             return root;
+        }
+
+        private static bool IsDeveloperMode(SettingsBuildContext context)
+        {
+            try { return context.DeveloperMode; }
+            catch { return false; }
+        }
+
+        private SettingsFolder BuildRunParametersFolder()
+        {
+            return new SettingsFolder(
+                labelKey: "settings.run_params",
+                descriptionKey: "settings.run_params.desc",
+                buildChildren: () => new List<SettingsItem>
+                {
+                    BuildUseRandomSeedToggle(),
+                    BuildKnownSeedsList(),
+                    new SettingsAction("common.back", execute: () => { })
+                }
+            );
+        }
+
+        private SettingsToggle BuildUseRandomSeedToggle()
+        {
+            return new SettingsToggle(
+                labelKey: "settings.run_params.random_seed",
+                descriptionKey: "settings.run_params.random_seed.desc",
+                getValue: () =>
+                {
+                    string gameId = _session != null ? _session.SelectedGameId : null;
+                    if (_runParams == null) return true;
+                    return _runParams.GetUseRandomSeed(gameId);
+                },
+                setValue: v =>
+                {
+                    string gameId = _session != null ? _session.SelectedGameId : null;
+                    _runParams?.SetUseRandomSeed(gameId, v);
+                }
+            );
+        }
+
+        private SettingsList BuildKnownSeedsList()
+        {
+            return new SettingsList(
+                labelKey: "settings.run_params.seed_list",
+                descriptionKey: "settings.run_params.seed_list.desc",
+                getOptions: () =>
+                {
+                    string gameId = _session != null ? _session.SelectedGameId : null;
+
+                    var opts = new List<SettingsListOption>();
+
+                    if (_runParams == null)
+                    {
+                        opts.Add(new SettingsListOption(id: "none", labelKey: "settings.run_params.seed.none"));
+                        return opts;
+                    }
+
+                    var seeds = _runParams.GetKnownSeeds(gameId);
+                    if (seeds == null || seeds.Count == 0)
+                    {
+                        opts.Add(new SettingsListOption(id: "none", labelKey: "settings.run_params.seed.none"));
+                        return opts;
+                    }
+
+                    for (int i = 0; i < seeds.Count; i++)
+                    {
+                        string id = seeds[i].ToString();
+                        opts.Add(new SettingsListOption(id: id, labelKey: id));
+                    }
+
+                    return opts;
+                },
+                getIndex: () =>
+                {
+                    string gameId = _session != null ? _session.SelectedGameId : null;
+
+                    if (_runParams == null)
+                        return 0;
+
+                    var seeds = _runParams.GetKnownSeeds(gameId);
+                    if (seeds == null || seeds.Count == 0)
+                        return 0;
+
+                    if (_runParams.TryGetSelectedSeed(gameId, out int selected))
+                    {
+                        for (int i = 0; i < seeds.Count; i++)
+                            if (seeds[i] == selected)
+                                return i;
+                    }
+
+                    return 0;
+                },
+                setIndex: idx =>
+                {
+                    string gameId = _session != null ? _session.SelectedGameId : null;
+
+                    if (_runParams == null)
+                        return;
+
+                    var seeds = _runParams.GetKnownSeeds(gameId);
+                    if (seeds == null || seeds.Count == 0)
+                        return;
+
+                    if (idx < 0) idx = 0;
+                    if (idx >= seeds.Count) idx = seeds.Count - 1;
+
+                    _runParams.SetSelectedSeed(gameId, seeds[idx]);
+                }
+            );
         }
 
         private SettingsFolder BuildStatsFolder()

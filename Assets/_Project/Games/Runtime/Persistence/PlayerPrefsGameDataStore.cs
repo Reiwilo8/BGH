@@ -108,6 +108,12 @@ namespace Project.Games.Persistence
                 if (g.stats.modes == null)
                     g.stats.modes = new System.Collections.Generic.List<GameModeStatsData>();
 
+                if (g.custom == null)
+                    g.custom = new System.Collections.Generic.List<GameCustomEntry>();
+
+                if (g.prefs.knownSeeds == null)
+                    g.prefs.knownSeeds = new System.Collections.Generic.List<int>();
+
                 for (int mi = g.stats.modes.Count - 1; mi >= 0; mi--)
                 {
                     var m = g.stats.modes[mi];
@@ -126,14 +132,24 @@ namespace Project.Games.Persistence
             {
                 RecomputeBestTimesFromRecentRuns();
                 Data.schemaVersion = 2;
-
                 Save();
             }
-            else
+
+            if (Data.schemaVersion < 3)
             {
-                if (Data.schemaVersion < 2)
-                    Data.schemaVersion = 2;
+                foreach (var g in Data.games)
+                {
+                    if (g == null || g.prefs == null) continue;
+                    if (g.prefs.knownSeeds == null)
+                        g.prefs.knownSeeds = new System.Collections.Generic.List<int>();
+                }
+
+                Data.schemaVersion = 3;
+                Save();
             }
+
+            if (Data.schemaVersion < 3)
+                Data.schemaVersion = 3;
         }
 
         private void RecomputeBestTimesFromRecentRuns()
