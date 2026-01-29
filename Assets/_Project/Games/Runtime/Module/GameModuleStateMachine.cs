@@ -44,9 +44,22 @@ namespace Project.Games.Module
             if (action == NavAction.ToggleVisualAssist && _current is not GameSettingsState)
                 return;
 
+            if (_current is GameSettingsState)
+            {
+                _current.Handle(action);
+                return;
+            }
+
             if (_current is GameMenuState menu && action == NavAction.Confirm)
             {
                 AudioFx?.PlayUiCue(menu.IsConfirmingBackItem() ? UiCueId.Back : UiCueId.Confirm);
+                _current.Handle(action);
+                return;
+            }
+
+            if (_current is GameStatsState stats && action == NavAction.Confirm)
+            {
+                AudioFx?.PlayUiCue(stats.IsConfirmingBackItem() ? UiCueId.Back : UiCueId.Confirm);
                 _current.Handle(action);
                 return;
             }

@@ -27,6 +27,8 @@ namespace Project.Games.Module.States
         private readonly ILocalizationService _loc;
         private readonly IVisualAssistService _va;
 
+        private readonly IGameRunContextService _runs;
+
         private GameDefinition _game;
 
         private int _index;
@@ -56,6 +58,9 @@ namespace Project.Games.Module.States
             _catalog = services.Resolve<GameCatalog>();
             _loc = services.Resolve<ILocalizationService>();
             _va = services.Resolve<IVisualAssistService>();
+
+            try { _runs = services.Resolve<IGameRunContextService>(); }
+            catch { _runs = null; }
         }
 
         public void Enter()
@@ -246,6 +251,18 @@ namespace Project.Games.Module.States
                         return;
 
                     _session.SelectMode(item.Mode.modeId);
+
+                    try
+                    {
+                        _runs?.PrepareRun(
+                            gameId: _session.SelectedGameId,
+                            modeId: _session.SelectedModeId,
+                            seed: null,
+                            initialParameters: null,
+                            wereRunSettingsCustomized: false
+                        );
+                    }
+                    catch { }
 
                     _uiAudio.CancelCurrent();
                     _va?.NotifyTransitioning();

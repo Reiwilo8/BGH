@@ -129,9 +129,10 @@ GameObject:
   m_Component:
   - component: {fileID: 53891177}
   - component: {fileID: 53891176}
-  - component: {fileID: 53891178}
   - component: {fileID: 53891179}
   - component: {fileID: 53891180}
+  - component: {fileID: 53891178}
+  - component: {fileID: 53891181}
   m_Layer: 0
   m_Name: AppRoot
   m_TagString: Untagged
@@ -214,6 +215,18 @@ MonoBehaviour:
   gameCatalogRegistry: {fileID: 11400000, guid: 3d493eb7b6b90324e876658fe9928ecc, type: 2}
   uiPoolSize: 8
   gamePoolSize: 16
+--- !u!114 &53891181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53891175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0869d9e973dc12e45b87ccc19f7608f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &913697826
 GameObject:
   m_ObjectHideFlags: 0

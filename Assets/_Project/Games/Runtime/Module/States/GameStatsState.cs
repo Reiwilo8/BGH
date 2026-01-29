@@ -137,6 +137,8 @@ namespace Project.Games.Module.States
             }
         }
 
+        public bool IsConfirmingBackItem() => IsBackSelected();
+
         private bool LoadSelectedGameOrFail()
         {
             if (string.IsNullOrWhiteSpace(_session.SelectedGameId))
@@ -408,7 +410,7 @@ namespace Project.Games.Module.States
             if (_showRecent)
                 return BuildRecentDesc(ms.Value);
 
-            return BuildOverallDesc(mode, ms.Value);
+            return BuildOverallDesc(ms.Value);
         }
 
         private ModeStatsSnapshot? FindModeSnapshot(GameStatsSnapshot snap, string modeId)
@@ -425,44 +427,29 @@ namespace Project.Games.Module.States
             return null;
         }
 
-        private (string key, object[] args) BuildOverallDesc(GameModeDefinition modeDef, ModeStatsSnapshot ms)
+        private (string key, object[] args) BuildOverallDesc(ModeStatsSnapshot ms)
         {
             var o = ms.Overall;
 
             string runs = o.Runs.ToString();
-
-            bool endless = modeDef != null && modeDef.kind == GameModeKind.Endless;
-            string completions = endless ? SafeGet("stats.na") : o.Completions.ToString();
+            string completions = o.Completions.ToString();
 
             bool hasCompletion = o.Completions > 0;
 
             string bestLabel;
             string bestTime;
 
-            if (hasCompletion && o.BestTime.HasValue)
+            if (hasCompletion && o.BestCompletedTime.HasValue)
             {
-                bestLabel = endless
-                    ? SafeGet("stats.best_time.longest")
-                    : SafeGet("stats.best_time.shortest");
-
-                bestTime = FormatDuration(o.BestTime.Value);
+                bestLabel = SafeGet("stats.best_time.shortest");
+                bestTime = FormatDuration(o.BestCompletedTime.Value);
             }
             else
             {
-                TimeSpan longest = TimeSpan.Zero;
-
-                var rr = ms.RecentRuns;
-                if (rr != null)
-                {
-                    for (int i = 0; i < rr.Count; i++)
-                    {
-                        if (rr[i].Duration > longest)
-                            longest = rr[i].Duration;
-                    }
-                }
-
                 bestLabel = SafeGet("stats.best_time.longest");
-                bestTime = longest > TimeSpan.Zero ? FormatDuration(longest) : SafeGet("stats.na");
+                bestTime = o.BestSurvivalTime.HasValue
+                    ? FormatDuration(o.BestSurvivalTime.Value)
+                    : SafeGet("stats.na");
             }
 
             string lastPlayed = o.LastPlayedUtc.HasValue

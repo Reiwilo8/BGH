@@ -3,12 +3,6 @@ using System.Collections.Generic;
 
 namespace Project.Games.Stats
 {
-    public enum BestTimeDirection
-    {
-        LowerIsBetter,
-        HigherIsBetter
-    }
-
     public readonly struct RecentRunSnapshot
     {
         public readonly TimeSpan Duration;
@@ -30,22 +24,23 @@ namespace Project.Games.Stats
         public readonly int Runs;
         public readonly int Completions;
 
-        public readonly TimeSpan? BestTime;
-        public readonly BestTimeDirection BestTimeDir;
+        public readonly TimeSpan? BestCompletedTime;
+
+        public readonly TimeSpan? BestSurvivalTime;
 
         public readonly DateTime? LastPlayedUtc;
 
         public ModeOverallSnapshot(
             int runs,
             int completions,
-            TimeSpan? bestTime,
-            BestTimeDirection bestTimeDir,
+            TimeSpan? bestCompletedTime,
+            TimeSpan? bestSurvivalTime,
             DateTime? lastPlayedUtc)
         {
             Runs = runs;
             Completions = completions;
-            BestTime = bestTime;
-            BestTimeDir = bestTimeDir;
+            BestCompletedTime = bestCompletedTime;
+            BestSurvivalTime = bestSurvivalTime;
             LastPlayedUtc = lastPlayedUtc;
         }
     }

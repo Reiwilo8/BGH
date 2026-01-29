@@ -34,7 +34,7 @@ namespace Project.Games.Persistence
                 Data = new GamesUserData();
             }
 
-            Normalize();
+            NormalizeAndMigrateIfNeeded();
         }
 
         public void Save()
@@ -46,6 +46,8 @@ namespace Project.Games.Persistence
 
         public GameUserEntry GetOrCreateGame(string gameId)
         {
+            EnsureData();
+
             string id = NormalizeGameId(gameId);
 
             foreach (var g in Data.games)
@@ -63,6 +65,8 @@ namespace Project.Games.Persistence
 
         public void RemoveGame(string gameId)
         {
+            EnsureData();
+
             string id = NormalizeGameId(gameId);
 
             for (int i = Data.games.Count - 1; i >= 0; i--)
@@ -72,10 +76,17 @@ namespace Project.Games.Persistence
             }
         }
 
-        private void Normalize()
+        private void EnsureData()
         {
+            if (Data == null)
+                Data = new GamesUserData();
             if (Data.games == null)
                 Data.games = new System.Collections.Generic.List<GameUserEntry>();
+        }
+
+        private void NormalizeAndMigrateIfNeeded()
+        {
+            EnsureData();
 
             for (int i = Data.games.Count - 1; i >= 0; i--)
             {
@@ -96,6 +107,78 @@ namespace Project.Games.Persistence
 
                 if (g.stats.modes == null)
                     g.stats.modes = new System.Collections.Generic.List<GameModeStatsData>();
+
+                for (int mi = g.stats.modes.Count - 1; mi >= 0; mi--)
+                {
+                    var m = g.stats.modes[mi];
+                    if (m == null || string.IsNullOrWhiteSpace(m.modeId))
+                    {
+                        g.stats.modes.RemoveAt(mi);
+                        continue;
+                    }
+
+                    if (m.recentRuns == null)
+                        m.recentRuns = new System.Collections.Generic.List<RecentRunData>();
+                }
+            }
+
+            if (Data.schemaVersion < 2)
+            {
+                RecomputeBestTimesFromRecentRuns();
+                Data.schemaVersion = 2;
+
+                Save();
+            }
+            else
+            {
+                if (Data.schemaVersion < 2)
+                    Data.schemaVersion = 2;
+            }
+        }
+
+        private void RecomputeBestTimesFromRecentRuns()
+        {
+            if (Data.games == null) return;
+
+            foreach (var g in Data.games)
+            {
+                if (g == null || g.stats == null || g.stats.modes == null)
+                    continue;
+
+                foreach (var m in g.stats.modes)
+                {
+                    if (m == null) continue;
+
+                    long bestSurvival = 0;
+                    long bestCompleted = 0;
+
+                    var rr = m.recentRuns;
+                    if (rr != null)
+                    {
+                        foreach (var r in rr)
+                        {
+                            if (r == null) continue;
+
+                            long dt = r.durationTicks;
+                            if (dt <= 0) continue;
+
+                            if (dt > bestSurvival)
+                                bestSurvival = dt;
+
+                            if (r.completed)
+                            {
+                                if (bestCompleted == 0 || dt < bestCompleted)
+                                    bestCompleted = dt;
+                            }
+                        }
+                    }
+
+                    if (m.bestSurvivalTimeTicks <= 0 && bestSurvival > 0)
+                        m.bestSurvivalTimeTicks = bestSurvival;
+
+                    if (m.bestCompletedTimeTicks <= 0 && bestCompleted > 0)
+                        m.bestCompletedTimeTicks = bestCompleted;
+                }
             }
         }
 

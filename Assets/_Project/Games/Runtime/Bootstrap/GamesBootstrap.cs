@@ -17,12 +17,38 @@ namespace Project.Games.Bootstrap
 
             AppContext.Services.Register(gameCatalog);
 
+            EnsureGameRunContextService();
+
             var store = new PlayerPrefsGameDataStore();
             store.Load();
 
             AppContext.Services.Register<IGameDataStore>(store);
             AppContext.Services.Register<IGameStatsService>(new PersistentGameStatsService(store));
             AppContext.Services.Register<IGameStatsPreferencesService>(new PersistentGameStatsPreferencesService(store));
+
+            WarnIfReporterMissing();
+        }
+
+        private static void EnsureGameRunContextService()
+        {
+            try
+            {
+                AppContext.Services.Resolve<IGameRunContextService>();
+            }
+            catch
+            {
+                AppContext.Services.Register<IGameRunContextService>(new GameRunContextService());
+            }
+        }
+
+        private void WarnIfReporterMissing()
+        {
+            if (GetComponent<GameRunStatsReporter>() == null)
+            {
+                Debug.LogWarning(
+                    "[GamesBootstrap] GameRunStatsReporter is not present on AppRoot. " +
+                    "Stats will not be recorded from run context events.");
+            }
         }
     }
 }
