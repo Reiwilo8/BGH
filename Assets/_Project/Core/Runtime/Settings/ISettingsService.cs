@@ -22,14 +22,18 @@ namespace Project.Core.Settings
 
         void SetControlHintMode(ControlHintMode mode);
 
+        void SetCuesEnabled(bool enabled);
+        void SetCuesVolume01(float volume01);
+        void SetGameVolume01(float volume01);
+
+        void SetHapticsEnabled(bool enabled);
+        void SetHapticsStrengthScale01(float scale01);
+        void SetHapticsAudioFallbackEnabled(bool enabled);
+
         void SetRepeatIdleSeconds(float seconds);
 
         void SetAutoRepeatEnabled(bool enabled);
         void SetAutoRepeatIdleSeconds(float seconds);
-
-        void SetCuesEnabled(bool enabled);
-        void SetCuesVolume01(float volume01);
-        void SetGameVolume01(float volume01);
 
         void SetVaTextSizePreset(VisualAssistTextSizePreset preset);
         void SetVaMarqueeSpeedScale(float scale);

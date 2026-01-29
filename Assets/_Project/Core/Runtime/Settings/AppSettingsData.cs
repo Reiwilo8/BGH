@@ -17,6 +17,10 @@ namespace Project.Core.Settings
         public float cuesVolume = 1f;
         public float gameVolume = 1f;
 
+        public bool hapticsEnabled = true;
+        public float hapticsStrengthScale01 = 1f;
+        public bool hapticsAudioFallbackEnabled = true;
+
         public float repeatIdleSeconds = 10f;
 
         public bool autoRepeatEnabled = true;

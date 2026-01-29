@@ -60,6 +60,10 @@ namespace Project.Core.App
                 cuesVolume = 1f,
                 gameVolume = 1f,
 
+                hapticsEnabled = true,
+                hapticsStrengthScale01 = 1f,
+                hapticsAudioFallbackEnabled = true,
+
                 repeatIdleSeconds = 10f,
 
                 autoRepeatEnabled = true,

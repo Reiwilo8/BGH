@@ -731,6 +731,38 @@ MonoBehaviour:
     m_Localized: No seeds recorded
     m_Metadata:
       m_Items: []
+  - m_Id: 6964765810126848
+    m_Localized: Haptics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965445354483712
+    m_Localized: Vibration settings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6966749011275776
+    m_Localized: Enable haptics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6967116398751744
+    m_Localized: Enables vibration feedback.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6967633539657728
+    m_Localized: Haptics strength
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6968241143312384
+    m_Localized: Overall intensity of vibration feedback.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6968542193676288
+    m_Localized: Audio fallback
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6969064334192640
+    m_Localized: Play vibration sound when physical vibration is not available.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
