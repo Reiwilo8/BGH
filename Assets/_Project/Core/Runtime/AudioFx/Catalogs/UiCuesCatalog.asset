@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ad51bbe5244b44ca15450fc5a92532, type: 3}
-  m_Name: AudioFxCatalog
+  m_Script: {fileID: 11500000, guid: bed87ac6001a8a543a4371947b3181e0, type: 3}
+  m_Name: UiCuesCatalog
   m_EditorClassIdentifier: 
   uiCues:
   - id: 0
@@ -45,6 +45,9 @@ MonoBehaviour:
     defaultVolume01: 1
   - id: 10
     clip: {fileID: 8300000, guid: 3bf9333c6f9dc2642b09c213a4613061, type: 3}
+    defaultVolume01: 1
+  - id: 11
+    clip: {fileID: 8300000, guid: c64969c598fbe184593920a419af1f00, type: 3}
     defaultVolume01: 1
   - id: 12
     clip: {fileID: 8300000, guid: 45eaffcedaffa5a41a138efb41032f05, type: 3}

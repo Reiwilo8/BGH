@@ -10,6 +10,7 @@ using Project.Core.Speech;
 using Project.Core.VisualAssist;
 using Project.Games.Catalog;
 using Project.Games.Definitions;
+using Project.Games.Localization;
 using Project.Games.Module.Settings;
 using Project.Games.Module.Settings.Sequences;
 using UnityEngine;
@@ -248,7 +249,7 @@ namespace Project.Games.Module.States
         {
             if (_va == null) return;
 
-            _va.SetHeaderKey("va.screen.game_settings", _game != null ? _game.displayName : "—");
+            _va.SetHeaderKey("va.screen.game_settings", GameLocalization.GetGameName(_loc, _game));
 
             var sub = ResolveVaSubHeader();
             _va.SetSubHeaderText(sub);
@@ -333,7 +334,7 @@ namespace Project.Games.Module.States
                 UiAudioScope.GameModule,
                 ctx => GameSettingsPromptSequence.Browse(
                     ctx,
-                    _game != null ? _game.displayName : "—",
+                    GameLocalization.GetGameName(ctx.Localization, _game),
                     currentKey,
                     currentText,
                     hintKey,
@@ -448,7 +449,7 @@ namespace Project.Games.Module.States
                 stillTransitioning: () => _sm.Transitions.IsTransitioning,
                 delaySeconds: 0.5f,
                 priority: SpeechPriority.High,
-                _game != null ? _game.displayName : null
+                GameLocalization.GetGameName(_loc, _game)
             );
 
             _sm.Transitions.RunInstant(() =>
@@ -583,7 +584,6 @@ namespace Project.Games.Module.States
 
         private static string ResolveRecentCapacitySuffixKey(int v)
         {
-
             if (v == 1)
                 return "settings.stats.recent_capacity.suffix.singular";
 

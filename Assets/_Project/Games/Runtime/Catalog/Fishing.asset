@@ -13,32 +13,25 @@ MonoBehaviour:
   m_Name: Fishing
   m_EditorClassIdentifier: 
   gameId: fishing
+  localizationTable: Game_Fishing
+  nameKey: name
+  descriptionKey: description
   displayName: Fishing
-  description: Fishing
+  description: Catch fish by reeling and countering their movements.
   gameplaySceneName: FishingScene
   modes:
   - modeId: tutorial
     kind: 0
-    displayName: Tutorial
-    description: Tutorial mode
     modeConfig: {fileID: 0}
   - modeId: easy
     kind: 1
-    displayName: Easy
-    description: Easy difficulty
     modeConfig: {fileID: 0}
   - modeId: medium
     kind: 1
-    displayName: Medium
-    description: Medium difficulty
     modeConfig: {fileID: 0}
   - modeId: hard
     kind: 1
-    displayName: Hard
-    description: Hard difficulty
     modeConfig: {fileID: 0}
   - modeId: custom
     kind: 3
-    displayName: Custom
-    description: Custom mode
     modeConfig: {fileID: 0}

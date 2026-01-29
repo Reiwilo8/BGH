@@ -13,32 +13,25 @@ MonoBehaviour:
   m_Name: SteamRush
   m_EditorClassIdentifier: 
   gameId: steamrush
+  localizationTable: Game_SteamRush
+  nameKey: name
+  descriptionKey: description
   displayName: SteamRush
-  description: SteamRush
+  description: Dodge the oncomming steam trains, by switching between three tracks.
   gameplaySceneName: SteamRushScene
   modes:
   - modeId: tutorial
     kind: 0
-    displayName: Tutorial
-    description: Tutorial mode
     modeConfig: {fileID: 0}
   - modeId: easy
     kind: 1
-    displayName: Easy
-    description: Easy difficulty
     modeConfig: {fileID: 0}
   - modeId: medium
     kind: 1
-    displayName: Medium
-    description: Medium difficulty
     modeConfig: {fileID: 0}
   - modeId: hard
     kind: 1
-    displayName: Hard
-    description: Hard diffculty
     modeConfig: {fileID: 0}
   - modeId: endless
     kind: 2
-    displayName: Endless
-    description: Endless mode
     modeConfig: {fileID: 0}

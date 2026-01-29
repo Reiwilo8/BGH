@@ -18,10 +18,11 @@ namespace Project.Games.Module.Settings.Sequences
         {
             yield return UiAudioSteps.SpeakKeyAndWait(ctx, "enter.game_settings", gameName);
             yield return CurrentItemSequence.Run(ctx, currentKey, currentText);
-            yield return UiAudioSteps.SpeakKeyAndWait(ctx, hintKey);
 
             if (!string.IsNullOrWhiteSpace(descriptionKey))
                 yield return UiAudioSteps.SpeakKeyAndWait(ctx, descriptionKey);
+
+            yield return UiAudioSteps.SpeakKeyAndWait(ctx, hintKey);
 
             UiAudioSteps.PlayUiCue(ctx, UiCueId.SequenceEnd);
         }
@@ -48,10 +49,11 @@ namespace Project.Games.Module.Settings.Sequences
         {
             yield return CurrentItemSequence.Run(ctx, currentKey, currentText);
             yield return UiAudioSteps.SpeakKeyAndWait(ctx, "current.value", valueText);
-            yield return UiAudioSteps.SpeakKeyAndWait(ctx, hintKey);
 
             if (!string.IsNullOrWhiteSpace(descriptionKey))
                 yield return UiAudioSteps.SpeakKeyAndWait(ctx, descriptionKey);
+
+            yield return UiAudioSteps.SpeakKeyAndWait(ctx, hintKey);
 
             UiAudioSteps.PlayUiCue(ctx, UiCueId.SequenceEnd);
         }
@@ -65,10 +67,11 @@ namespace Project.Games.Module.Settings.Sequences
         {
             yield return UiAudioSteps.SpeakKeyAndWait(ctx, "settings.action.confirm");
             yield return CurrentItemSequence.Run(ctx, currentKey, currentText);
-            yield return UiAudioSteps.SpeakKeyAndWait(ctx, hintKey);
 
             if (!string.IsNullOrWhiteSpace(descriptionKey))
                 yield return UiAudioSteps.SpeakKeyAndWait(ctx, descriptionKey);
+
+            yield return UiAudioSteps.SpeakKeyAndWait(ctx, hintKey);
 
             UiAudioSteps.PlayUiCue(ctx, UiCueId.SequenceEnd);
         }

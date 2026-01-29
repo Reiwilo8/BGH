@@ -12,6 +12,7 @@ using Project.Core.Speech;
 using Project.Core.VisualAssist;
 using Project.Games.Catalog;
 using Project.Games.Definitions;
+using Project.Games.Localization;
 using Project.Games.Stats;
 using UnityEngine;
 
@@ -136,6 +137,8 @@ namespace Project.Games.Module.States
             }
         }
 
+        public bool IsConfirmingBackItem() => IsBackSelected();
+
         private bool LoadSelectedGameOrFail()
         {
             if (string.IsNullOrWhiteSpace(_session.SelectedGameId))
@@ -168,17 +171,10 @@ namespace Project.Games.Module.States
                 }
             }
 
-            if (_modesWithBack.Count == 0)
-            {
-                _modesWithBack.Add(new GameModeDefinition
-                {
-                    modeId = "default",
-                    kind = GameModeKind.Other,
-                    displayName = SafeGet("stats.mode.default")
-                });
-            }
-
             _modesWithBack.Add(null);
+
+            if (_index < 0) _index = 0;
+            if (_index >= _modesWithBack.Count) _index = _modesWithBack.Count - 1;
         }
 
         private bool IsBackSelected()
@@ -191,18 +187,25 @@ namespace Project.Games.Module.States
         {
             if (_va == null) return;
 
-            _va.SetHeaderKey("va.screen.game_stats", _game != null ? _game.displayName : "—");
+            _va.SetHeaderKey("va.screen.game_stats", GameLocalization.GetGameName(_loc, _game));
 
             string subHeader = IsBackSelected()
                 ? SafeGet("common.back")
-                : ResolveModeName(_modesWithBack[_index]);
+                : GameLocalization.GetModeName(_loc, _modesWithBack[_index]);
 
             _va.SetSubHeaderText(subHeader);
             _va.SetIdleHintKey(ResolveControlHintKey());
 
             var (descKey, descArgs) = BuildDescriptionKeyAndArgs();
-            string center = SafeGet(descKey, descArgs);
-            _va.SetCenterText(VaCenterLayer.PlannedSpeech, center);
+            if (!string.IsNullOrWhiteSpace(descKey))
+            {
+                string center = SafeGet(descKey, descArgs);
+                _va.SetCenterText(VaCenterLayer.PlannedSpeech, center);
+            }
+            else
+            {
+                _va.SetCenterText(VaCenterLayer.PlannedSpeech, "");
+            }
 
             ScheduleClearTransitioning();
         }
@@ -240,7 +243,7 @@ namespace Project.Games.Module.States
             else
             {
                 currentKey = "current.mode";
-                currentText = $"{ResolveModeName(_modesWithBack[_index])} ({viewLabel})";
+                currentText = $"{GameLocalization.GetModeName(_loc, _modesWithBack[_index])} ({viewLabel})";
             }
 
             var (descKey, descArgs) = BuildDescriptionKeyAndArgs();
@@ -249,7 +252,7 @@ namespace Project.Games.Module.States
                 UiAudioScope.GameModule,
                 ctx => BrowseSequence(
                     ctx,
-                    _game != null ? _game.displayName : "—",
+                    GameLocalization.GetGameName(_loc, _game),
                     currentKey,
                     currentText,
                     hintKey,
@@ -275,7 +278,7 @@ namespace Project.Games.Module.States
             else
             {
                 currentKey = "current.mode";
-                currentText = $"{ResolveModeName(_modesWithBack[_index])} ({viewLabel})";
+                currentText = $"{GameLocalization.GetModeName(_loc, _modesWithBack[_index])} ({viewLabel})";
             }
 
             var (descKey, descArgs) = BuildDescriptionKeyAndArgs();
@@ -296,7 +299,7 @@ namespace Project.Games.Module.States
                 return;
             }
 
-            string modeName = ResolveModeName(_modesWithBack[_index]);
+            string modeName = GameLocalization.GetModeName(_loc, _modesWithBack[_index]);
             string viewLabel = SafeGet(_showRecent ? "stats.view.recent" : "stats.view.overall");
 
             var (descKey, descArgs) = BuildDescriptionKeyAndArgs();
@@ -366,7 +369,7 @@ namespace Project.Games.Module.States
                 stillTransitioning: () => _sm.Transitions.IsTransitioning,
                 delaySeconds: 0.5f,
                 priority: SpeechPriority.High,
-                _game != null ? _game.displayName : null
+                GameLocalization.GetGameName(_loc, _game)
             );
 
             _sm.Transitions.RunInstant(() =>
@@ -378,9 +381,7 @@ namespace Project.Games.Module.States
         private (string key, object[] args) BuildDescriptionKeyAndArgs()
         {
             if (IsBackSelected())
-            {
-                return ("stats.back.desc", Array.Empty<object>());
-            }
+                return (null, Array.Empty<object>());
 
             int cap = 5;
             try
@@ -409,7 +410,7 @@ namespace Project.Games.Module.States
             if (_showRecent)
                 return BuildRecentDesc(ms.Value);
 
-            return BuildOverallDesc(mode, ms.Value);
+            return BuildOverallDesc(ms.Value);
         }
 
         private ModeStatsSnapshot? FindModeSnapshot(GameStatsSnapshot snap, string modeId)
@@ -426,44 +427,29 @@ namespace Project.Games.Module.States
             return null;
         }
 
-        private (string key, object[] args) BuildOverallDesc(GameModeDefinition modeDef, ModeStatsSnapshot ms)
+        private (string key, object[] args) BuildOverallDesc(ModeStatsSnapshot ms)
         {
             var o = ms.Overall;
 
             string runs = o.Runs.ToString();
-
-            bool endless = modeDef != null && modeDef.kind == GameModeKind.Endless;
-            string completions = endless ? SafeGet("stats.na") : o.Completions.ToString();
+            string completions = o.Completions.ToString();
 
             bool hasCompletion = o.Completions > 0;
 
             string bestLabel;
             string bestTime;
 
-            if (hasCompletion && o.BestTime.HasValue)
+            if (hasCompletion && o.BestCompletedTime.HasValue)
             {
-                bestLabel = endless
-                    ? SafeGet("stats.best_time.longest")
-                    : SafeGet("stats.best_time.shortest");
-
-                bestTime = FormatDuration(o.BestTime.Value);
+                bestLabel = SafeGet("stats.best_time.shortest");
+                bestTime = FormatDuration(o.BestCompletedTime.Value);
             }
             else
             {
-                TimeSpan longest = TimeSpan.Zero;
-
-                var rr = ms.RecentRuns;
-                if (rr != null)
-                {
-                    for (int i = 0; i < rr.Count; i++)
-                    {
-                        if (rr[i].Duration > longest)
-                            longest = rr[i].Duration;
-                    }
-                }
-
                 bestLabel = SafeGet("stats.best_time.longest");
-                bestTime = longest > TimeSpan.Zero ? FormatDuration(longest) : SafeGet("stats.na");
+                bestTime = o.BestSurvivalTime.HasValue
+                    ? FormatDuration(o.BestSurvivalTime.Value)
+                    : SafeGet("stats.na");
             }
 
             string lastPlayed = o.LastPlayedUtc.HasValue
@@ -517,23 +503,6 @@ namespace Project.Games.Module.States
             return mode == ControlHintMode.Touch
                 ? "hint.game_stats.touch"
                 : "hint.game_stats.keyboard";
-        }
-
-        private string ResolveModeName(GameModeDefinition mode)
-        {
-            if (mode == null) return "—";
-
-            var id = mode.modeId;
-            if (!string.IsNullOrWhiteSpace(id) && _loc != null)
-            {
-                var key = $"mode.{id}";
-                var localized = _loc.Get(key);
-
-                if (!string.IsNullOrWhiteSpace(localized) && localized != key)
-                    return localized;
-            }
-
-            return !string.IsNullOrWhiteSpace(mode.displayName) ? mode.displayName : (id ?? "—");
         }
 
         private string SafeGet(string key, params object[] args)

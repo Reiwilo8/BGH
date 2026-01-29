@@ -27,8 +27,8 @@ namespace Project.Games.Stats
                     overall: new ModeOverallSnapshot(
                         runs: m.runs,
                         completions: m.completions,
-                        bestTime: m.bestTimeTicks > 0 ? TimeSpan.FromTicks(m.bestTimeTicks) : (TimeSpan?)null,
-                        bestTimeDir: m.bestTimeDir,
+                        bestCompletedTime: m.bestCompletedTimeTicks > 0 ? TimeSpan.FromTicks(m.bestCompletedTimeTicks) : (TimeSpan?)null,
+                        bestSurvivalTime: m.bestSurvivalTimeTicks > 0 ? TimeSpan.FromTicks(m.bestSurvivalTimeTicks) : (TimeSpan?)null,
                         lastPlayedUtc: m.lastPlayedUtcTicks > 0 ? new DateTime(m.lastPlayedUtcTicks, DateTimeKind.Utc) : (DateTime?)null
                     ),
                     recentRuns: BuildRecent(m)
@@ -41,6 +41,9 @@ namespace Project.Games.Stats
 
         public void RecordRunStarted(string gameId, string modeId)
         {
+            if (!IsValidKey(gameId) || !IsValidKey(modeId))
+                return;
+
             var m = GetOrCreateMode(gameId, modeId);
             m.lastPlayedUtcTicks = DateTime.UtcNow.Ticks;
             _store.Save();
@@ -48,6 +51,9 @@ namespace Project.Games.Stats
 
         public void RecordRunFinished(string gameId, string modeId, TimeSpan duration, int score, bool completed)
         {
+            if (!IsValidKey(gameId) || !IsValidKey(modeId))
+                return;
+
             var m = GetOrCreateMode(gameId, modeId);
 
             m.runs++;
@@ -57,16 +63,15 @@ namespace Project.Games.Stats
 
             if (duration > TimeSpan.Zero)
             {
-                if (m.bestTimeTicks <= 0)
-                    m.bestTimeTicks = duration.Ticks;
-                else
-                {
-                    bool better = m.bestTimeDir == BestTimeDirection.LowerIsBetter
-                        ? duration.Ticks < m.bestTimeTicks
-                        : duration.Ticks > m.bestTimeTicks;
+                long ticks = duration.Ticks;
 
-                    if (better)
-                        m.bestTimeTicks = duration.Ticks;
+                if (m.bestSurvivalTimeTicks <= 0 || ticks > m.bestSurvivalTimeTicks)
+                    m.bestSurvivalTimeTicks = ticks;
+
+                if (completed)
+                {
+                    if (m.bestCompletedTimeTicks <= 0 || ticks < m.bestCompletedTimeTicks)
+                        m.bestCompletedTimeTicks = ticks;
                 }
             }
 
@@ -93,13 +98,12 @@ namespace Project.Games.Stats
         private GameModeStatsData GetOrCreateMode(string gameId, string modeId)
         {
             var g = _store.GetOrCreateGame(gameId);
-            string id = string.IsNullOrWhiteSpace(modeId) ? "default" : modeId;
 
             foreach (var m in g.stats.modes)
-                if (m.modeId == id)
+                if (m.modeId == modeId)
                     return m;
 
-            var nm = new GameModeStatsData { modeId = id };
+            var nm = new GameModeStatsData { modeId = modeId };
             g.stats.modes.Add(nm);
             return nm;
         }
@@ -116,10 +120,14 @@ namespace Project.Games.Stats
                     duration: r.durationTicks > 0 ? TimeSpan.FromTicks(r.durationTicks) : TimeSpan.Zero,
                     score: r.score,
                     completed: r.completed,
-                    finishedUtc: new DateTime(r.finishedUtcTicks, DateTimeKind.Utc)
+                    finishedUtc: r.finishedUtcTicks > 0
+                        ? new DateTime(r.finishedUtcTicks, DateTimeKind.Utc)
+                        : DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc)
                 ));
             }
             return list;
         }
+
+        private static bool IsValidKey(string s) => !string.IsNullOrWhiteSpace(s);
     }
 }

@@ -8,9 +8,23 @@ namespace Project.Games.Definitions
         [Header("Identity")]
         public string gameId;
 
-        [Header("Presentation (EN for now)")]
+        [Header("Localization")]
+        [Tooltip("String Table Collection name, e.g. 'Game_SteamRush'.")]
+        public string localizationTable;
+
+        [Tooltip("Key inside game's table. Recommended: 'name'.")]
+        public string nameKey = "name";
+
+        [Tooltip("Key inside game's table. Recommended: 'description'.")]
+        public string descriptionKey = "description";
+
+        [Header("Presentation (legacy fallback, EN)")]
+        [Tooltip("Used only if localization key/table is missing.")]
         public string displayName;
-        [TextArea] public string description;
+
+        [TextArea]
+        [Tooltip("Used only if localization key/table is missing.")]
+        public string description;
 
         [Header("Scenes")]
         public string gameplaySceneName;

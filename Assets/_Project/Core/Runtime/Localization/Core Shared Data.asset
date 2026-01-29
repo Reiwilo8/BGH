@@ -251,6 +251,10 @@ MonoBehaviour:
     m_Key: hint.gameplay.keyboard
     m_Metadata:
       m_Items: []
+  - m_Id: 6611808413446144
+    m_Key: common.text
+    m_Metadata:
+      m_Items: []
   - m_Id: 153419705643041
     m_Key: common.back
     m_Metadata:
@@ -443,6 +447,34 @@ MonoBehaviour:
     m_Key: settings.visual_mode.dimmer_strength.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 6913720912343040
+    m_Key: settings.run_params
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914324351053824
+    m_Key: settings.run_params.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914792171139072
+    m_Key: settings.run_params.random_seed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6915083419414528
+    m_Key: settings.run_params.random_seed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6915608009404416
+    m_Key: settings.run_params.seed_list
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6915794404274176
+    m_Key: settings.run_params.seed_list.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6916139612270592
+    m_Key: settings.run_params.seed.none
+    m_Metadata:
+      m_Items: []
   - m_Id: 6341833492688896
     m_Key: settings.stats
     m_Metadata:
@@ -577,10 +609,6 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 6295672354402304
     m_Key: stats.never
-    m_Metadata:
-      m_Items: []
-  - m_Id: 6295903083065344
-    m_Key: stats.mode.default
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643056

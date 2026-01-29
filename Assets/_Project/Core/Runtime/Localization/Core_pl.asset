@@ -660,10 +660,6 @@ MonoBehaviour:
     m_Localized: Nigdy
     m_Metadata:
       m_Items: []
-  - m_Id: 6295903083065344
-    m_Localized: "Domy\u015Blny"
-    m_Metadata:
-      m_Items: []
   - m_Id: 6327680522678272
     m_Localized: Brak danych dla tego trybu.
     m_Metadata:
@@ -735,6 +731,39 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 6371749605044224
     m_Localized: wpisy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6611808413446144
+    m_Localized: '{0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6913720912343040
+    m_Localized: "Parametry rozpocz\u0119cia rozgrywki"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914324351053824
+    m_Localized: "Ustawienia wp\u0142ywaj\u0105ce na rozpocz\u0119cie rozgrywki."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914792171139072
+    m_Localized: Losowy seed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6915083419414528
+    m_Localized: "W\u0142\u0105cz, aby generowa\u0107 seed dla rozgrywki lub wy\u0142\u0105cz,
+      \u017Ceby ustawi\u0107 seed r\u0119cznie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6915608009404416
+    m_Localized: "Lista seed\xF3w"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6915794404274176
+    m_Localized: Wybierz seed z poprzednich rozgrywek.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6916139612270592
+    m_Localized: "Brak zapisanych seed\xF3w"
     m_Metadata:
       m_Items: []
   references:

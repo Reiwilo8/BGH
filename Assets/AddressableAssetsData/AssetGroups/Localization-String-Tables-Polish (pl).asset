@@ -15,6 +15,24 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-Polish (pl)
   m_GUID: 9ec45cbf6bcf249489580069bcffb73e
   m_SerializeEntries:
+  - m_GUID: 8f1bf34f213eee645aae889e59c0eee3
+    m_Address: Game_Memory_pl
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-pl
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c4748448d6c771445a68148722997c3b
+    m_Address: Game_SteamRush_pl
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-pl
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e3032c06ebbfc6d4bbffe2198e769a5c
+    m_Address: Game_Fishing_pl
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-pl
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ee861c89e88a52f4695e397389ca9eb6
     m_Address: Core_pl
     m_ReadOnly: 1

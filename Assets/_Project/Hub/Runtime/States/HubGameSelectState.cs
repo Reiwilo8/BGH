@@ -1,13 +1,14 @@
 using Project.Core.App;
 using Project.Core.Audio;
-using Project.Core.Audio.Sequences.Common;
 using Project.Core.Audio.Steps;
 using Project.Core.Input;
+using Project.Core.Localization;
 using Project.Core.Settings;
 using Project.Core.Speech;
 using Project.Core.VisualAssist;
 using Project.Games.Catalog;
 using Project.Games.Definitions;
+using Project.Games.Localization;
 using Project.Hub.Sequences;
 using System.Collections;
 using UnityEngine;
@@ -18,17 +19,22 @@ namespace Project.Hub.States
     {
         private readonly HubStateMachine _sm;
         private readonly GameCatalog _catalog;
-        private int _index;
-
+        private readonly ILocalizationService _loc;
         private readonly IVisualAssistService _va;
+
+        private int _index;
 
         public string Name => "Hub.GameSelect";
 
         public HubGameSelectState(HubStateMachine sm)
         {
             _sm = sm;
-            _catalog = AppContext.Services.Resolve<GameCatalog>();
-            _va = AppContext.Services.Resolve<IVisualAssistService>();
+
+            var services = AppContext.Services;
+
+            _catalog = services.Resolve<GameCatalog>();
+            _loc = services.Resolve<ILocalizationService>();
+            _va = services.Resolve<IVisualAssistService>();
         }
 
         public void Enter()
@@ -41,8 +47,18 @@ namespace Project.Hub.States
         }
 
         public void Exit() { }
-        public void OnFocusGained() { RefreshVa(); PlayPrompt(); }
-        public void OnRepeatRequested() { RefreshVa(); PlayPrompt(); }
+
+        public void OnFocusGained()
+        {
+            RefreshVa();
+            PlayPrompt();
+        }
+
+        public void OnRepeatRequested()
+        {
+            RefreshVa();
+            PlayPrompt();
+        }
 
         public void Handle(NavAction action)
         {
@@ -70,18 +86,14 @@ namespace Project.Hub.States
             {
                 case NavAction.Next:
                     _index = (_index + 1) % count;
-
                     _va?.PulseListMove(VaListMoveDirection.Next);
-
                     RefreshVa();
                     PlayCurrent();
                     break;
 
                 case NavAction.Previous:
                     _index = (_index - 1 + count) % count;
-
                     _va?.PulseListMove(VaListMoveDirection.Previous);
-
                     RefreshVa();
                     PlayCurrent();
                     break;
@@ -134,17 +146,16 @@ namespace Project.Hub.States
 
         private string GetCurrentTextForVa(GameDefinition[] games)
         {
-            var loc = AppContext.Services.Resolve<Project.Core.Localization.ILocalizationService>();
-
             if (games == null || games.Length == 0)
-                return loc.Get("va.current", loc.Get("common.back"));
+                return _loc.Get("va.current", _loc.Get("common.back"));
 
             if (IsBackItem(games))
-                return loc.Get("va.current", loc.Get("common.back"));
+                return _loc.Get("va.current", _loc.Get("common.back"));
 
             var g = games[_index];
-            var name = (g != null && !string.IsNullOrWhiteSpace(g.displayName)) ? g.displayName : "Unknown";
-            return loc.Get("va.game", name);
+            var name = GameLocalization.GetGameName(_loc, g);
+
+            return _loc.Get("va.game", name);
         }
 
         private void PlayPrompt()
@@ -153,7 +164,11 @@ namespace Project.Hub.States
 
             _sm.UiAudio.Play(
                 UiAudioScope.Hub,
-                ctx => GameSelectPromptSequence.Run(ctx, GetCurrentText(ctx, _catalog.games), hintKey),
+                ctx =>
+                {
+                    var (name, desc) = GetCurrentNameAndDesc(ctx, _catalog.games);
+                    return GameSelectPromptSequence.Run(ctx, name, desc, hintKey);
+                },
                 SpeechPriority.Normal,
                 interruptible: true
             );
@@ -163,10 +178,30 @@ namespace Project.Hub.States
         {
             _sm.UiAudio.Play(
                 UiAudioScope.Hub,
-                ctx => CurrentItemSequence.Run(ctx, "current.game", GetCurrentText(ctx, _catalog.games)),
+                ctx =>
+                {
+                    var (name, desc) = GetCurrentNameAndDesc(ctx, _catalog.games);
+                    return GameSelectCurrentSequence.Run(ctx, name, desc);
+                },
                 SpeechPriority.Normal,
                 interruptible: true
             );
+        }
+
+        private (string name, string descOrNull) GetCurrentNameAndDesc(UiAudioContext ctx, GameDefinition[] games)
+        {
+            if (games == null || games.Length == 0 || IsBackItem(games))
+                return (ctx.Localization.Get("common.back"), null);
+
+            var g = games[_index];
+
+            var name = GameLocalization.GetGameName(ctx.Localization, g);
+
+            var desc = GameLocalization.GetGameDescription(ctx.Localization, g);
+            if (string.IsNullOrWhiteSpace(desc))
+                desc = null;
+
+            return (name, desc);
         }
 
         private void BackToMain()
@@ -197,33 +232,21 @@ namespace Project.Hub.States
 
             _va?.NotifyTransitioning();
 
+            string gameName = GameLocalization.GetGameName(_loc, game);
+
             _sm.UiAudio.PlayGated(
                 UiAudioScope.Hub,
                 "nav.to_game_menu",
                 stillTransitioning: () => _sm.Flow.IsTransitioning,
                 delaySeconds: 0.5f,
                 priority: SpeechPriority.High,
-                game.displayName
+                gameName
             );
 
             await _sm.Flow.EnterGameModuleAsync(game.gameId);
         }
 
         private bool IsBackItem(GameDefinition[] games) => _index == games.Length;
-
-        private string GetCurrentText(UiAudioContext ctx, GameDefinition[] games)
-        {
-            if (games == null || games.Length == 0)
-                return ctx.Localization.Get("common.back");
-
-            if (IsBackItem(games))
-                return ctx.Localization.Get("common.back");
-
-            var g = games[_index];
-            return (g != null && !string.IsNullOrWhiteSpace(g.displayName))
-                ? g.displayName
-                : "Unknown";
-        }
 
         private static string ResolveControlHintKey(AppSettingsData settings)
         {

@@ -8,6 +8,8 @@ using Project.Core.Speech;
 using Project.Core.VisualAssist;
 using Project.Games.Catalog;
 using Project.Games.Definitions;
+using Project.Games.Localization;
+using Project.Games.Run;
 using Project.Games.Sequences;
 using UnityEngine;
 
@@ -25,6 +27,9 @@ namespace Project.Games.Module.States
         private readonly GameCatalog _catalog;
         private readonly ILocalizationService _loc;
         private readonly IVisualAssistService _va;
+
+        private readonly IGameRunContextService _runs;
+        private readonly IGameRunParametersService _runParams;
 
         private GameDefinition _game;
 
@@ -55,6 +60,12 @@ namespace Project.Games.Module.States
             _catalog = services.Resolve<GameCatalog>();
             _loc = services.Resolve<ILocalizationService>();
             _va = services.Resolve<IVisualAssistService>();
+
+            try { _runs = services.Resolve<IGameRunContextService>(); }
+            catch { _runs = null; }
+
+            try { _runParams = services.Resolve<IGameRunParametersService>(); }
+            catch { _runParams = null; }
         }
 
         public void Enter()
@@ -169,7 +180,7 @@ namespace Project.Games.Module.States
         {
             if (_va == null) return;
 
-            _va.SetHeaderKey("va.screen.game_menu", _game != null ? _game.displayName : "—");
+            _va.SetHeaderKey("va.screen.game_menu", GameLocalization.GetGameName(_loc, _game));
             _va.SetSubHeaderText(DescribeItem(_items[_index]));
             _va.SetIdleHintKey(ResolveControlHintKey());
 
@@ -205,7 +216,7 @@ namespace Project.Games.Module.States
                 UiAudioScope.GameModule,
                 ctx => GameMenuPromptSequence.Run(
                     ctx,
-                    _game.displayName,
+                    GameLocalization.GetGameName(ctx.Localization, _game),
                     currentKey,
                     currentText,
                     hintKey),
@@ -246,6 +257,43 @@ namespace Project.Games.Module.States
 
                     _session.SelectMode(item.Mode.modeId);
 
+                    int? seed = null;
+                    bool useRandomSeed = true;
+
+                    try
+                    {
+                        if (_runParams != null)
+                        {
+                            useRandomSeed = _runParams.GetUseRandomSeed(_session.SelectedGameId);
+                            seed = _runParams.ResolveSeedForNewRun(_session.SelectedGameId);
+                        }
+                    }
+                    catch
+                    {
+                        useRandomSeed = true;
+                        seed = null;
+                    }
+
+                    bool wereRunSettingsCustomized = !useRandomSeed;
+
+                    var initialParams = GameRunInitialParametersBuilder.Build(
+                        settings: _settings,
+                        useRandomSeed: useRandomSeed,
+                        seedValue: seed
+                    );
+
+                    try
+                    {
+                        _runs?.PrepareRun(
+                            gameId: _session.SelectedGameId,
+                            modeId: _session.SelectedModeId,
+                            seed: seed,
+                            initialParameters: initialParams,
+                            wereRunSettingsCustomized: wereRunSettingsCustomized
+                        );
+                    }
+                    catch { }
+
                     _uiAudio.CancelCurrent();
                     _va?.NotifyTransitioning();
 
@@ -254,8 +302,8 @@ namespace Project.Games.Module.States
                         ctx => NavigateToSequence.Run(
                             ctx,
                             "nav.to_gameplay",
-                            _game.displayName,
-                            ResolveModeName(item.Mode)),
+                            GameLocalization.GetGameName(ctx.Localization, _game),
+                            GameLocalization.GetModeName(ctx.Localization, item.Mode)),
                         SpeechPriority.High,
                         interruptible: false
                     );
@@ -275,7 +323,7 @@ namespace Project.Games.Module.States
                         stillTransitioning: () => _sm.Transitions.IsTransitioning,
                         delaySeconds: 0.5f,
                         priority: SpeechPriority.High,
-                        _game.displayName
+                        GameLocalization.GetGameName(_loc, _game)
                     );
 
                     _sm.Transitions.RunInstant(() =>
@@ -296,7 +344,7 @@ namespace Project.Games.Module.States
                         stillTransitioning: () => _sm.Transitions.IsTransitioning,
                         delaySeconds: 0.5f,
                         priority: SpeechPriority.High,
-                        _game.displayName
+                        GameLocalization.GetGameName(_loc, _game)
                     );
 
                     _sm.Transitions.RunInstant(() =>
@@ -335,29 +383,12 @@ namespace Project.Games.Module.States
 
             return item.Kind switch
             {
-                MenuItemKind.Mode => ResolveModeName(item.Mode),
+                MenuItemKind.Mode => GameLocalization.GetModeName(_loc, item.Mode),
                 MenuItemKind.Settings => SafeGet("common.settings"),
                 MenuItemKind.Stats => SafeGet("common.stats"),
                 MenuItemKind.Back => SafeGet("common.back"),
                 _ => "Unknown"
             };
-        }
-
-        private string ResolveModeName(GameModeDefinition mode)
-        {
-            if (mode == null) return "Unknown";
-
-            var id = mode.modeId;
-            if (!string.IsNullOrWhiteSpace(id) && _loc != null)
-            {
-                var key = $"mode.{id}";
-                var localized = _loc.Get(key);
-
-                if (!string.IsNullOrWhiteSpace(localized) && localized != key)
-                    return localized;
-            }
-
-            return !string.IsNullOrWhiteSpace(mode.displayName) ? mode.displayName : "Unknown";
         }
 
         private int ResolveInitialIndexWithMemory()
