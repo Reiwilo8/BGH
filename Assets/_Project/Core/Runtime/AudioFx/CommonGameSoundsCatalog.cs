@@ -3,26 +3,26 @@ using UnityEngine;
 
 namespace Project.Core.AudioFx
 {
-    [CreateAssetMenu(menuName = "Project/AudioFx/AudioFx Catalog")]
-    public sealed class AudioFxCatalog : ScriptableObject
+    [CreateAssetMenu(menuName = "Project/AudioFx/Common Game Sounds Catalog")]
+    public sealed class CommonGameSoundsCatalog : ScriptableObject
     {
         [Serializable]
-        public sealed class UiCueEntry
+        public sealed class Entry
         {
-            public UiCueId id;
+            public CommonGameSoundId id;
             public AudioClip clip;
             [Range(0f, 1f)] public float defaultVolume01 = 1f;
         }
 
-        public UiCueEntry[] uiCues;
+        public Entry[] entries;
 
-        public bool TryGet(UiCueId id, out AudioClip clip, out float defaultVolume01)
+        public bool TryGet(CommonGameSoundId id, out AudioClip clip, out float defaultVolume01)
         {
-            if (uiCues != null)
+            if (entries != null)
             {
-                for (int i = 0; i < uiCues.Length; i++)
+                for (int i = 0; i < entries.Length; i++)
                 {
-                    var e = uiCues[i];
+                    var e = entries[i];
                     if (e == null) continue;
                     if (e.id != id) continue;
 

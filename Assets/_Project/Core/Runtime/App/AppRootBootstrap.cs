@@ -22,7 +22,9 @@ namespace Project.Core.App
         [SerializeField] private string hubSceneName = "HubScene";
 
         [Header("AudioFx")]
-        [SerializeField] private AudioFxCatalog audioFxCatalog;
+        [SerializeField] private UiCuesCatalog uiCuesCatalog;
+        [SerializeField] private CommonGameSoundsCatalog commonGameSoundsCatalog;
+        [SerializeField] private GameAudioCatalogRegistry gameAudioCatalogRegistry;
 
         [Header("Diagnostics")]
         [SerializeField] private bool speakOnBoot = false;
@@ -96,7 +98,15 @@ namespace Project.Core.App
             if (_audioFx == null)
                 _audioFx = gameObject.AddComponent<AudioFxService>();
 
-            _audioFx.SetCatalog(audioFxCatalog);
+            _audioFx.SetUiCuesCatalog(uiCuesCatalog);
+            _audioFx.SetCommonGameSoundsCatalog(commonGameSoundsCatalog);
+            _audioFx.SetGameCatalogRegistry(gameAudioCatalogRegistry);
+
+            _audioFx.SetCurrentGameResolver(() =>
+            {
+                var session = AppContext.Services.Resolve<AppSession>();
+                return session?.SelectedGameId;
+            });
 
             ApplyAudioSettings(settings.Current, _audioFx);
 
