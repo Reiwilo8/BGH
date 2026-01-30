@@ -375,6 +375,38 @@ MonoBehaviour:
     m_Key: settings.game_volume.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 6964765810126848
+    m_Key: settings.haptics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965445354483712
+    m_Key: settings.haptics.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6966749011275776
+    m_Key: settings.haptics.enabled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6967116398751744
+    m_Key: settings.haptics.enabled.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6967633539657728
+    m_Key: settings.haptics.strength
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6968241143312384
+    m_Key: settings.haptics.strength.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6968542193676288
+    m_Key: settings.haptics.audio_fallback
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6969064334192640
+    m_Key: settings.haptics.audio_fallback.desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 4643841337356288
     m_Key: settings.repeat
     m_Metadata:

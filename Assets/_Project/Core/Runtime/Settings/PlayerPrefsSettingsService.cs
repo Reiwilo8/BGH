@@ -106,6 +106,8 @@ namespace Project.Core.Settings
             Current.vaDimmerStrength01 = Mathf.Clamp01(Current.vaDimmerStrength01);
             Current.vaDimmerStrength01 = Quantize(Current.vaDimmerStrength01, 0.1f);
 
+            Current.hapticsStrengthScale01 = Mathf.Clamp01(Current.hapticsStrengthScale01);
+
             NormalizeRepeatCoherence();
         }
 
@@ -200,6 +202,25 @@ namespace Project.Core.Settings
             Save();
         }
 
+        public void SetHapticsEnabled(bool enabled)
+        {
+            Current.hapticsEnabled = enabled;
+            Save();
+        }
+
+        public void SetHapticsStrengthScale01(float scale01)
+        {
+            Current.hapticsStrengthScale01 = Mathf.Clamp01(scale01);
+            Current.hapticsStrengthScale01 = Quantize(Current.hapticsStrengthScale01, 0.1f);
+            Save();
+        }
+
+        public void SetHapticsAudioFallbackEnabled(bool enabled)
+        {
+            Current.hapticsAudioFallbackEnabled = enabled;
+            Save();
+        }
+
         private void PostLoadNormalizeAndMigrate()
         {
             Current.cuesVolume = Mathf.Clamp01(Current.cuesVolume);
@@ -215,6 +236,9 @@ namespace Project.Core.Settings
 
             Current.vaDimmerStrength01 = Mathf.Clamp01(Current.vaDimmerStrength01);
             Current.vaDimmerStrength01 = Quantize(Current.vaDimmerStrength01, 0.1f);
+
+            Current.hapticsStrengthScale01 = Mathf.Clamp01(Current.hapticsStrengthScale01);
+            Current.hapticsStrengthScale01 = Quantize(Current.hapticsStrengthScale01, 0.1f);
 
             if (!PlayerPrefs.HasKey(RepeatInitMarkerKey))
             {
@@ -275,6 +299,10 @@ namespace Project.Core.Settings
                 cuesEnabled = src.cuesEnabled,
                 cuesVolume = src.cuesVolume,
                 gameVolume = src.gameVolume,
+
+                hapticsEnabled = src.hapticsEnabled,
+                hapticsStrengthScale01 = src.hapticsStrengthScale01,
+                hapticsAudioFallbackEnabled = src.hapticsAudioFallbackEnabled,
 
                 repeatIdleSeconds = src.repeatIdleSeconds,
 

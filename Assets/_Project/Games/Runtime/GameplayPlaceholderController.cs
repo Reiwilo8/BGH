@@ -1,6 +1,7 @@
 using Project.Core.App;
 using Project.Core.Audio;
 using Project.Core.AudioFx;
+using Project.Core.Haptics;
 using Project.Core.Input;
 using Project.Core.Localization;
 using Project.Core.Settings;
@@ -21,6 +22,8 @@ namespace Project.Games.Gameplay
         private IAppFlowService _flow;
         private ISettingsService _settings;
 
+        private IHapticsService _haptics;
+
         private ILocalizationService _loc;
 
         private AppSession _session;
@@ -36,6 +39,9 @@ namespace Project.Games.Gameplay
 
         private bool _startRunScheduled;
 
+        private int _continuousLevelIndex = -1;
+        private HapticsHandle _continuousHandle;
+
         private void Awake()
         {
             var services = Core.App.AppContext.Services;
@@ -44,6 +50,9 @@ namespace Project.Games.Gameplay
             _uiAudio = services.Resolve<IUiAudioOrchestrator>();
             _flow = services.Resolve<IAppFlowService>();
             _settings = services.Resolve<ISettingsService>();
+
+            try { _haptics = services.Resolve<IHapticsService>(); }
+            catch { _haptics = null; }
 
             _loc = services.Resolve<ILocalizationService>();
 
@@ -68,6 +77,16 @@ namespace Project.Games.Gameplay
             RefreshVa();
 
             PlayPromptAndStartRunAfterSequence();
+        }
+
+        private void OnDisable()
+        {
+            StopContinuousHaptics(graceful: true);
+        }
+
+        private void OnDestroy()
+        {
+            StopContinuousHaptics(graceful: true);
         }
 
         private void EnsurePreparedRunFallback()
@@ -121,9 +140,32 @@ namespace Project.Games.Gameplay
 
         public void Handle(NavAction action)
         {
+            if (action == NavAction.Next)
+            {
+                IncreaseContinuousHapticsLevel();
+                return;
+            }
+
+            if (action == NavAction.Previous)
+            {
+                DecreaseContinuousHapticsLevel();
+                return;
+            }
+
+            if (action == NavAction.Confirm)
+            {
+                _haptics?.Pulse(HapticLevel.Light);
+                return;
+            }
+
             if (action == NavAction.Back)
             {
                 _audioFx?.PlayUiCue(UiCueId.Back);
+
+                _haptics?.Pulse(HapticLevel.Strong);
+
+                StopContinuousHaptics(graceful: true);
+
                 _ = ReturnAsync();
             }
         }
@@ -265,6 +307,75 @@ namespace Project.Games.Gameplay
                 );
             }
             catch { }
+        }
+
+        private void IncreaseContinuousHapticsLevel()
+        {
+            if (_haptics == null)
+                return;
+
+            int next = Mathf.Clamp(_continuousLevelIndex + 1, -1, 2);
+            ApplyContinuousLevel(next);
+        }
+
+        private void DecreaseContinuousHapticsLevel()
+        {
+            if (_haptics == null)
+                return;
+
+            int next = Mathf.Clamp(_continuousLevelIndex - 1, -1, 2);
+            ApplyContinuousLevel(next);
+        }
+
+        private void ApplyContinuousLevel(int newIndex)
+        {
+            if (_haptics == null)
+            {
+                _continuousLevelIndex = -1;
+                _continuousHandle = null;
+                return;
+            }
+
+            newIndex = Mathf.Clamp(newIndex, -1, 2);
+
+            if (newIndex == _continuousLevelIndex)
+                return;
+
+            StopContinuousHaptics(graceful: true);
+
+            _continuousLevelIndex = newIndex;
+
+            if (_continuousLevelIndex < 0)
+                return;
+
+            var level = _continuousLevelIndex switch
+            {
+                0 => HapticLevel.Light,
+                1 => HapticLevel.Medium,
+                2 => HapticLevel.Strong,
+                _ => HapticLevel.Medium
+            };
+
+            _continuousHandle = _haptics.StartContinuous(level);
+        }
+
+        private void StopContinuousHaptics(bool graceful)
+        {
+            if (_continuousHandle != null)
+            {
+                try
+                {
+                    _continuousHandle.Stop();
+                }
+                catch { }
+            }
+
+            _continuousHandle = null;
+
+            if (!graceful)
+                _continuousLevelIndex = -1;
+
+            _continuousLevelIndex = -1;
         }
     }
 }

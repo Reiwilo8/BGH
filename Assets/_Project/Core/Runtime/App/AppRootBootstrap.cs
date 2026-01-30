@@ -1,6 +1,7 @@
 using Project.Core.Activity;
 using Project.Core.Audio;
 using Project.Core.AudioFx;
+using Project.Core.Haptics;
 using Project.Core.Input;
 using Project.Core.Localization;
 using Project.Core.Services;
@@ -36,6 +37,7 @@ namespace Project.Core.App
 
         private ISettingsService _settings;
         private AudioFxService _audioFx;
+        private HapticsService _haptics;
 
         private void Awake()
         {
@@ -59,6 +61,10 @@ namespace Project.Core.App
                 cuesEnabled = true,
                 cuesVolume = 1f,
                 gameVolume = 1f,
+
+                hapticsEnabled = true,
+                hapticsStrengthScale01 = 1f,
+                hapticsAudioFallbackEnabled = true,
 
                 repeatIdleSeconds = 10f,
 
@@ -112,6 +118,15 @@ namespace Project.Core.App
 
             _services.Register<IAudioFxService>(_audioFx);
 
+            _haptics = GetComponent<HapticsService>();
+            if (_haptics == null)
+                _haptics = gameObject.AddComponent<HapticsService>();
+
+            _haptics.Init(_audioFx);
+            ApplyHapticsSettings(settings.Current, _haptics);
+
+            _services.Register<IHapticsService>(_haptics);
+
             settings.Changed -= OnSettingsChanged;
             settings.Changed += OnSettingsChanged;
 
@@ -147,8 +162,13 @@ namespace Project.Core.App
 
         private void OnSettingsChanged()
         {
-            if (_settings == null || _audioFx == null) return;
-            ApplyAudioSettings(_settings.Current, _audioFx);
+            if (_settings == null) return;
+
+            if (_audioFx != null)
+                ApplyAudioSettings(_settings.Current, _audioFx);
+
+            if (_haptics != null)
+                ApplyHapticsSettings(_settings.Current, _haptics);
         }
 
         private static void ApplyAudioSettings(AppSettingsData s, AudioFxService audioFx)
@@ -158,6 +178,15 @@ namespace Project.Core.App
             audioFx.SetUiCuesEnabled(s.cuesEnabled);
             audioFx.SetBusVolume01(AudioFxBus.UiCues, Mathf.Clamp01(s.cuesVolume));
             audioFx.SetBusVolume01(AudioFxBus.GameSounds, Mathf.Clamp01(s.gameVolume));
+        }
+
+        private static void ApplyHapticsSettings(AppSettingsData s, HapticsService haptics)
+        {
+            if (s == null || haptics == null) return;
+
+            haptics.SetEnabled(s.hapticsEnabled);
+            haptics.SetStrengthScale01(Mathf.Clamp01(s.hapticsStrengthScale01));
+            haptics.SetAudioFallbackEnabled(s.hapticsAudioFallbackEnabled);
         }
 
         private void EnsureRepeatAutoDriver(float intervalSeconds)

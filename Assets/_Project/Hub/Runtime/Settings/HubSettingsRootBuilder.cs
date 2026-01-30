@@ -44,6 +44,8 @@ namespace Project.Hub.Settings
 
                 BuildAudioFolder(),
 
+                BuildHapticsFolder(),
+
                 BuildRepeatFolder(),
 
                 BuildVisualModeFolder(),
@@ -342,6 +344,42 @@ namespace Project.Hub.Settings
                         step: 0.05f,
                         getValue: () => _settings.Current.gameVolume,
                         setValue: v => _settings.SetGameVolume01(v)
+                    ),
+
+                    new SettingsAction("common.back", execute: () => { })
+                }
+            );
+        }
+
+        private SettingsFolder BuildHapticsFolder()
+        {
+            return new SettingsFolder(
+                labelKey: "settings.haptics",
+                descriptionKey: "settings.haptics.desc",
+                buildChildren: () => new List<SettingsItem>
+                {
+                    new SettingsToggle(
+                        labelKey: "settings.haptics.enabled",
+                        descriptionKey: "settings.haptics.enabled.desc",
+                        getValue: () => _settings.Current.hapticsEnabled,
+                        setValue: enabled => _settings.SetHapticsEnabled(enabled)
+                    ),
+
+                    new SettingsRange(
+                        labelKey: "settings.haptics.strength",
+                        descriptionKey: "settings.haptics.strength.desc",
+                        min: 0f,
+                        max: 1f,
+                        step: 0.1f,
+                        getValue: () => _settings.Current.hapticsStrengthScale01,
+                        setValue: v => _settings.SetHapticsStrengthScale01(v)
+                    ),
+
+                    new SettingsToggle(
+                        labelKey: "settings.haptics.audio_fallback",
+                        descriptionKey: "settings.haptics.audio_fallback.desc",
+                        getValue: () => _settings.Current.hapticsAudioFallbackEnabled,
+                        setValue: enabled => _settings.SetHapticsAudioFallbackEnabled(enabled)
                     ),
 
                     new SettingsAction("common.back", execute: () => { })
