@@ -57,6 +57,15 @@ namespace Project.Hub
                 return;
             }
 
+            if (_current is States.HubMainState && action == NavAction.Confirm)
+            {
+                if (HubMainSelection == States.HubMainOption.Exit)
+                {
+                    _current.Handle(action);
+                    return;
+                }
+            }
+
             PlayNavCueForHub(action);
             _current?.Handle(action);
         }
