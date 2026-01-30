@@ -17,6 +17,8 @@ namespace Project.Core.Speech
 
         private int _uttCounter;
 
+        private bool _hasProgressListener;
+
         public AndroidSpeechService()
         {
             try
@@ -30,19 +32,15 @@ namespace Project.Core.Speech
                     new OnInitListener(OnTtsInit)
                 );
 
-                var listener = new UtteranceListener(
-                    onStart: _ => _isSpeaking = true,
-                    onDone: _ => _isSpeaking = false,
-                    onError: _ => _isSpeaking = false
-                );
-
-                _tts.Call("setOnUtteranceProgressListener", listener);
+                // Listener jest opcjonalny – nie mo¿e psuæ ca³ego TTS.
+                TryAttachProgressListener();
             }
             catch (Exception e)
             {
                 Debug.LogWarning($"AndroidSpeechService init failed: {e.Message}");
                 _tts = null;
                 _ready = false;
+                _isSpeaking = false;
             }
         }
 
@@ -51,7 +49,10 @@ namespace Project.Core.Speech
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
-            if (!_ready || _tts == null)
+            if (_tts == null)
+                return;
+
+            if (!_ready)
             {
                 _pendingText = text;
                 return;
@@ -77,15 +78,19 @@ namespace Project.Core.Speech
         {
             _lang = string.IsNullOrWhiteSpace(languageCode) ? "en" : languageCode;
 
-            if (!_ready || _tts == null) return;
+            if (!_ready || _tts == null)
+                return;
 
             try
             {
+                // Wspieramy zarówno "en", jak i "en-US"
                 AndroidJavaObject locale;
                 if (_lang.Contains("-"))
                 {
                     var parts = _lang.Split('-');
-                    locale = new AndroidJavaObject("java.util.Locale", parts[0], parts[1]);
+                    locale = parts.Length >= 2
+                        ? new AndroidJavaObject("java.util.Locale", parts[0], parts[1])
+                        : new AndroidJavaObject("java.util.Locale", parts[0]);
                 }
                 else
                 {
@@ -118,16 +123,41 @@ namespace Project.Core.Speech
         {
             try
             {
+                if (!_hasProgressListener)
+                    _isSpeaking = true;
+
                 var utteranceId = $"utt_{++_uttCounter}";
 
-                using var bundle = new AndroidJavaObject("android.os.Bundle");
-                bundle.Call("putString", "utteranceId", utteranceId);
+                _tts.Call<int>("speak", text, 0, null, utteranceId);
 
-                _tts.Call<int>("speak", text, 0, bundle, utteranceId);
+                if (!_hasProgressListener)
+                    _isSpeaking = false;
             }
             catch
             {
                 _isSpeaking = false;
+            }
+        }
+
+        private void TryAttachProgressListener()
+        {
+            if (_tts == null)
+                return;
+
+            try
+            {
+                var listener = new UtteranceListener(
+                    onStart: _ => _isSpeaking = true,
+                    onDone: _ => _isSpeaking = false,
+                    onError: _ => _isSpeaking = false
+                );
+
+                _tts.Call("setOnUtteranceProgressListener", listener);
+                _hasProgressListener = true;
+            }
+            catch
+            {
+                _hasProgressListener = false;
             }
         }
 
