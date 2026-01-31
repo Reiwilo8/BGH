@@ -7,16 +7,12 @@ namespace Project.Games.Sequences
 {
     public static class GameplayPromptSequence
     {
-        public static IEnumerator Run(
-            UiAudioContext ctx,
-            string gameName,
-            string modeName,
-            string hintKey)
+        public static IEnumerator Run(UiAudioContext ctx, IAudioFxService audioFx)
         {
-            yield return UiAudioSteps.SpeakKeyAndWait(ctx, "enter.gameplay", gameName, modeName);
-            yield return UiAudioSteps.SpeakKeyAndWait(ctx, hintKey);
+            yield return UiAudioSteps.SpeakKeyAndWait(ctx, "enter.gameplay");
 
-            UiAudioSteps.PlayUiCue(ctx, UiCueId.SequenceEnd);
+            try { audioFx?.PlayCommonGameSound(CommonGameSoundId.GameStart); }
+            catch { }
         }
     }
 }

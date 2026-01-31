@@ -79,6 +79,10 @@ MonoBehaviour:
     m_Key: enter.gameplay
     m_Metadata:
       m_Items: []
+  - m_Id: 7095303988473856
+    m_Key: enter.pause
+    m_Metadata:
+      m_Items: []
   - m_Id: 153419705643018
     m_Key: nav.to_main_menu
     m_Metadata:
@@ -249,6 +253,14 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 153419705643040
     m_Key: hint.gameplay.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7096916127936512
+    m_Key: hint.pause.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7097403308929024
+    m_Key: hint.pause.keyboard
     m_Metadata:
       m_Items: []
   - m_Id: 6611808413446144
@@ -703,6 +715,10 @@ MonoBehaviour:
     m_Key: va.screen.gameplay
     m_Metadata:
       m_Items: []
+  - m_Id: 7098127346462720
+    m_Key: va.screen.paused
+    m_Metadata:
+      m_Items: []
   - m_Id: 1785206898847744
     m_Key: va.status.transitioning
     m_Metadata:
@@ -717,6 +733,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 1785621434494976
     m_Key: va.mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7098311526739968
+    m_Key: va.game_and_mode
     m_Metadata:
       m_Items: []
   - m_Id: 1785697644998656

@@ -90,7 +90,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643017
-    m_Localized: '{0}. {1}. Rozgrywka.'
+    m_Localized: Start gry!
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643016
@@ -797,6 +797,29 @@ MonoBehaviour:
   - m_Id: 6969064334192640
     m_Localized: "Odtwarza d\u017Awi\u0119k wibracji, gdy fizyczna wibracja nie jest
       dost\u0119pna."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7095303988473856
+    m_Localized: "Spauzowano gr\u0119."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7096916127936512
+    m_Localized: "Stuknij dwukrotnie, aby wr\xF3ci\u0107 do rozgrywki. Przytrzymaj
+      palec na ekranie, \u017Ceby wyj\u015B\u0107 z rozgrywki."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7097403308929024
+    m_Localized: "Naci\u015Bnij Enter, aby wr\xF3ci\u0107 do rozgrywki. Naci\u015Bnij
+      Backspace, \u017Ceby wyj\u015B\u0107 z rozgrywki. Naci\u015Bnij Spacj\u0119
+      w celu powt\xF3rzenia instrukcji."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7098127346462720
+    m_Localized: Pauza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7098311526739968
+    m_Localized: "{0} \xB7 {1}"
     m_Metadata:
       m_Items: []
   references:

@@ -19,7 +19,6 @@ namespace Project.Core.VisualAssist
 
         [Header("Header font size (base, before scaling)")]
         public int headerFontSize = 42;
-        public int subHeaderFontSize = 34;
 
         [Header("Center font size presets (descending priority)")]
         public int[] centerFontSizes = new[]

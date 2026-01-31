@@ -14,8 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entries:
   - id: 0
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 5910f55367a334249a5c1ed88ccd37c5, type: 3}
     defaultVolume01: 1
   - id: 1
+    clip: {fileID: 8300000, guid: f5b326fd67125d74490110cabd1811b2, type: 3}
+    defaultVolume01: 1
+  - id: 2
+    clip: {fileID: 8300000, guid: e927b61aa145b0f48b86014aa7aeeac0, type: 3}
+    defaultVolume01: 1
+  - id: 3
     clip: {fileID: 8300000, guid: 320353517c4ae4442924222c96457a47, type: 3}
     defaultVolume01: 1

@@ -50,5 +50,8 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: c64969c598fbe184593920a419af1f00, type: 3}
     defaultVolume01: 1
   - id: 12
-    clip: {fileID: 8300000, guid: 45eaffcedaffa5a41a138efb41032f05, type: 3}
+    clip: {fileID: 8300000, guid: 3354610874143d3409ecdda02475b873, type: 3}
+    defaultVolume01: 1
+  - id: 13
+    clip: {fileID: 8300000, guid: 315b04c7fe308214584d028548d23e2c, type: 3}
     defaultVolume01: 1

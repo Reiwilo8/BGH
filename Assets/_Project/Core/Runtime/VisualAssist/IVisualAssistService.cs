@@ -32,6 +32,9 @@ namespace Project.Core.VisualAssist
         int ListMovePulse { get; }
         VaListMoveDirection LastListMoveDirection { get; }
 
+        bool IsRootVisible { get; }
+        void SetRootVisible(bool visible);
+
         void SetHeaderKey(string key, params object[] args);
         void SetHeaderText(string text);
 
