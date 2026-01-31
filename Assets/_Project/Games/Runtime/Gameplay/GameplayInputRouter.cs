@@ -8,7 +8,7 @@ namespace Project.Games.Gameplay
 {
     public sealed class GameplayInputRouter : MonoBehaviour
     {
-        [SerializeField] private GameplayPlaceholderController controller;
+        [SerializeField] private GameplayController controller;
 
         private IInputService _input;
         private IInputFocusService _focus;
@@ -23,7 +23,7 @@ namespace Project.Games.Gameplay
             _va = AppContext.Services.Resolve<IVisualAssistService>();
 
             if (controller == null)
-                controller = FindFirstObjectByType<GameplayPlaceholderController>();
+                controller = FindFirstObjectByType<GameplayController>();
         }
 
         private void OnEnable()

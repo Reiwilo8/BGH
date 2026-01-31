@@ -10,32 +10,32 @@ namespace Project.Core.VisualAssist
                     return new VisualAssistTypographyProfile
                     {
                         headerFontSize = 34,
-                        subHeaderFontSize = 28,
-                        centerFontSizes = new[] { 38, 34, 30, 26 }
+                        headerToSubHeaderRatio = 1.22f,
+                        centerFontSizes = new[] { 40, 36, 32, 28 }
                     };
 
                 case VisualAssistTextSizePreset.Medium:
                     return new VisualAssistTypographyProfile
                     {
-                        headerFontSize = 42,
-                        subHeaderFontSize = 34,
-                        centerFontSizes = new[] { 48, 42, 36, 30, 26 }
+                        headerFontSize = 44,
+                        headerToSubHeaderRatio = 1.22f,
+                        centerFontSizes = new[] { 56, 50, 44, 38 }
                     };
 
                 case VisualAssistTextSizePreset.Large:
                     return new VisualAssistTypographyProfile
                     {
-                        headerFontSize = 48,
-                        subHeaderFontSize = 38,
-                        centerFontSizes = new[] { 56, 48, 42, 36, 30 }
+                        headerFontSize = 58,
+                        headerToSubHeaderRatio = 1.22f,
+                        centerFontSizes = new[] { 76, 68, 60, 52 }
                     };
 
                 case VisualAssistTextSizePreset.ExtraLarge:
                     return new VisualAssistTypographyProfile
                     {
-                        headerFontSize = 56,
-                        subHeaderFontSize = 44,
-                        centerFontSizes = new[] { 64, 56, 48, 42, 36 }
+                        headerFontSize = 74,
+                        headerToSubHeaderRatio = 1.22f,
+                        centerFontSizes = new[] { 98, 88, 78, 68 }
                     };
 
                 default:

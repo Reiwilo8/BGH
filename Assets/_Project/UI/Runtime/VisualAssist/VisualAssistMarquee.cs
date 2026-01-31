@@ -21,7 +21,7 @@ namespace Project.UI.VisualAssist
 
         [Header("Dynamic speed tuning")]
         [Tooltip("Reference font size for 1.0 scale. Used to speed up marquee when Center font is larger.")]
-        [SerializeField] private float baseFontSize = 36f;
+        [SerializeField] private float baseFontSize = 48f;
 
         [Tooltip("How strongly we speed up when text is wider than viewport. 0 = off.")]
         [SerializeField] private float ratioBoostStrength = 0.85f;

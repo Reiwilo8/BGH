@@ -85,7 +85,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643017
-    m_Localized: '{0}. {1}. Gameplay.'
+    m_Localized: Game Start!
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643016
@@ -761,6 +761,27 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 6969064334192640
     m_Localized: Play vibration sound when physical vibration is not available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7095303988473856
+    m_Localized: Game paused.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7096916127936512
+    m_Localized: Double-tap to resume. Press and hold the screen to exit gameplay.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7097403308929024
+    m_Localized: Press Enter to resume. Press Backspace to exit gameplay. Press Space
+      to repeat instructions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7098127346462720
+    m_Localized: Paused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7098311526739968
+    m_Localized: "{0} \xB7 {1}"
     m_Metadata:
       m_Items: []
   references:

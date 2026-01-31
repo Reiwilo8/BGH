@@ -8,9 +8,18 @@ namespace Project.Hub.Sequences
     {
         public static IEnumerator Run(UiAudioContext ctx, string gameName, string gameDescriptionOrNull)
         {
-            yield return UiAudioSteps.SpeakKeyAndWait(ctx, "current.game", gameName);
+            if (ctx == null)
+                yield break;
 
-            if (!string.IsNullOrWhiteSpace(gameDescriptionOrNull))
+            bool isBackItem =
+                string.IsNullOrWhiteSpace(gameDescriptionOrNull) &&
+                string.Equals(gameName, ctx.Localization.Get("common.back"), System.StringComparison.Ordinal);
+
+            string key = isBackItem ? "current.option" : "current.game";
+
+            yield return UiAudioSteps.SpeakKeyAndWait(ctx, key, gameName);
+
+            if (!isBackItem && !string.IsNullOrWhiteSpace(gameDescriptionOrNull))
                 yield return UiAudioSteps.SpeakKeyAndWait(ctx, "common.text", gameDescriptionOrNull);
         }
     }

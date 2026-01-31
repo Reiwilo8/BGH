@@ -10,8 +10,13 @@ namespace Project.Core.App
 
         private GameRunContext _current;
 
+        private DateTime? _pausedUtc;
+        private TimeSpan _pausedAccumulated;
+
         public bool HasPreparedRun => _current.IsPrepared;
         public bool HasStartedRun => _current.IsStarted;
+
+        public bool IsPaused => _pausedUtc.HasValue;
 
         public GameRunContext Current => _current;
 
@@ -33,6 +38,9 @@ namespace Project.Core.App
             }
 
             var now = DateTime.UtcNow;
+
+            _pausedUtc = null;
+            _pausedAccumulated = TimeSpan.Zero;
 
             _current = new GameRunContext(
                 gameId: gameId,
@@ -58,6 +66,9 @@ namespace Project.Core.App
 
             var start = startedUtc ?? DateTime.UtcNow;
 
+            _pausedUtc = null;
+            _pausedAccumulated = TimeSpan.Zero;
+
             _current = new GameRunContext(
                 gameId: _current.GameId,
                 modeId: _current.ModeId,
@@ -73,6 +84,36 @@ namespace Project.Core.App
             return true;
         }
 
+        public bool PauseRun(DateTime? pausedUtc = null)
+        {
+            if (!HasPreparedRun || !HasStartedRun)
+                return false;
+
+            if (_pausedUtc.HasValue)
+                return false;
+
+            _pausedUtc = pausedUtc ?? DateTime.UtcNow;
+            return true;
+        }
+
+        public bool ResumeRun(DateTime? resumedUtc = null)
+        {
+            if (!HasPreparedRun || !HasStartedRun)
+                return false;
+
+            if (!_pausedUtc.HasValue)
+                return false;
+
+            var resume = resumedUtc ?? DateTime.UtcNow;
+            var pausedAt = _pausedUtc.Value;
+
+            if (resume > pausedAt)
+                _pausedAccumulated += (resume - pausedAt);
+
+            _pausedUtc = null;
+            return true;
+        }
+
         public bool FinishRun(
             GameRunFinishReason reason,
             bool completed,
@@ -85,7 +126,20 @@ namespace Project.Core.App
             var fin = finishedUtc ?? DateTime.UtcNow;
             var started = _current.StartedUtc ?? _current.PreparedUtc;
 
-            var dur = fin >= started ? (fin - started) : TimeSpan.Zero;
+            TimeSpan pausedTotal = _pausedAccumulated;
+
+            if (_pausedUtc.HasValue)
+            {
+                var pausedAt = _pausedUtc.Value;
+                if (fin > pausedAt)
+                    pausedTotal += (fin - pausedAt);
+            }
+
+            TimeSpan raw = fin >= started ? (fin - started) : TimeSpan.Zero;
+            TimeSpan effective = raw - pausedTotal;
+
+            if (effective < TimeSpan.Zero)
+                effective = TimeSpan.Zero;
 
             var ev = new GameRunFinished(
                 context: _current,
@@ -93,7 +147,7 @@ namespace Project.Core.App
                 completed: completed,
                 score: score,
                 finishedUtc: fin,
-                duration: dur
+                duration: effective
             );
 
             RunFinished?.Invoke(ev);
@@ -105,6 +159,8 @@ namespace Project.Core.App
         public void Clear()
         {
             _current = default;
+            _pausedUtc = null;
+            _pausedAccumulated = TimeSpan.Zero;
         }
     }
 }

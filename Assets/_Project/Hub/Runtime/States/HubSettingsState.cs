@@ -116,6 +116,10 @@ namespace Project.Hub.States
             }
 
             RefreshVa();
+
+            if (result.HandledByHooks)
+                return;
+
             HandleUiResult(action, result);
         }
 
@@ -124,7 +128,7 @@ namespace Project.Hub.States
             _developerModeEnabled = !_developerModeEnabled;
 
             _sm.UiAudio.CancelCurrent();
-            _audioFx?.PlayUiCue(UiCueId.DeveloperMode);
+            _audioFx?.PlayUiCue(_developerModeEnabled ? UiCueId.DeveloperModeOn : UiCueId.DeveloperModeOff);
 
             string key = _developerModeEnabled
                 ? "settings.dev_mode.enabled"
@@ -181,9 +185,6 @@ namespace Project.Hub.States
 
                 if (result.CommittedEdit)
                 {
-                    if (result.HandledByHooks)
-                        return;
-
                     SpeakSelectedThenQueueBrowsePrompt(
                         selectedKey: "selected.value",
                         selectedValueText: ResolveCommittedValueText(result),
@@ -465,6 +466,8 @@ namespace Project.Hub.States
                 return;
 
             _isHelpPlaying = true;
+
+            _sm.UiAudio.CancelCurrent();
 
             _sm.UiAudio.Play(
                 UiAudioScope.Hub,

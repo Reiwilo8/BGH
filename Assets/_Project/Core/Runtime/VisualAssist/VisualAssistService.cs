@@ -20,8 +20,18 @@ namespace Project.Core.VisualAssist
         public int ListMovePulse { get; private set; } = 0;
         public VaListMoveDirection LastListMoveDirection { get; private set; } = VaListMoveDirection.None;
 
-        private bool _waitingForFirstMarqueePass;
+        public bool IsRootVisible { get; private set; } = true;
 
+        public void SetRootVisible(bool visible)
+        {
+            if (IsRootVisible == visible)
+                return;
+
+            IsRootVisible = visible;
+            RaiseChanged();
+        }
+
+        private bool _waitingForFirstMarqueePass;
         public bool IsWaitingForFirstMarqueePass => _waitingForFirstMarqueePass;
 
         public void ForceRelease()

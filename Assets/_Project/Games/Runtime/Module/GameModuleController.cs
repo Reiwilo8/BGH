@@ -1,12 +1,13 @@
-using System.Collections;
 using Project.Core.App;
 using Project.Core.Audio;
 using Project.Core.Input;
 using Project.Core.Localization;
+using Project.Core.Services;
 using Project.Core.Settings;
 using Project.Core.VisualAssist;
 using Project.Games.Module.States;
 using UnityEngine;
+using System.Collections;
 
 namespace Project.Games.Module
 {
@@ -119,7 +120,7 @@ namespace Project.Games.Module
             _sm.Dispatch(action);
         }
 
-        private static IVisualAssistService TryResolveVa(Project.Core.Services.IServiceRegistry services)
+        private static IVisualAssistService TryResolveVa(IServiceRegistry services)
         {
             try { return services.Resolve<IVisualAssistService>(); }
             catch { return null; }
@@ -129,6 +130,8 @@ namespace Project.Games.Module
         {
             if (_va == null || _loc == null)
                 return;
+
+            _va.SetRootVisible(true);
 
             _va.ClearTransitioning();
             _va.ClearDimmer();

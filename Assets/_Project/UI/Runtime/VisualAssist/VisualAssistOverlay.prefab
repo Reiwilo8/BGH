@@ -152,6 +152,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoTuneByPlatform: 1
   targetCycleSeconds: 3.8
+  minCycleSeconds: 1.6
+  maxCycleSeconds: 4.2
+  baseFontSize: 36
+  ratioBoostStrength: 0.85
+  fontBoostStrength: 0.55
+  maxFontScaleBoost: 1.25
+  userSpeedScale: 1
   minSpeedPxPerSecond: 90
   maxSpeedPxPerSecond: 240
   gapPx: 60
@@ -356,6 +363,17 @@ MonoBehaviour:
   centerText: {fileID: 7205596613505473329}
   smoothDimmer: 1
   dimmerLerpSpeed: 12
+  transitionFade: 1
+  fadeOutSeconds: 0.18
+  fadeInSeconds: 0.22
+  enableSubHeaderSwipe: 1
+  swipeSpeedPxPerSecond: 1800
+  swipeMinDurationSeconds: 0.06
+  swipeMaxDurationSeconds: 0.14
+  swipeExtraGapPx: 40
+  offscreenTextWidthFactor: 1
+  oppositePulseWindowSeconds: 0.08
+  textSizePreset: 1
 --- !u!1 &5013451097846409136
 GameObject:
   m_ObjectHideFlags: 0
@@ -687,7 +705,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7886460530161141368}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

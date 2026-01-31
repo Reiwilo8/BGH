@@ -110,7 +110,8 @@ namespace Project.Games.Module.States
             _developerModeEnabled = !_developerModeEnabled;
 
             _sm.UiAudio.CancelCurrent();
-            _audioFx?.PlayUiCue(UiCueId.DeveloperMode);
+
+            _audioFx?.PlayUiCue(_developerModeEnabled ? UiCueId.DeveloperModeOn : UiCueId.DeveloperModeOff);
 
             string key = _developerModeEnabled
                 ? "settings.dev_mode.enabled"

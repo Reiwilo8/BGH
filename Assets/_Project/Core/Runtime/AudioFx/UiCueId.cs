@@ -20,6 +20,7 @@ namespace Project.Core.AudioFx
         Repeat,
         Error,
 
-        DeveloperMode
+        DeveloperModeOn,
+        DeveloperModeOff
     }
 }

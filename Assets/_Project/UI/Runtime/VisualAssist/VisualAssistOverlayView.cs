@@ -200,6 +200,8 @@ namespace Project.UI.VisualAssist
             if (_va == null)
                 return;
 
+            ApplyRootVisibility();
+
             if (dimmerPanel != null)
             {
                 float dimmerStrength01 = GetDimmerStrength01Safe();
@@ -256,9 +258,53 @@ namespace Project.UI.VisualAssist
             }
         }
 
+        private void ApplyRootVisibility()
+        {
+            if (root == null)
+                return;
+
+            bool modeVisible = _mode != null && _mode.Mode == VisualMode.VisualAssist;
+            bool wantRoot = modeVisible && (_va == null || _va.IsRootVisible);
+
+            bool wasActive = root.activeSelf;
+
+            if (wasActive == wantRoot)
+                return;
+
+            root.SetActive(wantRoot);
+
+            if (!wasActive && wantRoot)
+            {
+                if (_fadeCo != null)
+                {
+                    StopCoroutine(_fadeCo);
+                    _fadeCo = null;
+                }
+
+                _fadePhase = FadePhase.None;
+                _pendingFadeInAfterOut = false;
+
+                SetFadeAlpha01(0f);
+                StartFadeTo(targetAlpha01: 1f, durationSeconds: Mathf.Max(0.001f, fadeInSeconds), phase: FadePhase.In);
+            }
+            else
+            {
+                if (_fadeCo != null)
+                {
+                    StopCoroutine(_fadeCo);
+                    _fadeCo = null;
+                }
+
+                _fadePhase = FadePhase.None;
+                _pendingFadeInAfterOut = false;
+            }
+        }
+
         private void RenderNow()
         {
             if (_va == null) return;
+
+            ApplyRootVisibility();
 
             if (headerText != null)
                 headerText.text = _va.Header ?? "";
@@ -321,8 +367,6 @@ namespace Project.UI.VisualAssist
         {
             bool visible = mode == VisualMode.VisualAssist;
 
-            if (root != null) root.SetActive(visible);
-
             if (!visible)
             {
                 _currentDim = 0f;
@@ -363,6 +407,8 @@ namespace Project.UI.VisualAssist
                 ApplyTypographyLayout();
                 _marquee?.Refresh(forceRestart: true);
             }
+
+            ApplyRootVisibility();
 
             if (dimmerPanel != null)
                 SetDimmerAlpha(_currentDim);
@@ -591,14 +637,12 @@ namespace Project.UI.VisualAssist
         private void StartFadeOut()
         {
             float duration = Mathf.Max(0.001f, fadeOutSeconds);
-
             StartFadeTo(targetAlpha01: 0f, durationSeconds: duration, phase: FadePhase.Out);
         }
 
         private void StartFadeIn()
         {
             float duration = Mathf.Max(0.001f, fadeInSeconds);
-
             StartFadeTo(targetAlpha01: 1f, durationSeconds: duration, phase: FadePhase.In);
         }
 

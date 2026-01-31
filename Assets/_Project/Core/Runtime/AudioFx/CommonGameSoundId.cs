@@ -4,6 +4,9 @@ namespace Project.Core.AudioFx
     {
         GameStart,
 
+        Pause,
+        Unpause,
+
         Vibration
     }
 }

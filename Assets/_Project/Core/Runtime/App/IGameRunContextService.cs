@@ -86,6 +86,8 @@ namespace Project.Core.App
         bool HasPreparedRun { get; }
         bool HasStartedRun { get; }
 
+        bool IsPaused { get; }
+
         GameRunContext Current { get; }
 
         void PrepareRun(
@@ -96,6 +98,9 @@ namespace Project.Core.App
             bool wereRunSettingsCustomized = false);
 
         bool StartRun(DateTime? startedUtc = null);
+
+        bool PauseRun(DateTime? pausedUtc = null);
+        bool ResumeRun(DateTime? resumedUtc = null);
 
         bool FinishRun(
             GameRunFinishReason reason,
