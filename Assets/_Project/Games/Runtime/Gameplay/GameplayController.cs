@@ -33,6 +33,7 @@ namespace Project.Games.Gameplay
 
         private IGameplayGame _game;
         private IGameplayInputHandler _gameInput;
+        private IGameplayDirection4Handler _gameDir4;
         private bool _gameInitialized;
         private bool _gameFinishedHandled;
 
@@ -124,6 +125,17 @@ namespace Project.Games.Gameplay
             }
         }
 
+        public void Handle(NavDirection4 direction)
+        {
+            if (_state == GameplayState.Exiting)
+                return;
+
+            if (_state != GameplayState.Running)
+                return;
+
+            _gameDir4?.Handle(direction);
+        }
+
         public void OnRepeatRequested()
         {
             if (_state == GameplayState.Paused)
@@ -149,12 +161,19 @@ namespace Project.Games.Gameplay
 #endif
             if (all == null) return;
 
+            _game = null;
+            _gameInput = null;
+            _gameDir4 = null;
+
             for (int i = 0; i < all.Length; i++)
             {
                 if (all[i] is IGameplayGame g)
                 {
                     _game = g;
+
                     _gameInput = all[i] as IGameplayInputHandler;
+                    _gameDir4 = all[i] as IGameplayDirection4Handler;
+
                     break;
                 }
             }

@@ -31,7 +31,10 @@ namespace Project.Games.Gameplay
             _focus.Push(InputScope.Gameplay);
 
             if (_input != null)
-                _input.OnNavAction += HandleNav;
+            {
+                _input.OnNavAction += HandleNavAction;
+                _input.OnNavDirection4 += HandleNavDirection4;
+            }
 
             if (_repeat != null)
                 _repeat.RepeatRequested += HandleRepeat;
@@ -40,7 +43,10 @@ namespace Project.Games.Gameplay
         private void OnDisable()
         {
             if (_input != null)
-                _input.OnNavAction -= HandleNav;
+            {
+                _input.OnNavAction -= HandleNavAction;
+                _input.OnNavDirection4 -= HandleNavDirection4;
+            }
 
             if (_repeat != null)
                 _repeat.RepeatRequested -= HandleRepeat;
@@ -48,17 +54,26 @@ namespace Project.Games.Gameplay
             _focus.Pop(InputScope.Gameplay);
         }
 
-        private void HandleNav(NavAction action)
+        private void HandleNavAction(NavAction action)
         {
             if (_focus.Current != InputScope.Gameplay) return;
 
             if (action == NavAction.ToggleVisualAssist) return;
+
             controller?.Handle(action);
+        }
+
+        private void HandleNavDirection4(NavDirection4 dir)
+        {
+            if (_focus.Current != InputScope.Gameplay) return;
+
+            controller?.Handle(dir);
         }
 
         private void HandleRepeat()
         {
             if (_focus.Current != InputScope.Gameplay) return;
+
             _va?.FlashRepeat(0.25f);
             controller?.OnRepeatRequested();
         }

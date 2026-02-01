@@ -14,8 +14,14 @@ namespace Project.Games.Gameplay.Contracts
         void ResumeGame();
         void StopGame();
     }
+
     public interface IGameplayInputHandler
     {
         void Handle(NavAction action);
+    }
+
+    public interface IGameplayDirection4Handler
+    {
+        void Handle(NavDirection4 direction);
     }
 }
