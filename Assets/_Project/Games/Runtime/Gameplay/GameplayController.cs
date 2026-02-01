@@ -23,6 +23,8 @@ namespace Project.Games.Gameplay
         private ISettingsService _settings;
         private ILocalizationService _loc;
 
+        private ISpeechService _speech;
+
         private AppSession _session;
         private GameCatalog _catalog;
 
@@ -43,6 +45,8 @@ namespace Project.Games.Gameplay
         private bool _startRunScheduled;
         private GameplayState _state = GameplayState.Initializing;
 
+        private Coroutine _missingGameplayCo;
+
         private void Awake()
         {
             var services = AppContext.Services;
@@ -52,6 +56,8 @@ namespace Project.Games.Gameplay
             _flow = services.Resolve<IAppFlowService>();
             _settings = services.Resolve<ISettingsService>();
             _loc = services.Resolve<ILocalizationService>();
+
+            _speech = services.Resolve<ISpeechService>();
 
             _session = services.Resolve<AppSession>();
             _catalog = services.Resolve<GameCatalog>();
@@ -78,11 +84,23 @@ namespace Project.Games.Gameplay
 
             RefreshVaForGameplay();
 
+            if (_game == null)
+            {
+                StartMissingGameplayFlow();
+                return;
+            }
+
             PlayIntroAndStartRunAfterSequence();
         }
 
         private void OnDisable()
         {
+            if (_missingGameplayCo != null)
+            {
+                StopCoroutine(_missingGameplayCo);
+                _missingGameplayCo = null;
+            }
+
             _va?.SetRootVisible(true);
 
             UnsubscribeGameFinished();
@@ -90,6 +108,61 @@ namespace Project.Games.Gameplay
             TryFinishRunOnDisable();
 
             TryStopGameSafe();
+        }
+
+        private void StartMissingGameplayFlow()
+        {
+            if (_missingGameplayCo != null)
+            {
+                StopCoroutine(_missingGameplayCo);
+                _missingGameplayCo = null;
+            }
+
+            _startRunScheduled = false;
+
+            _missingGameplayCo = StartCoroutine(MissingGameplayRoutine());
+        }
+
+        private System.Collections.IEnumerator MissingGameplayRoutine()
+        {
+            yield return null;
+
+            const float initialDelaySeconds = 0.75f;
+            float t0 = Time.unscaledTime;
+            while (Time.unscaledTime - t0 < initialDelaySeconds)
+                yield return null;
+
+            const float maxSpeechWaitSeconds = 10f;
+            float s0 = Time.unscaledTime;
+            while (IsSpeakingSafe())
+            {
+                if (Time.unscaledTime - s0 >= maxSpeechWaitSeconds)
+                    break;
+                yield return null;
+            }
+
+            _audioFx?.PlayUiCue(UiCueId.Error);
+
+            const float maxFlowWaitSeconds = 10f;
+            float f0 = Time.unscaledTime;
+            while (_flow != null && _flow.IsTransitioning)
+            {
+                if (Time.unscaledTime - f0 >= maxFlowWaitSeconds)
+                    break;
+                yield return null;
+            }
+
+            yield return null;
+
+            _ = ReturnAsync(abortRun: true);
+
+            _missingGameplayCo = null;
+        }
+
+        private bool IsSpeakingSafe()
+        {
+            try { return _speech != null && _speech.IsSpeaking; }
+            catch { return false; }
         }
 
         public void Handle(NavAction action)
@@ -296,13 +369,6 @@ namespace Project.Games.Gameplay
                 return;
 
             _startRunScheduled = false;
-
-            if (_game == null)
-            {
-                _audioFx?.PlayUiCue(UiCueId.Error);
-                _ = ReturnAsync(abortRun: true);
-                return;
-            }
 
             _state = GameplayState.Running;
 
