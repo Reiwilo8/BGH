@@ -519,6 +519,46 @@ MonoBehaviour:
     m_Key: settings.run_params.seed.none
     m_Metadata:
       m_Items: []
+  - m_Id: 8003683762466816
+    m_Key: settings.run_params.seed_history.reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8003993960607744
+    m_Key: settings.run_params.seed_history.reset.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8001820761681920
+    m_Key: settings.modes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8002480420843520
+    m_Key: settings.modes.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8002701884289024
+    m_Key: settings.custom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8002946533847040
+    m_Key: settings.custom.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8004374031659008
+    m_Key: settings.board.width
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8004615288025088
+    m_Key: settings.board.width.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8004840643784704
+    m_Key: settings.board.height
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8005044197552128
+    m_Key: settings.board.height.desc
+    m_Metadata:
+      m_Items: []
   - m_Id: 6341833492688896
     m_Key: settings.stats
     m_Metadata:
@@ -561,6 +601,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 1512428316553216
     m_Key: settings.reset_defaults.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8003264021688320
+    m_Key: settings.reset_defaults.desc.dev
     m_Metadata:
       m_Items: []
   - m_Id: 6226820610289664

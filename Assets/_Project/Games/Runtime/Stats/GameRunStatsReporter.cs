@@ -89,7 +89,8 @@ namespace Project.Games.Stats
                 modeId: ctx.ModeId,
                 duration: ev.Duration,
                 score: ev.Score,
-                completed: ev.Completed
+                completed: ev.Completed,
+                runtimeStats: ev.RuntimeStats
             );
         }
     }

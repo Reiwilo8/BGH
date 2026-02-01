@@ -12,6 +12,7 @@ using Project.Games.Localization;
 using Project.Games.Run;
 using Project.Games.Sequences;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Project.Games.Module.States
 {
@@ -30,6 +31,8 @@ namespace Project.Games.Module.States
 
         private readonly IGameRunContextService _runs;
         private readonly IGameRunParametersService _runParams;
+
+        private readonly IGameInitialParametersProvider _initialParamsProvider;
 
         private GameDefinition _game;
 
@@ -66,6 +69,9 @@ namespace Project.Games.Module.States
 
             try { _runParams = services.Resolve<IGameRunParametersService>(); }
             catch { _runParams = null; }
+
+            try { _initialParamsProvider = services.Resolve<IGameInitialParametersProvider>(); }
+            catch { _initialParamsProvider = null; }
         }
 
         public void Enter()
@@ -276,11 +282,22 @@ namespace Project.Games.Module.States
 
                     bool wereRunSettingsCustomized = !useRandomSeed;
 
-                    var initialParams = GameRunInitialParametersBuilder.Build(
+                    var baseParams = GameRunInitialParametersBuilder.Build(
                         settings: _settings,
                         useRandomSeed: useRandomSeed,
                         seedValue: seed
                     );
+
+                    var initialParams = new Dictionary<string, string>(baseParams);
+
+                    try
+                    {
+                        _initialParamsProvider?.AppendParameters(
+                            gameId: _session.SelectedGameId,
+                            modeId: _session.SelectedModeId,
+                            initialParameters: initialParams);
+                    }
+                    catch { }
 
                     try
                     {

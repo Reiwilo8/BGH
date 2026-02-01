@@ -49,7 +49,13 @@ namespace Project.Games.Stats
             _store.Save();
         }
 
-        public void RecordRunFinished(string gameId, string modeId, TimeSpan duration, int score, bool completed)
+        public void RecordRunFinished(
+            string gameId,
+            string modeId,
+            TimeSpan duration,
+            int score,
+            bool completed,
+            IReadOnlyDictionary<string, string> runtimeStats = null)
         {
             if (!IsValidKey(gameId) || !IsValidKey(modeId))
                 return;
@@ -75,13 +81,16 @@ namespace Project.Games.Stats
                 }
             }
 
-            m.recentRuns.Insert(0, new RecentRunData
+            var rr = new RecentRunData
             {
                 durationTicks = duration.Ticks,
                 score = score,
                 completed = completed,
-                finishedUtcTicks = DateTime.UtcNow.Ticks
-            });
+                finishedUtcTicks = DateTime.UtcNow.Ticks,
+                runtimeStats = BuildRuntimeStatsList(runtimeStats)
+            };
+
+            m.recentRuns.Insert(0, rr);
 
             while (m.recentRuns.Count > MaxRecentHistory)
                 m.recentRuns.RemoveAt(m.recentRuns.Count - 1);
@@ -114,18 +123,66 @@ namespace Project.Games.Stats
                 return Array.Empty<RecentRunSnapshot>();
 
             var list = new List<RecentRunSnapshot>(m.recentRuns.Count);
+
             foreach (var r in m.recentRuns)
             {
+                if (r == null) continue;
+
                 list.Add(new RecentRunSnapshot(
                     duration: r.durationTicks > 0 ? TimeSpan.FromTicks(r.durationTicks) : TimeSpan.Zero,
                     score: r.score,
                     completed: r.completed,
                     finishedUtc: r.finishedUtcTicks > 0
                         ? new DateTime(r.finishedUtcTicks, DateTimeKind.Utc)
-                        : DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc)
+                        : DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc),
+                    runtimeStats: BuildRuntimeStatsDict(r.runtimeStats)
                 ));
             }
+
             return list;
+        }
+
+        private static List<GameKeyValueEntry> BuildRuntimeStatsList(IReadOnlyDictionary<string, string> dict)
+        {
+            if (dict == null || dict.Count == 0)
+                return new List<GameKeyValueEntry>();
+
+            var list = new List<GameKeyValueEntry>(dict.Count);
+
+            foreach (var kv in dict)
+            {
+                if (string.IsNullOrWhiteSpace(kv.Key))
+                    continue;
+
+                list.Add(new GameKeyValueEntry
+                {
+                    key = kv.Key,
+                    value = kv.Value ?? ""
+                });
+            }
+
+            list.Sort((a, b) => string.CompareOrdinal(a.key, b.key));
+
+            return list;
+        }
+
+        private static IReadOnlyDictionary<string, string> BuildRuntimeStatsDict(List<GameKeyValueEntry> list)
+        {
+            if (list == null || list.Count == 0)
+                return null;
+
+            var dict = new Dictionary<string, string>(list.Count);
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                var e = list[i];
+                if (e == null || string.IsNullOrWhiteSpace(e.key))
+                    continue;
+
+                dict[e.key] = e.value ?? "";
+            }
+
+            return dict.Count == 0 ? null : dict;
         }
 
         private static bool IsValidKey(string s) => !string.IsNullOrWhiteSpace(s);

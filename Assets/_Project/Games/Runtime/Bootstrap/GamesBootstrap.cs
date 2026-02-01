@@ -30,6 +30,11 @@ namespace Project.Games.Bootstrap
 
             AppContext.Services.Register<IGameRunParametersService>(new PersistentGameRunParametersService(store));
 
+            var initialParamsProvider = new CompositeGameInitialParametersProvider(
+                new MemoryInitialParametersProvider(store)
+            );
+            AppContext.Services.Register<IGameInitialParametersProvider>(initialParamsProvider);
+
             WarnIfReporterMissing();
             WarnIfSeedReporterMissing();
         }

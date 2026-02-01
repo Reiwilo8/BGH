@@ -64,13 +64,17 @@ namespace Project.Core.App
         public readonly DateTime FinishedUtc;
         public readonly TimeSpan Duration;
 
+        // Optional, game-owned runtime metrics for this run.
+        public readonly IReadOnlyDictionary<string, string> RuntimeStats;
+
         public GameRunFinished(
             GameRunContext context,
             GameRunFinishReason reason,
             bool completed,
             int score,
             DateTime finishedUtc,
-            TimeSpan duration)
+            TimeSpan duration,
+            IReadOnlyDictionary<string, string> runtimeStats)
         {
             Context = context;
             Reason = reason;
@@ -78,6 +82,7 @@ namespace Project.Core.App
             Score = score;
             FinishedUtc = finishedUtc;
             Duration = duration;
+            RuntimeStats = runtimeStats;
         }
     }
 
@@ -106,7 +111,8 @@ namespace Project.Core.App
             GameRunFinishReason reason,
             bool completed,
             int score = 0,
-            DateTime? finishedUtc = null);
+            DateTime? finishedUtc = null,
+            IReadOnlyDictionary<string, string> runtimeStats = null);
 
         void Clear();
 

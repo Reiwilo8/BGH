@@ -12,6 +12,7 @@ using Project.Games.Localization;
 using Project.Games.Run;
 using Project.Games.Sequences;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Project.Games.Gameplay
 {
@@ -33,9 +34,14 @@ namespace Project.Games.Gameplay
         private IGameRunContextService _runs;
         private IGameRunParametersService _runParams;
 
+        private IGameInitialParametersProvider _initialParamsProvider;
+
         private IGameplayGame _game;
         private IGameplayInputHandler _gameInput;
         private IGameplayDirection4Handler _gameDir4;
+
+        private IGameplayRuntimeStatsProvider _runtimeStatsProvider;
+
         private bool _gameInitialized;
         private bool _gameFinishedHandled;
 
@@ -65,6 +71,9 @@ namespace Project.Games.Gameplay
 
             try { _runs = services.Resolve<IGameRunContextService>(); } catch { _runs = null; }
             try { _runParams = services.Resolve<IGameRunParametersService>(); } catch { _runParams = null; }
+
+            try { _initialParamsProvider = services.Resolve<IGameInitialParametersProvider>(); }
+            catch { _initialParamsProvider = null; }
         }
 
         private void Start()
@@ -237,6 +246,7 @@ namespace Project.Games.Gameplay
             _game = null;
             _gameInput = null;
             _gameDir4 = null;
+            _runtimeStatsProvider = null;
 
             for (int i = 0; i < all.Length; i++)
             {
@@ -246,6 +256,8 @@ namespace Project.Games.Gameplay
 
                     _gameInput = all[i] as IGameplayInputHandler;
                     _gameDir4 = all[i] as IGameplayDirection4Handler;
+
+                    _runtimeStatsProvider = all[i] as IGameplayRuntimeStatsProvider;
 
                     break;
                 }
@@ -541,7 +553,8 @@ namespace Project.Games.Gameplay
                 _runs?.FinishRun(
                     reason: reason,
                     completed: completed,
-                    score: result.Score
+                    score: result.Score,
+                    runtimeStats: result.RuntimeStats
                 );
             }
             catch { }
@@ -580,7 +593,7 @@ namespace Project.Games.Gameplay
             );
 
             if (abortRun)
-                FinishRunAbort();
+                FinishRunAbortWithRuntimeStatsIfPossible();
 
             try
             {
@@ -589,14 +602,28 @@ namespace Project.Games.Gameplay
             catch { }
         }
 
-        private void FinishRunAbort()
+        private void FinishRunAbortWithRuntimeStatsIfPossible()
         {
+            IReadOnlyDictionary<string, string> snapshot = null;
+
+            try
+            {
+                snapshot = _runtimeStatsProvider != null
+                    ? _runtimeStatsProvider.GetRuntimeStatsSnapshot()
+                    : null;
+            }
+            catch
+            {
+                snapshot = null;
+            }
+
             try
             {
                 _runs?.FinishRun(
                     reason: GameRunFinishReason.AbortedByUser,
                     completed: false,
-                    score: 0
+                    score: 0,
+                    runtimeStats: snapshot
                 );
             }
             catch { }
@@ -619,12 +646,26 @@ namespace Project.Games.Gameplay
             if (!prepared || !started)
                 return;
 
+            IReadOnlyDictionary<string, string> snapshot = null;
+
+            try
+            {
+                snapshot = _runtimeStatsProvider != null
+                    ? _runtimeStatsProvider.GetRuntimeStatsSnapshot()
+                    : null;
+            }
+            catch
+            {
+                snapshot = null;
+            }
+
             try
             {
                 _runs.FinishRun(
                     reason: GameRunFinishReason.AbortedByUser,
                     completed: false,
-                    score: 0
+                    score: 0,
+                    runtimeStats: snapshot
                 );
             }
             catch { }
@@ -653,11 +694,22 @@ namespace Project.Games.Gameplay
             }
             catch { }
 
-            var initialParams = GameRunInitialParametersBuilder.Build(
+            var baseParams = GameRunInitialParametersBuilder.Build(
                 settings: _settings,
                 useRandomSeed: useRandomSeed,
                 seedValue: seed
             );
+
+            var initialParams = new Dictionary<string, string>(baseParams);
+
+            try
+            {
+                _initialParamsProvider?.AppendParameters(
+                    gameId: _session.SelectedGameId,
+                    modeId: _session.SelectedModeId,
+                    initialParameters: initialParams);
+            }
+            catch { }
 
             try
             {

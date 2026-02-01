@@ -118,7 +118,8 @@ namespace Project.Core.App
             GameRunFinishReason reason,
             bool completed,
             int score = 0,
-            DateTime? finishedUtc = null)
+            DateTime? finishedUtc = null,
+            IReadOnlyDictionary<string, string> runtimeStats = null)
         {
             if (!HasPreparedRun || !HasStartedRun)
                 return false;
@@ -147,7 +148,8 @@ namespace Project.Core.App
                 completed: completed,
                 score: score,
                 finishedUtc: fin,
-                duration: effective
+                duration: effective,
+                runtimeStats: runtimeStats
             );
 
             RunFinished?.Invoke(ev);

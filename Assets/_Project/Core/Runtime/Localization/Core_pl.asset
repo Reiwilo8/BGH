@@ -121,11 +121,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643026
-    m_Localized: 'Wybrano: {0}.'
+    m_Localized: 'Wybrano: {0}'
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643025
-    m_Localized: 'Aktualna opcja: {0}.'
+    m_Localized: 'Aktualna opcja: {0}'
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643024
@@ -275,11 +275,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1480802916265984
-    m_Localized: "Aktualna warto\u015B\u0107: {0}."
+    m_Localized: "Aktualna warto\u015B\u0107: {0}"
     m_Metadata:
       m_Items: []
   - m_Id: 1481064540172288
-    m_Localized: 'Wybrano: {0}.'
+    m_Localized: 'Wybrano: {0}'
     m_Metadata:
       m_Items: []
   - m_Id: 1484218996518912
@@ -404,7 +404,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1504083610333184
-    m_Localized: 'Aktualne ustawienie: {0}.'
+    m_Localized: 'Aktualne ustawienie: {0}'
     m_Metadata:
       m_Items: []
   - m_Id: 1502158642900992
@@ -820,6 +820,50 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 7098311526739968
     m_Localized: "{0} \xB7 {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8001820761681920
+    m_Localized: "Tryby i trudno\u015Bci"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8002480420843520
+    m_Localized: "Ustawienia deweloperskie dla tryb\xF3w gry."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8002701884289024
+    m_Localized: "Tryb w\u0142asny"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8002946533847040
+    m_Localized: "Ustawienia u\u017Cywane w trybie w\u0142asnym."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8003264021688320
+    m_Localized: "Przywraca ustawienia domy\u015Blne, w tym parametry deweloperskie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8003683762466816
+    m_Localized: "Zresetuj histori\u0119 seed\xF3w"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8003993960607744
+    m_Localized: "Czy\u015Bci list\u0119 zapisanych seed\xF3w."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8004374031659008
+    m_Localized: "Szeroko\u015B\u0107 planszy"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8004615288025088
+    m_Localized: "Ustaw szeroko\u015B\u0107 planszy."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8004840643784704
+    m_Localized: "Wysoko\u015B\u0107 planszy"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8005044197552128
+    m_Localized: "Ustaw wysoko\u015B\u0107 planszy."
     m_Metadata:
       m_Items: []
   references:

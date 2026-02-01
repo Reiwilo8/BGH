@@ -111,11 +111,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643026
-    m_Localized: 'Selected: {0}.'
+    m_Localized: 'Selected: {0}'
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643025
-    m_Localized: 'Current option: {0}.'
+    m_Localized: 'Current option: {0}'
     m_Metadata:
       m_Items: []
   - m_Id: 153419705643024
@@ -264,11 +264,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1480802916265984
-    m_Localized: 'Current value: {0}.'
+    m_Localized: 'Current value: {0}'
     m_Metadata:
       m_Items: []
   - m_Id: 1481064540172288
-    m_Localized: 'Selected: {0}.'
+    m_Localized: 'Selected: {0}'
     m_Metadata:
       m_Items: []
   - m_Id: 1484218996518912
@@ -383,7 +383,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1504083610333184
-    m_Localized: 'Current setting: {0}.'
+    m_Localized: 'Current setting: {0}'
     m_Metadata:
       m_Items: []
   - m_Id: 1502158642900992
@@ -782,6 +782,50 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 7098311526739968
     m_Localized: "{0} \xB7 {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8001820761681920
+    m_Localized: Modes & difficulties
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8002480420843520
+    m_Localized: Developer settings for game modes.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8002701884289024
+    m_Localized: Custom mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8002946533847040
+    m_Localized: Settings used by the custom mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8003264021688320
+    m_Localized: Restores default settings including developer-only parameters.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8003683762466816
+    m_Localized: Reset seed history
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8003993960607744
+    m_Localized: Clears the list of recorded seeds.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8004374031659008
+    m_Localized: Board width
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8004615288025088
+    m_Localized: Adjust the board width.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8004840643784704
+    m_Localized: Board height
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8005044197552128
+    m_Localized: Adjust the board height.
     m_Metadata:
       m_Items: []
   references:
