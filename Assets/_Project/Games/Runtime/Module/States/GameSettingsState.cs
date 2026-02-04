@@ -91,6 +91,11 @@ namespace Project.Games.Module.States
                 return;
             }
 
+            // Potrzebujemy wykryæ anulowanie potwierdzania:
+            // jeœli byliœmy w ConfirmAction i po obs³udze UI ju¿ nie jesteœmy,
+            // to znaczy ¿e u¿ytkownik to anulowa³ (najczêœciej Back).
+            var modeBefore = _ui.Mode;
+
             PlayUiCueForAction(action);
 
             var result = _ui.Handle(action, hooks: _hooks);
@@ -102,6 +107,16 @@ namespace Project.Games.Module.States
             }
 
             RefreshVa();
+
+            if (modeBefore == SettingsUiMode.ConfirmAction
+                && _ui.Mode != SettingsUiMode.ConfirmAction
+                && !result.ConfirmedAction)
+            {
+                SpeakActionCancelledNonInterruptible();
+                PlayBrowsePrompt();
+                return;
+            }
+
             HandleUiResult(action, result);
         }
 
@@ -222,6 +237,16 @@ namespace Project.Games.Module.States
             }
 
             PlayPrompt();
+        }
+
+        private void SpeakActionCancelledNonInterruptible()
+        {
+            _sm.UiAudio.Play(
+                UiAudioScope.GameModule,
+                ctx => UiAudioSteps.SpeakKeyAndWait(ctx, "settings.action.cancelled"),
+                SpeechPriority.High,
+                interruptible: false
+            );
         }
 
         private void PlayUiCueForAction(NavAction action)
@@ -600,8 +625,33 @@ namespace Project.Games.Module.States
 
         private string ResolveListOptionText(SettingsListOption opt)
         {
+            if (LooksLikeRawNumber(opt.LabelKey))
+                return NormalizeRaw(opt.LabelKey);
+
             var s = SafeGet(opt.LabelKey);
             return string.IsNullOrWhiteSpace(s) || s == opt.LabelKey ? opt.Id : s;
+        }
+
+        private static bool LooksLikeRawNumber(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return false;
+
+            int i = 0;
+            if (s[0] == '-') i = 1;
+            if (i >= s.Length) return false;
+
+            for (; i < s.Length; i++)
+            {
+                char c = s[i];
+                if (c < '0' || c > '9')
+                    return false;
+            }
+            return true;
+        }
+
+        private static string NormalizeRaw(string s)
+        {
+            return s.Trim();
         }
 
         private static int ClampInt(int v, int min, int max) => v < min ? min : (v > max ? max : v);
@@ -640,7 +690,11 @@ namespace Project.Games.Module.States
         {
             public bool RequiresConfirmation(SettingsAction action)
             {
-                return action != null && action.LabelKey == "settings.stats.reset";
+                if (action == null) return false;
+
+                return action.LabelKey == "settings.stats.reset"
+                    || action.LabelKey == "settings.reset_defaults"
+                    || action.LabelKey == "settings.run_params.seed_history.reset";
             }
 
             public bool TryHandleToggle(SettingsToggle toggle) => false;

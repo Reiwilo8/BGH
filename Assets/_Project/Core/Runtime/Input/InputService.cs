@@ -9,6 +9,8 @@ namespace Project.Core.Input
 
         public event Action<NavAction> OnNavAction;
 
+        public event Action<NavDirection4> OnNavDirection4;
+
         public InputService(IUserInactivityService inactivity)
         {
             _inactivity = inactivity;
@@ -18,6 +20,12 @@ namespace Project.Core.Input
         {
             _inactivity.MarkNavAction();
             OnNavAction?.Invoke(action);
+        }
+
+        public void EmitDirection4(NavDirection4 direction)
+        {
+            _inactivity.MarkNavAction();
+            OnNavDirection4?.Invoke(direction);
         }
     }
 }

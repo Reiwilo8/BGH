@@ -98,6 +98,8 @@ namespace Project.Hub.States
                 _isHelpPlaying = false;
             }
 
+            var modeBefore = _ui.Mode;
+
             PlayUiCueForAction(action);
 
             var result = _ui.Handle(action, new HubHooks(this));
@@ -120,7 +122,26 @@ namespace Project.Hub.States
             if (result.HandledByHooks)
                 return;
 
+            if (modeBefore == SettingsUiMode.ConfirmAction
+                && _ui.Mode != SettingsUiMode.ConfirmAction
+                && !result.ConfirmedAction)
+            {
+                SpeakActionCancelledNonInterruptible();
+                PlayBrowsePrompt();
+                return;
+            }
+
             HandleUiResult(action, result);
+        }
+
+        private void SpeakActionCancelledNonInterruptible()
+        {
+            _sm.UiAudio.Play(
+                UiAudioScope.Hub,
+                ctx => UiAudioSteps.SpeakKeyAndWait(ctx, "settings.action.cancelled"),
+                SpeechPriority.High,
+                interruptible: false
+            );
         }
 
         private void ToggleDeveloperMode()

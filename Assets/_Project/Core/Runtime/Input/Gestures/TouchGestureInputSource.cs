@@ -240,15 +240,36 @@ namespace Project.Core.Input.Gestures
 
         private void EmitSwipe(Vector2 delta)
         {
-            if (Mathf.Abs(delta.x) >= Mathf.Abs(delta.y))
+            if (_input == null)
+                return;
+
+            bool horizontal = Mathf.Abs(delta.x) >= Mathf.Abs(delta.y);
+
+            if (horizontal)
             {
-                if (delta.x < 0) _input.Emit(NavAction.Next);
-                else _input.Emit(NavAction.Previous);
+                if (delta.x < 0)
+                {
+                    _input.Emit(NavAction.Next);
+                    _input.EmitDirection4(NavDirection4.Right);
+                }
+                else
+                {
+                    _input.Emit(NavAction.Previous);
+                    _input.EmitDirection4(NavDirection4.Left);
+                }
             }
             else
             {
-                if (delta.y > 0) _input.Emit(NavAction.Next);
-                else _input.Emit(NavAction.Previous);
+                if (delta.y > 0)
+                {
+                    _input.Emit(NavAction.Next);
+                    _input.EmitDirection4(NavDirection4.Down);
+                }
+                else
+                {
+                    _input.Emit(NavAction.Previous);
+                    _input.EmitDirection4(NavDirection4.Up);
+                }
             }
         }
 

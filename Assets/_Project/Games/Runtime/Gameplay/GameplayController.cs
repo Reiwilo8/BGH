@@ -12,6 +12,7 @@ using Project.Games.Localization;
 using Project.Games.Run;
 using Project.Games.Sequences;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Project.Games.Gameplay
 {
@@ -23,6 +24,8 @@ namespace Project.Games.Gameplay
         private ISettingsService _settings;
         private ILocalizationService _loc;
 
+        private ISpeechService _speech;
+
         private AppSession _session;
         private GameCatalog _catalog;
 
@@ -31,8 +34,14 @@ namespace Project.Games.Gameplay
         private IGameRunContextService _runs;
         private IGameRunParametersService _runParams;
 
+        private IGameInitialParametersProvider _initialParamsProvider;
+
         private IGameplayGame _game;
         private IGameplayInputHandler _gameInput;
+        private IGameplayDirection4Handler _gameDir4;
+
+        private IGameplayRuntimeStatsProvider _runtimeStatsProvider;
+
         private bool _gameInitialized;
         private bool _gameFinishedHandled;
 
@@ -41,6 +50,8 @@ namespace Project.Games.Gameplay
 
         private bool _startRunScheduled;
         private GameplayState _state = GameplayState.Initializing;
+
+        private Coroutine _missingGameplayCo;
 
         private void Awake()
         {
@@ -52,12 +63,17 @@ namespace Project.Games.Gameplay
             _settings = services.Resolve<ISettingsService>();
             _loc = services.Resolve<ILocalizationService>();
 
+            _speech = services.Resolve<ISpeechService>();
+
             _session = services.Resolve<AppSession>();
             _catalog = services.Resolve<GameCatalog>();
             _va = services.Resolve<IVisualAssistService>();
 
             try { _runs = services.Resolve<IGameRunContextService>(); } catch { _runs = null; }
             try { _runParams = services.Resolve<IGameRunParametersService>(); } catch { _runParams = null; }
+
+            try { _initialParamsProvider = services.Resolve<IGameInitialParametersProvider>(); }
+            catch { _initialParamsProvider = null; }
         }
 
         private void Start()
@@ -77,11 +93,23 @@ namespace Project.Games.Gameplay
 
             RefreshVaForGameplay();
 
+            if (_game == null)
+            {
+                StartMissingGameplayFlow();
+                return;
+            }
+
             PlayIntroAndStartRunAfterSequence();
         }
 
         private void OnDisable()
         {
+            if (_missingGameplayCo != null)
+            {
+                StopCoroutine(_missingGameplayCo);
+                _missingGameplayCo = null;
+            }
+
             _va?.SetRootVisible(true);
 
             UnsubscribeGameFinished();
@@ -89,6 +117,61 @@ namespace Project.Games.Gameplay
             TryFinishRunOnDisable();
 
             TryStopGameSafe();
+        }
+
+        private void StartMissingGameplayFlow()
+        {
+            if (_missingGameplayCo != null)
+            {
+                StopCoroutine(_missingGameplayCo);
+                _missingGameplayCo = null;
+            }
+
+            _startRunScheduled = false;
+
+            _missingGameplayCo = StartCoroutine(MissingGameplayRoutine());
+        }
+
+        private System.Collections.IEnumerator MissingGameplayRoutine()
+        {
+            yield return null;
+
+            const float initialDelaySeconds = 0.75f;
+            float t0 = Time.unscaledTime;
+            while (Time.unscaledTime - t0 < initialDelaySeconds)
+                yield return null;
+
+            const float maxSpeechWaitSeconds = 10f;
+            float s0 = Time.unscaledTime;
+            while (IsSpeakingSafe())
+            {
+                if (Time.unscaledTime - s0 >= maxSpeechWaitSeconds)
+                    break;
+                yield return null;
+            }
+
+            _audioFx?.PlayUiCue(UiCueId.Error);
+
+            const float maxFlowWaitSeconds = 10f;
+            float f0 = Time.unscaledTime;
+            while (_flow != null && _flow.IsTransitioning)
+            {
+                if (Time.unscaledTime - f0 >= maxFlowWaitSeconds)
+                    break;
+                yield return null;
+            }
+
+            yield return null;
+
+            _ = ReturnAsync(abortRun: true);
+
+            _missingGameplayCo = null;
+        }
+
+        private bool IsSpeakingSafe()
+        {
+            try { return _speech != null && _speech.IsSpeaking; }
+            catch { return false; }
         }
 
         public void Handle(NavAction action)
@@ -124,6 +207,17 @@ namespace Project.Games.Gameplay
             }
         }
 
+        public void Handle(NavDirection4 direction)
+        {
+            if (_state == GameplayState.Exiting)
+                return;
+
+            if (_state != GameplayState.Running)
+                return;
+
+            _gameDir4?.Handle(direction);
+        }
+
         public void OnRepeatRequested()
         {
             if (_state == GameplayState.Paused)
@@ -135,6 +229,17 @@ namespace Project.Games.Gameplay
 
             if (_state == GameplayState.Running || _state == GameplayState.Intro)
             {
+                if (_game is IGameplayRepeatHandler rep)
+                {
+                    try { rep.OnRepeatRequested(); }
+                    catch
+                    {
+                        RefreshVaForGameplay();
+                        PlayIntroOnly();
+                    }
+                    return;
+                }
+
                 RefreshVaForGameplay();
                 PlayIntroOnly();
             }
@@ -149,12 +254,22 @@ namespace Project.Games.Gameplay
 #endif
             if (all == null) return;
 
+            _game = null;
+            _gameInput = null;
+            _gameDir4 = null;
+            _runtimeStatsProvider = null;
+
             for (int i = 0; i < all.Length; i++)
             {
                 if (all[i] is IGameplayGame g)
                 {
                     _game = g;
+
                     _gameInput = all[i] as IGameplayInputHandler;
+                    _gameDir4 = all[i] as IGameplayDirection4Handler;
+
+                    _runtimeStatsProvider = all[i] as IGameplayRuntimeStatsProvider;
+
                     break;
                 }
             }
@@ -277,13 +392,6 @@ namespace Project.Games.Gameplay
                 return;
 
             _startRunScheduled = false;
-
-            if (_game == null)
-            {
-                _audioFx?.PlayUiCue(UiCueId.Error);
-                _ = ReturnAsync(abortRun: true);
-                return;
-            }
 
             _state = GameplayState.Running;
 
@@ -456,7 +564,8 @@ namespace Project.Games.Gameplay
                 _runs?.FinishRun(
                     reason: reason,
                     completed: completed,
-                    score: result.Score
+                    score: result.Score,
+                    runtimeStats: result.RuntimeStats
                 );
             }
             catch { }
@@ -495,7 +604,7 @@ namespace Project.Games.Gameplay
             );
 
             if (abortRun)
-                FinishRunAbort();
+                FinishRunAbortWithRuntimeStatsIfPossible();
 
             try
             {
@@ -504,14 +613,28 @@ namespace Project.Games.Gameplay
             catch { }
         }
 
-        private void FinishRunAbort()
+        private void FinishRunAbortWithRuntimeStatsIfPossible()
         {
+            IReadOnlyDictionary<string, string> snapshot = null;
+
+            try
+            {
+                snapshot = _runtimeStatsProvider != null
+                    ? _runtimeStatsProvider.GetRuntimeStatsSnapshot()
+                    : null;
+            }
+            catch
+            {
+                snapshot = null;
+            }
+
             try
             {
                 _runs?.FinishRun(
                     reason: GameRunFinishReason.AbortedByUser,
                     completed: false,
-                    score: 0
+                    score: 0,
+                    runtimeStats: snapshot
                 );
             }
             catch { }
@@ -534,12 +657,26 @@ namespace Project.Games.Gameplay
             if (!prepared || !started)
                 return;
 
+            IReadOnlyDictionary<string, string> snapshot = null;
+
+            try
+            {
+                snapshot = _runtimeStatsProvider != null
+                    ? _runtimeStatsProvider.GetRuntimeStatsSnapshot()
+                    : null;
+            }
+            catch
+            {
+                snapshot = null;
+            }
+
             try
             {
                 _runs.FinishRun(
                     reason: GameRunFinishReason.AbortedByUser,
                     completed: false,
-                    score: 0
+                    score: 0,
+                    runtimeStats: snapshot
                 );
             }
             catch { }
@@ -568,11 +705,22 @@ namespace Project.Games.Gameplay
             }
             catch { }
 
-            var initialParams = GameRunInitialParametersBuilder.Build(
+            var baseParams = GameRunInitialParametersBuilder.Build(
                 settings: _settings,
                 useRandomSeed: useRandomSeed,
                 seedValue: seed
             );
+
+            var initialParams = new Dictionary<string, string>(baseParams);
+
+            try
+            {
+                _initialParamsProvider?.AppendParameters(
+                    gameId: _session.SelectedGameId,
+                    modeId: _session.SelectedModeId,
+                    initialParameters: initialParams);
+            }
+            catch { }
 
             try
             {

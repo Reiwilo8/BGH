@@ -10,12 +10,20 @@ namespace Project.Games.Stats
         public readonly bool Completed;
         public readonly DateTime FinishedUtc;
 
-        public RecentRunSnapshot(TimeSpan duration, int score, bool completed, DateTime finishedUtc)
+        public readonly IReadOnlyDictionary<string, string> RuntimeStats;
+
+        public RecentRunSnapshot(
+            TimeSpan duration,
+            int score,
+            bool completed,
+            DateTime finishedUtc,
+            IReadOnlyDictionary<string, string> runtimeStats)
         {
             Duration = duration;
             Score = score;
             Completed = completed;
             FinishedUtc = finishedUtc;
+            RuntimeStats = runtimeStats;
         }
     }
 

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Project.Games.Persistence
@@ -125,6 +124,15 @@ namespace Project.Games.Persistence
 
                     if (m.recentRuns == null)
                         m.recentRuns = new System.Collections.Generic.List<RecentRunData>();
+
+                    for (int ri = 0; ri < m.recentRuns.Count; ri++)
+                    {
+                        var r = m.recentRuns[ri];
+                        if (r == null) continue;
+
+                        if (r.runtimeStats == null)
+                            r.runtimeStats = new System.Collections.Generic.List<GameKeyValueEntry>();
+                    }
                 }
             }
 
@@ -148,8 +156,31 @@ namespace Project.Games.Persistence
                 Save();
             }
 
-            if (Data.schemaVersion < 3)
-                Data.schemaVersion = 3;
+            if (Data.schemaVersion < 4)
+            {
+                foreach (var g in Data.games)
+                {
+                    if (g?.stats?.modes == null) continue;
+
+                    foreach (var m in g.stats.modes)
+                    {
+                        if (m?.recentRuns == null) continue;
+
+                        foreach (var r in m.recentRuns)
+                        {
+                            if (r == null) continue;
+                            if (r.runtimeStats == null)
+                                r.runtimeStats = new System.Collections.Generic.List<GameKeyValueEntry>();
+                        }
+                    }
+                }
+
+                Data.schemaVersion = 4;
+                Save();
+            }
+
+            if (Data.schemaVersion < 4)
+                Data.schemaVersion = 4;
         }
 
         private void RecomputeBestTimesFromRecentRuns()

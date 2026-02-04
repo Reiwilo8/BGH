@@ -20,8 +20,12 @@ namespace Project.Core.Input
         private InputAction _toggle;
 
         private InputAction _repeatAction;
-
         private InputAction _scroll;
+
+        private InputAction _up;
+        private InputAction _down;
+        private InputAction _left;
+        private InputAction _right;
 
         private float _nextScrollAllowedTime;
         private const float ScrollCooldownSeconds = 0.08f;
@@ -50,6 +54,11 @@ namespace Project.Core.Input
 
             _repeatAction = _nav.FindAction("Repeat", true);
             _scroll = _nav.FindAction("Scroll", true);
+
+            _up = _nav.FindAction("Up", throwIfNotFound: false);
+            _down = _nav.FindAction("Down", throwIfNotFound: false);
+            _left = _nav.FindAction("Left", throwIfNotFound: false);
+            _right = _nav.FindAction("Right", throwIfNotFound: false);
         }
 
         private void OnEnable()
@@ -64,6 +73,11 @@ namespace Project.Core.Input
 
             if (_repeatAction != null) _repeatAction.performed += OnRepeat;
             if (_scroll != null) _scroll.performed += OnScroll;
+
+            if (_up != null) _up.performed += OnUp;
+            if (_down != null) _down.performed += OnDown;
+            if (_left != null) _left.performed += OnLeft;
+            if (_right != null) _right.performed += OnRight;
         }
 
         private void OnDisable()
@@ -76,6 +90,11 @@ namespace Project.Core.Input
 
             if (_repeatAction != null) _repeatAction.performed -= OnRepeat;
             if (_scroll != null) _scroll.performed -= OnScroll;
+
+            if (_up != null) _up.performed -= OnUp;
+            if (_down != null) _down.performed -= OnDown;
+            if (_left != null) _left.performed -= OnLeft;
+            if (_right != null) _right.performed -= OnRight;
 
             _nav?.Disable();
         }
@@ -107,5 +126,13 @@ namespace Project.Core.Input
                 _nextScrollAllowedTime = now + ScrollCooldownSeconds;
             }
         }
+
+        private void OnUp(InputAction.CallbackContext ctx) => _input.EmitDirection4(NavDirection4.Up);
+
+        private void OnDown(InputAction.CallbackContext ctx) => _input.EmitDirection4(NavDirection4.Down);
+
+        private void OnLeft(InputAction.CallbackContext ctx) => _input.EmitDirection4(NavDirection4.Left);
+
+        private void OnRight(InputAction.CallbackContext ctx) => _input.EmitDirection4(NavDirection4.Right);
     }
 }
