@@ -5,10 +5,10 @@ namespace Project.Core.Speech
 {
     public sealed class IosSpeechService : ISpeechService
     {
-        [DllImport("__Internal")] private static extern void TTS_Init();
-        [DllImport("__Internal")] private static extern void TTS_Speak(string text, string lang);
-        [DllImport("__Internal")] private static extern void TTS_Stop();
-        [DllImport("__Internal")] private static extern bool TTS_IsSpeaking();
+        [DllImport("TtsBridgeIos")] private static extern void TTS_Init();
+        [DllImport("TtsBridgeIos")] private static extern void TTS_Speak(string text, string lang);
+        [DllImport("TtsBridgeIos")] private static extern void TTS_Stop();
+        [DllImport("TtsBridgeIos")] private static extern bool TTS_IsSpeaking();
 
         private string _lang = "en-US";
 

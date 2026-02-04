@@ -6,53 +6,44 @@ namespace Project.Core.Speech
 {
     public sealed class AndroidSpeechService : ISpeechService
     {
-        private AndroidJavaObject _tts;
-        private bool _ready;
-        private string _lang = "en";
+        private const string UnityGoName = "AndroidTtsBridgeReceiver";
+        private const string UnityCallback = "OnTtsEvent";
 
+        private AndroidJavaObject _bridge;
+
+        private AndroidTtsBridgeReceiver _receiver;
+
+        private string _lang = "en";
         private string _pendingText;
 
-        private volatile bool _isSpeaking;
-        public bool IsSpeaking => _isSpeaking;
-
-        private int _uttCounter;
-
-        private bool _hasProgressListener;
+        private volatile int _activeAny;
+        public bool IsSpeaking => _activeAny > 0;
 
         public AndroidSpeechService()
         {
             try
             {
-                using var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-                var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                EnsureReceiver();
 
-                _tts = new AndroidJavaObject(
-                    "android.speech.tts.TextToSpeech",
-                    activity,
-                    new OnInitListener(OnTtsInit)
-                );
+                using var cls = new AndroidJavaClass("com.project.core.speech.TtsBridgeAndroid");
+                _bridge = cls.CallStatic<AndroidJavaObject>("create", UnityGoName, UnityCallback);
 
-                // Listener jest opcjonalny – nie mo¿e psuæ ca³ego TTS.
-                TryAttachProgressListener();
+                TrySetLanguageNow();
             }
             catch (Exception e)
             {
                 Debug.LogWarning($"AndroidSpeechService init failed: {e.Message}");
-                _tts = null;
-                _ready = false;
-                _isSpeaking = false;
+                _bridge = null;
+                _activeAny = 0;
             }
         }
 
         public void Speak(string text, SpeechPriority priority = SpeechPriority.Normal)
         {
-            if (string.IsNullOrWhiteSpace(text))
-                return;
+            if (string.IsNullOrWhiteSpace(text)) return;
+            if (_bridge == null) return;
 
-            if (_tts == null)
-                return;
-
-            if (!_ready)
+            if (!IsReadySafe())
             {
                 _pendingText = text;
                 return;
@@ -63,136 +54,97 @@ namespace Project.Core.Speech
 
         public void StopAll()
         {
-            try
-            {
-                _pendingText = null;
-                _isSpeaking = false;
+            _pendingText = null;
+            _activeAny = 0;
 
-                if (_tts != null)
-                    _tts.Call<int>("stop");
-            }
-            catch { }
+            try { _bridge?.Call("stopAll"); } catch { }
         }
 
         public void SetLanguage(string languageCode)
         {
-            _lang = string.IsNullOrWhiteSpace(languageCode) ? "en" : languageCode;
+            _lang = string.IsNullOrWhiteSpace(languageCode) ? "en" : languageCode.Trim();
+            TrySetLanguageNow();
+        }
 
-            if (!_ready || _tts == null)
+        private void EnsureReceiver()
+        {
+            var go = GameObject.Find(UnityGoName);
+            if (go == null)
+            {
+                go = new GameObject(UnityGoName);
+                UnityEngine.Object.DontDestroyOnLoad(go);
+            }
+
+            _receiver = go.GetComponent<AndroidTtsBridgeReceiver>();
+            if (_receiver == null)
+                _receiver = go.AddComponent<AndroidTtsBridgeReceiver>();
+
+            _receiver.OnEvent -= HandleBridgeEvent;
+            _receiver.OnEvent += HandleBridgeEvent;
+        }
+
+        private void HandleBridgeEvent(string msg)
+        {
+            if (string.IsNullOrEmpty(msg)) return;
+
+            int sep = msg.IndexOf('|');
+            string kind = sep >= 0 ? msg.Substring(0, sep) : msg;
+
+            if (kind == "start_any")
+            {
+                _activeAny = 1;
                 return;
+            }
+
+            if (kind == "done_any" || kind == "stop")
+            {
+                _activeAny = 0;
+                return;
+            }
+
+            if (kind == "ready")
+            {
+                TrySetLanguageNow();
+
+                if (!string.IsNullOrWhiteSpace(_pendingText))
+                {
+                    var t = _pendingText;
+                    _pendingText = null;
+                    SpeakInternal(t);
+                }
+
+                return;
+            }
+        }
+
+        private bool IsReadySafe()
+        {
+            try { return _bridge != null && _bridge.Call<bool>("isReady"); }
+            catch { return false; }
+        }
+
+        private void TrySetLanguageNow()
+        {
+            if (_bridge == null) return;
 
             try
             {
-                // Wspieramy zarówno "en", jak i "en-US"
-                AndroidJavaObject locale;
-                if (_lang.Contains("-"))
-                {
-                    var parts = _lang.Split('-');
-                    locale = parts.Length >= 2
-                        ? new AndroidJavaObject("java.util.Locale", parts[0], parts[1])
-                        : new AndroidJavaObject("java.util.Locale", parts[0]);
-                }
-                else
-                {
-                    locale = new AndroidJavaObject("java.util.Locale", _lang);
-                }
-
-                _tts.Call<int>("setLanguage", locale);
+                if (IsReadySafe())
+                    _bridge.Call("setLanguage", _lang);
             }
             catch { }
-        }
-
-        private void OnTtsInit(int status)
-        {
-            _ready = (status == 0);
-
-            if (!_ready || _tts == null)
-                return;
-
-            SetLanguage(_lang);
-
-            if (!string.IsNullOrWhiteSpace(_pendingText))
-            {
-                var text = _pendingText;
-                _pendingText = null;
-                SpeakInternal(text);
-            }
         }
 
         private void SpeakInternal(string text)
         {
             try
             {
-                if (!_hasProgressListener)
-                    _isSpeaking = true;
-
-                var utteranceId = $"utt_{++_uttCounter}";
-
-                _tts.Call<int>("speak", text, 0, null, utteranceId);
-
-                if (!_hasProgressListener)
-                    _isSpeaking = false;
+                _bridge.Call<string>("speak", text, true);
             }
             catch
             {
-                _isSpeaking = false;
+                _activeAny = 0;
             }
-        }
-
-        private void TryAttachProgressListener()
-        {
-            if (_tts == null)
-                return;
-
-            try
-            {
-                var listener = new UtteranceListener(
-                    onStart: _ => _isSpeaking = true,
-                    onDone: _ => _isSpeaking = false,
-                    onError: _ => _isSpeaking = false
-                );
-
-                _tts.Call("setOnUtteranceProgressListener", listener);
-                _hasProgressListener = true;
-            }
-            catch
-            {
-                _hasProgressListener = false;
-            }
-        }
-
-        private sealed class OnInitListener : AndroidJavaProxy
-        {
-            private readonly Action<int> _onInit;
-
-            public OnInitListener(Action<int> onInit)
-                : base("android.speech.tts.TextToSpeech$OnInitListener")
-            {
-                _onInit = onInit;
-            }
-
-            public void onInit(int status) => _onInit?.Invoke(status);
-        }
-
-        private sealed class UtteranceListener : AndroidJavaProxy
-        {
-            private readonly Action<string> _onStart;
-            private readonly Action<string> _onDone;
-            private readonly Action<string> _onError;
-
-            public UtteranceListener(Action<string> onStart, Action<string> onDone, Action<string> onError)
-                : base("android.speech.tts.UtteranceProgressListener")
-            {
-                _onStart = onStart;
-                _onDone = onDone;
-                _onError = onError;
-            }
-
-            public void onStart(string utteranceId) => _onStart?.Invoke(utteranceId);
-            public void onDone(string utteranceId) => _onDone?.Invoke(utteranceId);
-
-            public void onError(string utteranceId) => _onError?.Invoke(utteranceId);
-            public void onError(string utteranceId, int errorCode) => _onError?.Invoke(utteranceId);
         }
     }
 }
