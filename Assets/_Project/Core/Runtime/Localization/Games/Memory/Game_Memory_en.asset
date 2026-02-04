@@ -26,6 +26,33 @@ MonoBehaviour:
     m_Localized: Find and match identical pairs of cards.
     m_Metadata:
       m_Items: []
+  - m_Id: 2227262494502912
+    m_Localized: Card is covered.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2227471026909184
+    m_Localized: Card is already revelead.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2227652359254016
+    m_Localized: Card is already matched.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2338196080717824
+    m_Localized: Swipe to move through the cards. Double-tap to flip the current
+      card. Press and hold the screen to pause the game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2338252900954112
+    m_Localized: Use the arrow keys to move through the cards. Press Enter to flip
+      the current card. Press Backspace to pause the game. Press Space to repeat
+      instructions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2339567936892928
+    m_Localized: Your objective is to find and match identical pairs of cards.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

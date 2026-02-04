@@ -13,4 +13,28 @@ MonoBehaviour:
   m_Name: MemoryAudioCatalog
   m_EditorClassIdentifier: 
   gameId: memory
-  sounds: []
+  sounds:
+  - soundId: HorizontalSwishLeft
+    clip: {fileID: 8300000, guid: a159106f748a2a641b38faea30edcbaf, type: 3}
+    defaultVolume01: 1
+  - soundId: HorizontalSwishRight
+    clip: {fileID: 8300000, guid: 8bad5f75bcada5e4786ada5310d24da2, type: 3}
+    defaultVolume01: 1
+  - soundId: VerticalSwishUp
+    clip: {fileID: 8300000, guid: 2357c01b5e01e2449be015212fd67379, type: 3}
+    defaultVolume01: 1
+  - soundId: VerticalSwishDown
+    clip: {fileID: 8300000, guid: f34f2938d714d36499e5d40e73f98c31, type: 3}
+    defaultVolume01: 1
+  - soundId: CardFlip
+    clip: {fileID: 8300000, guid: 61d1442903ac5f04f90e766a8224ef89, type: 3}
+    defaultVolume01: 1
+  - soundId: Match
+    clip: {fileID: 8300000, guid: 84c4ee97750b1974593e63a9ce6b9a5c, type: 3}
+    defaultVolume01: 1
+  - soundId: Mismatch
+    clip: {fileID: 8300000, guid: 6df3fb186cb53ee41af1a7b621932af7, type: 3}
+    defaultVolume01: 1
+  - soundId: Win
+    clip: {fileID: 8300000, guid: 65bea039ecb6f6e4d8a7dac65873d734, type: 3}
+    defaultVolume01: 1

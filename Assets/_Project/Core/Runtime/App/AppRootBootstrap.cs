@@ -1,5 +1,6 @@
 using Project.Core.Activity;
 using Project.Core.Audio;
+using Project.Core.Audio.Steps;
 using Project.Core.AudioFx;
 using Project.Core.Haptics;
 using Project.Core.Input;
@@ -51,12 +52,15 @@ namespace Project.Core.App
             var visualModeService = new VisualModeService();
             _services.Register<IVisualModeService>(visualModeService);
 
+            _services.Register<Visual.Games.IGameVisualService>(
+                new Visual.Games.GameVisualServiceBroker());
+
             var defaults = new AppSettingsData
             {
                 languageCode = "en",
                 hasUserSelectedLanguage = false,
 
-                controlHintMode = Project.Core.Input.ControlHintMode.Auto,
+                controlHintMode = ControlHintMode.Auto,
 
                 cuesEnabled = true,
                 cuesVolume = 1f,
@@ -220,7 +224,7 @@ namespace Project.Core.App
 
                 var h = uiAudio.Play(
                     UiAudioScope.Start,
-                    ctx => Project.Core.Audio.Steps.UiAudioSteps.SpeakKeyAndWait(ctx, "app.welcome"),
+                    ctx => UiAudioSteps.SpeakKeyAndWait(ctx, "app.welcome"),
                     SpeechPriority.High,
                     interruptible: false
                 );

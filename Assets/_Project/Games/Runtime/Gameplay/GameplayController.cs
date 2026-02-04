@@ -229,6 +229,17 @@ namespace Project.Games.Gameplay
 
             if (_state == GameplayState.Running || _state == GameplayState.Intro)
             {
+                if (_game is IGameplayRepeatHandler rep)
+                {
+                    try { rep.OnRepeatRequested(); }
+                    catch
+                    {
+                        RefreshVaForGameplay();
+                        PlayIntroOnly();
+                    }
+                    return;
+                }
+
                 RefreshVaForGameplay();
                 PlayIntroOnly();
             }

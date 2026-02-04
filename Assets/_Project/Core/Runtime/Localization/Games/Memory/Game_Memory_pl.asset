@@ -26,6 +26,35 @@ MonoBehaviour:
     m_Localized: "Znajd\u017A i dopasuj identyczne pary kart."
     m_Metadata:
       m_Items: []
+  - m_Id: 2227262494502912
+    m_Localized: Karta jest zakryta.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2227471026909184
+    m_Localized: "Karta jest ju\u017C odkryta."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2227652359254016
+    m_Localized: "Karta jest ju\u017C dopasowana."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2338196080717824
+    m_Localized: "Przeci\u0105gaj palcem, aby przechodzi\u0107 mi\u0119dzy kartami.
+      Podw\xF3jnym stukni\u0119ciem odwracasz obecn\u0105 kart\u0119. Przytrzymaj
+      palec na ekranie, aby spauzowa\u0107 gr\u0119."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2338252900954112
+    m_Localized: "U\u017Cyj strza\u0142ek do przechodzenia mi\u0119dzy kartami. Wci\u015Bnij
+      Enter, aby odwr\xF3ci\u0107 wybran\u0105 kart\u0119. Wci\u015Bnij Backspace,
+      \u017Ceby spauzowa\u0107 gr\u0119. Mo\u017Cesz wcisn\u0105\u0107 Spacj\u0119,
+      w celu powt\xF3rzenia instrukcji."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2339567936892928
+    m_Localized: Twoim zadaniem jest znalezienie i dopasowanie identycznych par kart.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
