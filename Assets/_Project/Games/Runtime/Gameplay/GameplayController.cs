@@ -18,6 +18,8 @@ namespace Project.Games.Gameplay
 {
     public sealed class GameplayController : MonoBehaviour
     {
+        private const float StartAfterGameStartDelaySeconds = 1.5f;
+
         private IAudioFxService _audioFx;
         private IUiAudioOrchestrator _uiAudio;
         private IAppFlowService _flow;
@@ -382,6 +384,16 @@ namespace Project.Games.Gameplay
 
             if (ctx?.Handle == null || ctx.Handle.IsCancelled)
                 yield break;
+
+            float d = Mathf.Max(0f, StartAfterGameStartDelaySeconds);
+            float t0 = Time.unscaledTime;
+            while (Time.unscaledTime - t0 < d)
+            {
+                if (ctx.Handle.IsCancelled)
+                    yield break;
+
+                yield return null;
+            }
 
             StartRunNow();
         }
