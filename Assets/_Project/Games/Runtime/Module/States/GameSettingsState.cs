@@ -91,10 +91,8 @@ namespace Project.Games.Module.States
                 return;
             }
 
-            // Potrzebujemy wykryæ anulowanie potwierdzania:
-            // jeœli byliœmy w ConfirmAction i po obs³udze UI ju¿ nie jesteœmy,
-            // to znaczy ¿e u¿ytkownik to anulowa³ (najczêœciej Back).
             var modeBefore = _ui.Mode;
+            string subBefore = ResolveVaSubHeader();
 
             PlayUiCueForAction(action);
 
@@ -105,6 +103,9 @@ namespace Project.Games.Module.States
                 ExitToGameMenu();
                 return;
             }
+
+            string subAfter = ResolveVaSubHeader();
+            TryPulseVaListMove(action, subBefore, subAfter);
 
             RefreshVa();
 
@@ -118,6 +119,24 @@ namespace Project.Games.Module.States
             }
 
             HandleUiResult(action, result);
+        }
+
+        private void TryPulseVaListMove(NavAction action, string subBefore, string subAfter)
+        {
+            if (_va == null)
+                return;
+
+            if (action != NavAction.Next && action != NavAction.Previous)
+                return;
+
+            if (_ui.Mode == SettingsUiMode.EditRange)
+                return;
+
+            if (string.Equals(subBefore ?? "", subAfter ?? "", System.StringComparison.Ordinal))
+                return;
+
+            var dir = action == NavAction.Next ? VaListMoveDirection.Next : VaListMoveDirection.Previous;
+            _va.PulseListMove(dir);
         }
 
         private void ToggleDeveloperMode()
