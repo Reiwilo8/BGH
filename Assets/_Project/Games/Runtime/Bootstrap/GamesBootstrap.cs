@@ -31,7 +31,8 @@ namespace Project.Games.Bootstrap
             AppContext.Services.Register<IGameRunParametersService>(new PersistentGameRunParametersService(store));
 
             var initialParamsProvider = new CompositeGameInitialParametersProvider(
-                new MemoryInitialParametersProvider(store)
+                new MemoryInitialParametersProvider(store),
+                new SteamRushInitialParametersProvider(store)
             );
             AppContext.Services.Register<IGameInitialParametersProvider>(initialParamsProvider);
 

@@ -335,9 +335,9 @@ namespace Project.Games.Module.States
             if (_ui.Mode == SettingsUiMode.EditList
                 || _ui.Mode == SettingsUiMode.EditRange
                 || _ui.Mode == SettingsUiMode.ConfirmAction)
-                return SafeGet("va.setting", text);
+                return GetCore("va.setting", text);
 
-            return SafeGet("va.current", text);
+            return GetCore("va.current", text);
         }
 
         private void PlayPrompt()
@@ -383,7 +383,8 @@ namespace Project.Games.Module.States
                     currentKey,
                     currentText,
                     hintKey,
-                    descKey),
+                    descKey,
+                    _game != null ? _game.localizationTable : null),
                 SpeechPriority.Normal,
                 interruptible: true
             );
@@ -404,7 +405,8 @@ namespace Project.Games.Module.States
                     ctx,
                     currentKey,
                     currentText,
-                    descKey),
+                    descKey,
+                    _game != null ? _game.localizationTable : null),
                 SpeechPriority.Normal,
                 interruptible: true
             );
@@ -435,7 +437,8 @@ namespace Project.Games.Module.States
                     currentText,
                     valueText,
                     hintKey,
-                    descKey),
+                    descKey,
+                    _game != null ? _game.localizationTable : null),
                 SpeechPriority.Normal,
                 interruptible: true
             );
@@ -451,63 +454,52 @@ namespace Project.Games.Module.States
             );
         }
 
-        private void PlayConfirmActionPrompt(SettingsItem item)
+        private string ResolveCommittedValueText(SettingsUiResult r)
         {
-            _sm.UiAudio.Play(
-                UiAudioScope.GameModule,
-                ctx => UiAudioSteps.SpeakKeyAndWait(ctx, "settings.action.confirm"),
-                SpeechPriority.High,
-                interruptible: false
-            );
+            if (r.AffectedItemType == SettingsItemType.Toggle)
+                return r.ToggleValue ? GetCore("settings.on") : GetCore("settings.off");
 
-            string hintKey = SettingsUiHintKeys.Resolve(
-                SettingsUiMode.ConfirmAction,
-                ResolveEffectiveHintMode(_sm.Settings.Current));
+            if (r.AffectedItem != null && (r.AffectedItemType == SettingsItemType.Range || r.AffectedItemType == SettingsItemType.List))
+                return ResolveItemDisplayText(r.AffectedItem);
 
-            string currentKey = "current.setting";
-            string currentText = item != null ? ResolveItemDisplayText(item) : "—";
-            string descKey = item != null ? ResolveDescriptionKey(item) : null;
-
-            _va?.SetIdleHintKey(hintKey);
-
-            _sm.UiAudio.Play(
-                UiAudioScope.GameModule,
-                ctx => GameSettingsPromptSequence.ConfirmAction(
-                    ctx,
-                    currentKey,
-                    currentText,
-                    hintKey,
-                    descKey),
-                SpeechPriority.Normal,
-                interruptible: true
-            );
+            return GetCore("selected.value");
         }
 
-        private void ExitToGameMenu()
+        private string ResolveDescriptionKey(SettingsItem item)
         {
-            _sm.UiAudio.CancelCurrent();
-            _va?.NotifyTransitioning();
+            if (item == null) return null;
+            if (item.LabelKey == "common.back") return null;
+            return item.DescriptionKey;
+        }
 
-            _sm.UiAudio.PlayGated(
-                UiAudioScope.GameModule,
-                "exit.to_game_menu",
-                stillTransitioning: () => _sm.Transitions.IsTransitioning,
-                delaySeconds: 0.5f,
-                priority: SpeechPriority.High,
-                GameLocalization.GetGameName(_loc, _game)
-            );
+        private static string CurrentKeyForItem(SettingsItem it)
+        {
+            if (it == null) return "current.option";
+            if (it.LabelKey == "common.back") return "current.option";
+            if (IsFolder(it)) return "current.option";
 
-            _sm.Transitions.RunInstant(() =>
-            {
-                _sm.SetState(new GameMenuState(_sm));
-            });
+            return IsRealSetting(it) ? "current.setting" : "current.option";
+        }
+
+        private static bool IsFolder(SettingsItem it) => it != null && it.Type == SettingsItemType.Folder;
+
+        private static bool IsRealSetting(SettingsItem it)
+        {
+            if (it == null) return false;
+
+            if (it.Type == SettingsItemType.Toggle
+                || it.Type == SettingsItemType.List
+                || it.Type == SettingsItemType.Range)
+                return true;
+
+            return false;
         }
 
         private string ResolveItemDisplayText(SettingsItem item)
         {
             if (item == null) return "Unknown";
 
-            var label = SafeGet(item.LabelKey);
+            var label = GetLabel(item.LabelKey);
 
             switch (item.Type)
             {
@@ -517,7 +509,7 @@ namespace Project.Games.Module.States
                         {
                             bool v = false;
                             try { v = t.GetValue(); } catch { }
-                            var vt = v ? SafeGet("settings.on") : SafeGet("settings.off");
+                            var vt = v ? GetCore("settings.on") : GetCore("settings.off");
                             return $"{label}: {vt}";
                         }
                         return label;
@@ -565,47 +557,6 @@ namespace Project.Games.Module.States
             return "—";
         }
 
-        private string ResolveCommittedValueText(SettingsUiResult r)
-        {
-            if (r.AffectedItemType == SettingsItemType.Toggle)
-                return r.ToggleValue ? SafeGet("settings.on") : SafeGet("settings.off");
-
-            if (r.AffectedItem != null && (r.AffectedItemType == SettingsItemType.Range || r.AffectedItemType == SettingsItemType.List))
-                return ResolveItemDisplayText(r.AffectedItem);
-
-            return SafeGet("selected.value");
-        }
-
-        private string ResolveDescriptionKey(SettingsItem item)
-        {
-            if (item == null) return null;
-            if (item.LabelKey == "common.back") return null;
-            return item.DescriptionKey;
-        }
-
-        private static string CurrentKeyForItem(SettingsItem it)
-        {
-            if (it == null) return "current.option";
-            if (it.LabelKey == "common.back") return "current.option";
-            if (IsFolder(it)) return "current.option";
-
-            return IsRealSetting(it) ? "current.setting" : "current.option";
-        }
-
-        private static bool IsFolder(SettingsItem it) => it != null && it.Type == SettingsItemType.Folder;
-
-        private static bool IsRealSetting(SettingsItem it)
-        {
-            if (it == null) return false;
-
-            if (it.Type == SettingsItemType.Toggle
-                || it.Type == SettingsItemType.List
-                || it.Type == SettingsItemType.Range)
-                return true;
-
-            return false;
-        }
-
         private string FormatRangeValue(SettingsRange range, float value)
         {
             if (range != null && range.LabelKey == "settings.stats.recent_capacity")
@@ -617,7 +568,7 @@ namespace Project.Games.Module.States
 
                 string suffixKey = ResolveRecentCapacitySuffixKey(v);
 
-                string suffix = SafeGet(suffixKey);
+                string suffix = GetCore(suffixKey);
                 if (string.IsNullOrWhiteSpace(suffix) || suffix == suffixKey)
                     suffix = "entries";
 
@@ -647,7 +598,7 @@ namespace Project.Games.Module.States
             if (LooksLikeRawNumber(opt.LabelKey))
                 return NormalizeRaw(opt.LabelKey);
 
-            var s = SafeGet(opt.LabelKey);
+            var s = GetLabel(opt.LabelKey);
             return string.IsNullOrWhiteSpace(s) || s == opt.LabelKey ? opt.Id : s;
         }
 
@@ -668,10 +619,7 @@ namespace Project.Games.Module.States
             return true;
         }
 
-        private static string NormalizeRaw(string s)
-        {
-            return s.Trim();
-        }
+        private static string NormalizeRaw(string s) => s.Trim();
 
         private static int ClampInt(int v, int min, int max) => v < min ? min : (v > max ? max : v);
 
@@ -683,26 +631,107 @@ namespace Project.Games.Module.States
             return mode;
         }
 
-        private string SafeGet(string key, params object[] args)
+        private string GetCore(string key, params object[] args)
         {
-            if (_loc == null || string.IsNullOrWhiteSpace(key))
+            if (string.IsNullOrWhiteSpace(key))
                 return key ?? "";
 
-            if (args == null || args.Length == 0)
-            {
-                var s = _loc.Get(key);
-                return string.IsNullOrWhiteSpace(s) ? key : s;
-            }
+            if (_loc == null)
+                return key;
 
             try
             {
-                var s = _loc.Get(key, args);
+                var s = (args == null || args.Length == 0)
+                    ? _loc.Get(key)
+                    : _loc.Get(key, args);
+
                 return string.IsNullOrWhiteSpace(s) ? key : s;
             }
             catch
             {
                 return key;
             }
+        }
+
+        private string GetLabel(string key, params object[] args)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                return key ?? "";
+
+            if (_loc == null)
+                return key;
+
+            string table = null;
+            try { table = _game != null ? _game.localizationTable : null; }
+            catch { table = null; }
+
+            return ResolveTextCoreThenGame(key, table, args);
+        }
+
+        private string ResolveTextCoreThenGame(string key, string gameTable, params object[] args)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                return key ?? "";
+
+            if (_loc == null)
+                return key;
+
+            try
+            {
+                var core = (args == null || args.Length == 0)
+                    ? _loc.Get(key)
+                    : _loc.Get(key, args);
+
+                if (!IsMissingValue(core, key))
+                    return core;
+            }
+            catch { }
+
+            if (!string.IsNullOrWhiteSpace(gameTable))
+            {
+                try
+                {
+                    var game = (args == null || args.Length == 0)
+                        ? _loc.GetFromTable(gameTable, key)
+                        : _loc.GetFromTable(gameTable, key, args);
+
+                    if (!IsMissingValue(game, key))
+                        return game;
+                }
+                catch { }
+            }
+
+            return key;
+        }
+
+        private static bool IsMissingValue(string value, string key)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return true;
+
+            if (string.IsNullOrWhiteSpace(key))
+                return false;
+
+            if (string.Equals(value, key, System.StringComparison.Ordinal))
+                return true;
+
+            var v = value.Trim();
+
+            if (v.IndexOf(key, System.StringComparison.Ordinal) < 0 &&
+                v.IndexOf(key, System.StringComparison.OrdinalIgnoreCase) < 0)
+                return false;
+
+            bool hasNotFound =
+                v.IndexOf("not found", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                v.IndexOf("missing", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                v.IndexOf("no entry", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                v.IndexOf("no translation", System.StringComparison.OrdinalIgnoreCase) >= 0;
+
+            bool hasInCoreOrTable =
+                v.IndexOf("in core", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                v.IndexOf("in table", System.StringComparison.OrdinalIgnoreCase) >= 0;
+
+            return hasNotFound || hasInCoreOrTable;
         }
 
         private sealed class GameSettingsHooks : ISettingsUiHooks
@@ -718,6 +747,59 @@ namespace Project.Games.Module.States
 
             public bool TryHandleToggle(SettingsToggle toggle) => false;
             public bool TryHandleAction(SettingsAction action) => false;
+        }
+
+        private void PlayConfirmActionPrompt(SettingsItem item)
+        {
+            _sm.UiAudio.Play(
+                UiAudioScope.GameModule,
+                ctx => UiAudioSteps.SpeakKeyAndWait(ctx, "settings.action.confirm"),
+                SpeechPriority.High,
+                interruptible: false
+            );
+
+            string hintKey = SettingsUiHintKeys.Resolve(
+                SettingsUiMode.ConfirmAction,
+                ResolveEffectiveHintMode(_sm.Settings.Current));
+
+            string currentKey = "current.setting";
+            string currentText = item != null ? ResolveItemDisplayText(item) : "—";
+            string descKey = item != null ? ResolveDescriptionKey(item) : null;
+
+            _va?.SetIdleHintKey(hintKey);
+
+            _sm.UiAudio.Play(
+                UiAudioScope.GameModule,
+                ctx => GameSettingsPromptSequence.ConfirmAction(
+                    ctx,
+                    currentKey,
+                    currentText,
+                    hintKey,
+                    descKey,
+                    _game != null ? _game.localizationTable : null),
+                SpeechPriority.Normal,
+                interruptible: true
+            );
+        }
+
+        private void ExitToGameMenu()
+        {
+            _sm.UiAudio.CancelCurrent();
+            _va?.NotifyTransitioning();
+
+            _sm.UiAudio.PlayGated(
+                UiAudioScope.GameModule,
+                "exit.to_game_menu",
+                stillTransitioning: () => _sm.Transitions.IsTransitioning,
+                delaySeconds: 0.5f,
+                priority: SpeechPriority.High,
+                GameLocalization.GetGameName(_loc, _game)
+            );
+
+            _sm.Transitions.RunInstant(() =>
+            {
+                _sm.SetState(new GameMenuState(_sm));
+            });
         }
     }
 }

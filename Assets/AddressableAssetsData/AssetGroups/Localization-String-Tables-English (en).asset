@@ -32,6 +32,7 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e89d80abd9c3fb042b3cfdcde37fe14d
     m_Address: Game_Fishing_en

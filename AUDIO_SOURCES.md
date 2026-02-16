@@ -89,11 +89,39 @@ https://pixabay.com/pl/sound-effects/musical-pause-piano-sound-40579/
 
 ---
 
+## Gry - SteamRush
+
+**Horizontal swish** - DJARTMUSIC
+https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-real-swish-3-304242/ 
+`steamrush_swish_left`, `steamrush_swish_right`
+
+**Steam train intro** - ScottishPerson
+https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-sound-effect-steam-train-248534/
+`steamrush_train_intro`
+
+**Steam train loop** - SamsterBirdies (Freesound) / freesound_community
+https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-steam-engine-37399/
+`steamrush_train_loop`
+
+**Steam whistle** - Caboose_canine
+https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-steam-locomotive-fouled-5-chime-375193/
+`steamrush_whistle`
+
+**Steam train pass** - ScottishPerson
+https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-sound-effect-steam-train-248534/
+`steamrush_train_pass`
+
+**Win game** - EAGLAXLE
+https://pixabay.com/pl/sound-effects/gaming-victory-464016/
+`steamrush_win`
+
+---
+
 ## Gry – Memory
 
 **Horizontal swish** – DJARTMUSIC  
 https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-real-swish-3-304242/  
-`memory_horizonstal_swish_left`, `memory_horizonstal_swish_right`
+`memory_horizontal_swish_left`, `memory_horizontal_swish_right`
 
 **Vertical swish** – OxidVideos  
 https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-video-game-sword-swing-sfx-409364/  
