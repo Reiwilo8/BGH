@@ -5,6 +5,7 @@ using Project.Core.Input;
 using Project.Core.Localization;
 using Project.Core.Settings;
 using Project.Core.Visual;
+using Project.Core.Visual.Games.SteamRush;
 using Project.Games.Gameplay.Contracts;
 using System;
 using System.Collections;
@@ -92,6 +93,10 @@ namespace Project.Games.SteamRush
         private const string EndlessRunKey3 = "steamrush.endless.run3";
         private const string EndlessRunKey4 = "steamrush.endless.run4";
 
+        [Header("Visual (optional)")]
+        [SerializeField] private MonoBehaviour visualDriver;
+        private ISteamRushVisualDriver _visual;
+
         private IAudioFxService _audioFx;
         private IHapticsService _haptics;
         private IVisualModeService _visualMode;
@@ -143,12 +148,16 @@ namespace Project.Games.SteamRush
         private Coroutine _collisionCo;
         private Coroutine _winCo;
 
-        // --- spawn budget (token bucket) ---
         private float _spawnTokens;
         private float _spawnTokenLastT;
 
+        private int _nextTrainId;
+
+        private bool _visualShown;
+
         private struct Train
         {
+            public int id;
             public int lane;
 
             public float startT;
@@ -232,6 +241,7 @@ namespace Project.Games.SteamRush
         public void Initialize(GameplayGameContext ctx)
         {
             ResolveServices();
+            ResolveVisual();
 
             _modeId = NormalizeAndValidateModeId(ctx.ModeId);
 
@@ -290,9 +300,10 @@ namespace Project.Games.SteamRush
 
             _gameTime = 0f;
 
-            // token bucket init
             _spawnTokens = 0f;
             _spawnTokenLastT = 0f;
+
+            _nextTrainId = 1;
 
             ComputeEndlessAdaptationIfNeeded();
             _prepDelaySeconds = ComputePreparationDelaySeconds();
@@ -303,6 +314,10 @@ namespace Project.Games.SteamRush
             StopCollisionRoutineIfAny();
             StopWinRoutineIfAny();
             StopAllHandlesAndClear();
+
+            _visualShown = false;
+            try { _visual?.Reset(); } catch { }
+            ApplyVisualVisibility(forceVisible: false);
         }
 
         public void StartGame()
@@ -313,6 +328,7 @@ namespace Project.Games.SteamRush
             _paused = false;
 
             ApplyVisualVisibility();
+            ApplyVisualState();
         }
 
         public void StopGame()
@@ -326,6 +342,8 @@ namespace Project.Games.SteamRush
             _trains.Clear();
             StopAllHandlesAndClear();
 
+            _visualShown = false;
+            try { _visual?.Reset(); } catch { }
             ApplyVisualVisibility(forceVisible: false);
         }
 
@@ -334,6 +352,7 @@ namespace Project.Games.SteamRush
             _paused = true;
             PauseAllHandles();
             ApplyVisualVisibility();
+            ApplyVisualState();
         }
 
         public void ResumeGame()
@@ -342,6 +361,7 @@ namespace Project.Games.SteamRush
             ResumeAllHandles();
             RefreshAllTrainAudioMix();
             ApplyVisualVisibility();
+            ApplyVisualState();
         }
 
         private void Update()
@@ -359,6 +379,8 @@ namespace Project.Games.SteamRush
             TickEmit(_gameTime);
             TickTrains(_gameTime);
             TickWinCondition(_gameTime);
+
+            ApplyVisualState();
         }
 
         public void Handle(NavAction action)
@@ -406,6 +428,8 @@ namespace Project.Games.SteamRush
 
             TriggerWhistlesOnLaneChangeIfNeeded();
             RefreshAllTrainAudioMix();
+
+            ApplyVisualState();
         }
 
         public void OnRepeatRequested()
@@ -422,17 +446,14 @@ namespace Project.Games.SteamRush
             int maxConcurrent = ResolveMaxConcurrent(elapsed);
             int active = CountActive(nowT);
 
-            // refill token bucket
             UpdateSpawnTokens(nowT, elapsed, maxConcurrent);
 
-            // if board full -> don't hammer per-frame
             if (active >= maxConcurrent)
             {
                 _nextEmitTime = nowT + Mathf.Max(0.10f, ComputeMinEmitIntervalSeconds(maxConcurrent) * 0.25f);
                 return;
             }
 
-            // if we can't afford even 1 train yet -> schedule next check when token arrives
             if (_spawnTokens < 0.999f)
             {
                 float rate = Mathf.Max(0.05f, ResolveAllowedTrainsPerSecond(elapsed, maxConcurrent));
@@ -446,7 +467,6 @@ namespace Project.Games.SteamRush
 
             int tokenBudget = Mathf.Clamp((int)_spawnTokens, 1, 32);
 
-            // cap burst per emit: tutorial 1, easy 2, medium 3, hard/endless 4 (and never above maxConcurrent)
             int burstCap =
                 IsTutorialMode(_modeId) ? 1 :
                 IsEasyMode(_modeId) ? 2 :
@@ -481,7 +501,6 @@ namespace Project.Games.SteamRush
 
             float rate = ResolveAllowedTrainsPerSecond(elapsed, maxConcurrent);
 
-            // cap burst size so "uzbierane" tokeny nie robią nagle młyna
             float burstCap =
                 IsTutorialMode(_modeId) ? 1.0f :
                 IsEasyMode(_modeId) ? 2.5f :
@@ -497,15 +516,12 @@ namespace Project.Games.SteamRush
         {
             float activeDur = Mathf.Max(0.20f, _approachSeconds + _collisionWindowSeconds);
 
-            // "fizyczny" limit sensowny przy danym maxConcurrent:
-            // jeśli chcesz mieć maxConcurrent aktywnych, to średnio maxConcurrent/activeDur startów/s ma sens.
             float phys = Mathf.Max(0.10f, maxConcurrent / activeDur);
 
             float p =
                 IsEndlessMode(_modeId) ? ResolveEndlessProgress01(elapsed) :
                 ResolveProgress01(elapsed);
 
-            // ramp: na początku spokojniej, potem do celu
             float ramp = Mathf.Lerp(0.70f, 1.00f, Mathf.Clamp01(p));
 
             float modeMul =
@@ -515,13 +531,11 @@ namespace Project.Games.SteamRush
                 IsHardMode(_modeId) ? 0.95f :
                 1.00f;
 
-            // dodatkowa miękka korekta pod spawnRateEffective, ale bez pozwolenia na spam
             float sr = Mathf.Clamp(_spawnRateEffective, 0.10f, 10.0f);
             float srMul = Mathf.Lerp(0.90f, 1.05f, Mathf.InverseLerp(0.5f, 3.0f, sr));
 
             float v = phys * modeMul * ramp * srMul;
 
-            // praktyczne clampy
             if (IsTutorialMode(_modeId)) v = Mathf.Min(v, 0.90f);
             if (IsEasyMode(_modeId)) v = Mathf.Min(v, 1.60f);
             if (IsMediumMode(_modeId)) v = Mathf.Min(v, 2.40f);
@@ -657,15 +671,15 @@ namespace Project.Games.SteamRush
             return kind switch
             {
                 PatternKind.Single => 1,
-                PatternKind.ExpressSingle => minCount,             // 2..4
+                PatternKind.ExpressSingle => minCount,
                 PatternKind.ParallelDouble => 2,
                 PatternKind.StairsInternal => 2,
                 PatternKind.GapStairs => 2,
                 PatternKind.StairsExternal => 2,
                 PatternKind.SwapSingle => 4,
                 PatternKind.ZigzagDense => 4,
-                PatternKind.ExpressDouble => 2 * minCount,         // 4..8
-                PatternKind.MultiSwap => 4 * minCount,             // 8..16
+                PatternKind.ExpressDouble => 2 * minCount,
+                PatternKind.MultiSwap => 4 * minCount,
                 _ => 1
             };
         }
@@ -716,7 +730,6 @@ namespace Project.Games.SteamRush
                         int maxCountByBudget = Mathf.Max(1, tokenBudget);
                         int count = Mathf.Clamp(countRand, 1, maxCountByBudget);
 
-                        // jeśli budżet jest mały, nie wymuszaj serii – lepiej 1
                         if (count <= 1)
                         {
                             int lane = RandomLaneAny();
@@ -789,7 +802,6 @@ namespace Project.Games.SteamRush
                     {
                         if (tokenBudget < 4)
                         {
-                            // degradacja: jak stać tylko na 2 -> schody, inaczej single
                             if (tokenBudget >= 2) goto case PatternKind.StairsInternal;
                             goto case PatternKind.Single;
                         }
@@ -947,6 +959,7 @@ namespace Project.Games.SteamRush
 
             var t = new Train
             {
+                id = _nextTrainId++,
                 lane = lane,
 
                 startT = startT,
@@ -1060,6 +1073,9 @@ namespace Project.Games.SteamRush
                 if (!t.introPlayed && nowT >= t.startT)
                 {
                     t.introPlayed = true;
+
+                    TryVisualSpawnTrain(t.lane);
+
                     t.introHandle = PlayTrainControlled(t.lane, SfxTrainIntro, volumeMul01: 0.95f, isWhistle: false, nowT: nowT);
                 }
 
@@ -1153,6 +1169,14 @@ namespace Project.Games.SteamRush
             RefreshAllTrainAudioMix();
         }
 
+        private void TryVisualSpawnTrain(int lane)
+        {
+            if (_visual == null) return;
+            if (!_visualShown) return;
+
+            try { _visual.SpawnTrain(lane, _approachSeconds, _collisionWindowSeconds); } catch { }
+        }
+
         private void SelectTop2Leads(float nowT, ref int lead1, ref int lead2)
         {
             lead1 = -1;
@@ -1203,6 +1227,8 @@ namespace Project.Games.SteamRush
 
             TryPlayControlled(SfxWin, AudioFxPlayOptions.Default);
 
+            ApplyVisualState();
+
             StopWinRoutineIfAny();
             _winCo = StartCoroutine(WinRoutine());
         }
@@ -1240,6 +1266,8 @@ namespace Project.Games.SteamRush
 
             StopAllHandlesAndClear();
             PulseHaptic(HapticCollision);
+
+            ApplyVisualState();
 
             StopCollisionRoutineIfAny();
             _collisionCo = StartCoroutine(CollisionFailRoutine());
@@ -1711,6 +1739,8 @@ namespace Project.Games.SteamRush
             );
 
             try { GameFinished?.Invoke(result); } catch { }
+
+            ApplyVisualVisibility(forceVisible: false);
         }
 
         private void FinishCompleted()
@@ -1726,6 +1756,8 @@ namespace Project.Games.SteamRush
             );
 
             try { GameFinished?.Invoke(result); } catch { }
+
+            ApplyVisualVisibility(forceVisible: false);
         }
 
         public IReadOnlyDictionary<string, string> GetRuntimeStatsSnapshot()
@@ -1778,11 +1810,77 @@ namespace Project.Games.SteamRush
             try { _settings = services.Resolve<ISettingsService>(); } catch { _settings = null; }
         }
 
+        private void ResolveVisual()
+        {
+            _visual = null;
+
+            if (visualDriver is ISteamRushVisualDriver vd0)
+            {
+                _visual = vd0;
+                return;
+            }
+
+#if UNITY_2023_1_OR_NEWER
+            var all = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+#else
+            var all = FindObjectsOfType<MonoBehaviour>(includeInactive: true);
+#endif
+            if (all == null) return;
+
+            for (int i = 0; i < all.Length; i++)
+            {
+                if (all[i] is ISteamRushVisualDriver vd)
+                {
+                    _visual = vd;
+                    return;
+                }
+            }
+        }
+
         private void ApplyVisualVisibility(bool? forceVisible = null)
         {
             bool wantVisible =
                 forceVisible.HasValue ? forceVisible.Value :
                 (_running && !_paused && _visualMode != null && _visualMode.Mode == VisualMode.VisualAssist);
+
+            if (_visual == null)
+                return;
+
+            if (_visualShown != wantVisible)
+            {
+                _visualShown = wantVisible;
+                try { _visual.SetVisible(wantVisible); } catch { }
+
+                if (!wantVisible)
+                {
+                    try { _visual.Reset(); } catch { }
+                }
+                else
+                {
+                    try { _visual.SetPaused(_paused); } catch { }
+                    try { _visual.SetPlayerLane(_currentLane); } catch { }
+                }
+            }
+            else
+            {
+                if (_visualShown)
+                {
+                    try { _visual.SetPaused(_paused); } catch { }
+                }
+            }
+        }
+
+        private void ApplyVisualState()
+        {
+            if (_visual == null) return;
+
+            bool visible = (_running && _visualMode != null && _visualMode.Mode == VisualMode.VisualAssist);
+
+            if (!visible)
+                return;
+
+            try { _visual.SetPaused(_paused); } catch { }
+            try { _visual.SetPlayerLane(_currentLane); } catch { }
         }
 
         private void PulseHaptic(HapticLevel level)

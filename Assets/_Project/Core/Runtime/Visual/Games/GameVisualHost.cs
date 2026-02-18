@@ -1,5 +1,4 @@
 using Project.Core.App;
-using Project.Core.Visual;
 using UnityEngine;
 
 namespace Project.Core.Visual.Games
