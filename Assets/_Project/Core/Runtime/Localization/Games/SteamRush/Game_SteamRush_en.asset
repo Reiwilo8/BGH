@@ -23,7 +23,89 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 47434330112
-    m_Localized: Dodge the oncomming steam trains, by switching between three tracks.
+    m_Localized: Dodge the oncoming steam trains by switching between three tracks.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167136952020992
+    m_Localized: Base parameters
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032448
+    m_Localized: Core gameplay parameters defining base timing and scaling.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032449
+    m_Localized: Base approach time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032450
+    m_Localized: Seconds from train spawn to impact, before difficulty scaling is
+      applied.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032451
+    m_Localized: Base pass time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032452
+    m_Localized: Seconds the train remains active after passing the impact point.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032453
+    m_Localized: Base spawn rate scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032454
+    m_Localized: Multiplier controlling how frequently trains spawn, before mode
+      scaling is applied.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235352034340864
+    m_Localized: Difficulty scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683968
+    m_Localized: Per-mode multiplier used for difficulty scaling.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683969
+    m_Localized: Max pattern tier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683970
+    m_Localized: Maximum pattern tier used in this mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683971
+    m_Localized: Mode duration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683972
+    m_Localized: Duration in seconds for modes that have an ending (not used in endless).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683973
+    m_Localized: Whistle moment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683974
+    m_Localized: Value from 0 to 1 defining when the warning whistle plays during
+      approach.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976151310823424
+    m_Localized: Your objective is to avoid oncoming trains. Switch tracks to stay
+      in a free lane and survive until time runs out.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976415497449472
+    m_Localized: Swipe left or right to change tracks. Press and hold the screen
+      to pause the game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976827612983296
+    m_Localized: Use the Left and Right arrow keys to change tracks. Press Backspace
+      to pause the game.
     m_Metadata:
       m_Items: []
   references:

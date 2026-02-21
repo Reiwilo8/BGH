@@ -23,6 +23,82 @@ MonoBehaviour:
     m_Key: description
     m_Metadata:
       m_Items: []
+  - m_Id: 6167136952020992
+    m_Key: settings.base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032448
+    m_Key: settings.base.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032449
+    m_Key: settings.base.approach
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032450
+    m_Key: settings.base.approach.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032451
+    m_Key: settings.base.pass
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032452
+    m_Key: settings.base.pass.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032453
+    m_Key: settings.base.rate_scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032454
+    m_Key: settings.base.rate_scale.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235352034340864
+    m_Key: settings.mode.difficulty_scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683968
+    m_Key: settings.mode.difficulty_scale.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683969
+    m_Key: settings.mode.pattern_tier_max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683970
+    m_Key: settings.mode.pattern_tier_max.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683971
+    m_Key: settings.mode.duration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683972
+    m_Key: settings.mode.duration.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683973
+    m_Key: settings.mode.whistle_moment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683974
+    m_Key: settings.mode.whistle_moment.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976151310823424
+    m_Key: hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976415497449472
+    m_Key: hint.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976827612983296
+    m_Key: hint.keyboard
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -13,4 +13,25 @@ MonoBehaviour:
   m_Name: SteamRushAudioCatalog
   m_EditorClassIdentifier: 
   gameId: steamrush
-  sounds: []
+  sounds:
+  - soundId: SwishLeft
+    clip: {fileID: 8300000, guid: 442f993c7a584294b948a460dc7292d1, type: 3}
+    defaultVolume01: 1
+  - soundId: SwishRight
+    clip: {fileID: 8300000, guid: 6cfcd76fd883bd64f87343cea160466b, type: 3}
+    defaultVolume01: 1
+  - soundId: TrainIntro
+    clip: {fileID: 8300000, guid: 683684dbf4c25cb48a5e4f88464dbae3, type: 3}
+    defaultVolume01: 1
+  - soundId: TrainLoop
+    clip: {fileID: 8300000, guid: b01e87dbb2b4306459a4f99fed076a38, type: 3}
+    defaultVolume01: 1
+  - soundId: Whistle
+    clip: {fileID: 8300000, guid: 7efb77d585d6bbb448bce5d7ee57ba72, type: 3}
+    defaultVolume01: 1
+  - soundId: TrainPass
+    clip: {fileID: 8300000, guid: fdbf80590a5aaa1438c25fd8ed291189, type: 3}
+    defaultVolume01: 1
+  - soundId: Win
+    clip: {fileID: 8300000, guid: 2fc6eebb80525054497e92f5b3fa60bc, type: 3}
+    defaultVolume01: 1

@@ -99,6 +99,7 @@ namespace Project.Hub.States
             }
 
             var modeBefore = _ui.Mode;
+            string subBefore = ResolveVaSubHeader();
 
             PlayUiCueForAction(action);
 
@@ -117,6 +118,9 @@ namespace Project.Hub.States
                 _audioFx?.PlayUiCue(UiCueId.Toggle);
             }
 
+            string subAfter = ResolveVaSubHeader();
+            TryPulseVaListMove(action, subBefore, subAfter);
+
             RefreshVa();
 
             if (result.HandledByHooks)
@@ -132,6 +136,24 @@ namespace Project.Hub.States
             }
 
             HandleUiResult(action, result);
+        }
+
+        private void TryPulseVaListMove(NavAction action, string subBefore, string subAfter)
+        {
+            if (_va == null)
+                return;
+
+            if (action != NavAction.Next && action != NavAction.Previous)
+                return;
+
+            if (_ui.Mode == SettingsUiMode.EditRange)
+                return;
+
+            if (string.Equals(subBefore ?? "", subAfter ?? "", System.StringComparison.Ordinal))
+                return;
+
+            var dir = action == NavAction.Next ? VaListMoveDirection.Next : VaListMoveDirection.Previous;
+            _va.PulseListMove(dir);
         }
 
         private void SpeakActionCancelledNonInterruptible()

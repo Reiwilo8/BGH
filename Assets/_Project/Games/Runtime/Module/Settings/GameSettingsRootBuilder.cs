@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Project.Core.App;
 using Project.Core.Settings.Ui;
 using Project.Games.Catalog;
@@ -7,11 +8,28 @@ using Project.Games.Definitions;
 using Project.Games.Persistence;
 using Project.Games.Run;
 using Project.Games.Stats;
+using UnityEngine;
 
 namespace Project.Games.Module.Settings
 {
     public sealed class GameSettingsRootBuilder : ISettingsRootBuilder
     {
+        private const string SteamRushGameId = "steamrush";
+
+        private const string SteamRushBasePrefix = "steamrush.base.";
+
+        private const string KeyApproachSeconds = SteamRushBasePrefix + "approachSeconds";
+        private const string KeyPassSeconds = SteamRushBasePrefix + "passSeconds";
+        private const string KeySpawnRateScale = SteamRushBasePrefix + "spawnRateScale";
+
+        private const string SteamRushPerModePrefix = "mode.";
+        private const string SteamRushPerModeMid = ".steamrush.";
+
+        private const string KeyDifficultyScaleSuffix = "difficultyScale";
+        private const string KeyPatternTierMaxSuffix = "patternTierMax";
+        private const string KeyModeDurationSecondsSuffix = "modeDurationSeconds";
+        private const string KeyWhistleMomentSuffix = "whistleMoment";
+
         private readonly IGameStatsPreferencesService _prefs;
         private readonly IGameStatsService _stats;
 
@@ -52,6 +70,9 @@ namespace Project.Games.Module.Settings
 
             if (dev)
                 root.Add(BuildSeedFolder(gameId));
+
+            if (dev && string.Equals(gameId, SteamRushGameId, StringComparison.OrdinalIgnoreCase))
+                root.Add(BuildSteamRushBaseFolder(gameId));
 
             if (dev)
             {
@@ -207,6 +228,43 @@ namespace Project.Games.Module.Settings
             SaveStoreSafe();
         }
 
+        private SettingsFolder BuildSteamRushBaseFolder(string gameId)
+        {
+            const float defApproach = 3.10f;
+            const float defPass = 0.55f;
+            const float defRateScale = 1.00f;
+
+            return new SettingsFolder(
+                labelKey: "settings.base",
+                descriptionKey: "settings.base.desc",
+                buildChildren: () => new List<SettingsItem>
+                {
+                    BuildFloatRangeSetting(
+                        labelKey: "settings.base.approach",
+                        descriptionKey: "settings.base.approach.desc",
+                        customKey: KeyApproachSeconds,
+                        min: 0.25f, max: 5.0f, step: 0.05f,
+                        defaultValue: defApproach),
+
+                    BuildFloatRangeSetting(
+                        labelKey: "settings.base.pass",
+                        descriptionKey: "settings.base.pass.desc",
+                        customKey: KeyPassSeconds,
+                        min: 0.10f, max: 5.0f, step: 0.05f,
+                        defaultValue: defPass),
+
+                    BuildFloatRangeSetting(
+                        labelKey: "settings.base.rate_scale",
+                        descriptionKey: "settings.base.rate_scale.desc",
+                        customKey: KeySpawnRateScale,
+                        min: 0.20f, max: 3.00f, step: 0.05f,
+                        defaultValue: defRateScale),
+
+                    new SettingsAction("common.back", execute: () => { })
+                }
+            );
+        }
+
         private SettingsFolder BuildModesFolderIfAny(string gameId, GameDefinition game)
         {
             if (game == null || game.modes == null || game.modes.Length == 0)
@@ -245,7 +303,165 @@ namespace Project.Games.Module.Settings
             if (string.Equals(gameId, "memory", StringComparison.OrdinalIgnoreCase))
                 return BuildMemoryModeFolder(modeId);
 
+            if (string.Equals(gameId, SteamRushGameId, StringComparison.OrdinalIgnoreCase))
+                return BuildSteamRushModeFolder(modeId);
+
             return null;
+        }
+
+        private SettingsFolder BuildSteamRushModeFolder(string modeId)
+        {
+            if (string.IsNullOrWhiteSpace(modeId))
+                return null;
+
+            bool endless = IsEndlessMode(modeId);
+
+            float defDifficulty = ResolveSteamRushDefaultDifficultyScale(modeId);
+            int defPatternTierMax = ResolveSteamRushDefaultPatternTierMax(modeId);
+            float defDuration = ResolveSteamRushDefaultDurationSeconds(modeId);
+            const float defWhistleMoment = 0.50f;
+
+            string keyDifficulty = BuildSteamRushPerModeKey(modeId, KeyDifficultyScaleSuffix);
+            string keyPatternTierMax = BuildSteamRushPerModeKey(modeId, KeyPatternTierMaxSuffix);
+            string keyDuration = BuildSteamRushPerModeKey(modeId, KeyModeDurationSecondsSuffix);
+            string keyWhistle = BuildSteamRushPerModeKey(modeId, KeyWhistleMomentSuffix);
+
+            return new SettingsFolder(
+                labelKey: $"mode.{modeId}",
+                descriptionKey: null,
+                buildChildren: () =>
+                {
+                    var items = new List<SettingsItem>
+                    {
+                        BuildFloatRangeSetting(
+                            labelKey: "settings.mode.difficulty_scale",
+                            descriptionKey: "settings.mode.difficulty_scale.desc",
+                            customKey: keyDifficulty,
+                            min: 0.30f, max: 2.50f, step: 0.05f,
+                            defaultValue: defDifficulty),
+
+                        BuildIntRangeSetting(
+                            labelKey: "settings.mode.pattern_tier_max",
+                            descriptionKey: "settings.mode.pattern_tier_max.desc",
+                            customKey: keyPatternTierMax,
+                            min: 0, max: 3, step: 1,
+                            defaultValue: defPatternTierMax)
+                    };
+
+                    if (!endless)
+                    {
+                        items.Add(
+                            BuildFloatRangeSetting(
+                                labelKey: "settings.mode.duration",
+                                descriptionKey: "settings.mode.duration.desc",
+                                customKey: keyDuration,
+                                min: 10.0f, max: 600.0f, step: 5.0f,
+                                defaultValue: defDuration
+                            )
+                        );
+                    }
+
+                    items.Add(
+                        BuildFloatRangeSetting(
+                            labelKey: "settings.mode.whistle_moment",
+                            descriptionKey: "settings.mode.whistle_moment.desc",
+                            customKey: keyWhistle,
+                            min: 0.10f, max: 0.90f, step: 0.05f,
+                            defaultValue: defWhistleMoment
+                        )
+                    );
+
+                    items.Add(new SettingsAction("common.back", execute: () => { }));
+                    return items;
+                }
+            );
+        }
+
+        private static bool IsEndlessMode(string modeId)
+        {
+            if (string.IsNullOrWhiteSpace(modeId)) return false;
+            var id = modeId.Trim();
+
+            return string.Equals(id, "endless", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(id, "nieskonczony", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(id, "nieskoñczony", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string BuildSteamRushPerModeKey(string modeId, string suffix)
+        {
+            return SteamRushPerModePrefix + modeId + SteamRushPerModeMid + suffix;
+        }
+
+        private static float ResolveSteamRushDefaultDifficultyScale(string modeId)
+        {
+            if (string.IsNullOrWhiteSpace(modeId))
+                return 1.00f;
+
+            var id = modeId.Trim();
+
+            if (string.Equals(id, "tutorial", StringComparison.OrdinalIgnoreCase))
+                return 0.50f;
+
+            if (string.Equals(id, "easy", StringComparison.OrdinalIgnoreCase))
+                return 0.7f;
+
+            if (string.Equals(id, "medium", StringComparison.OrdinalIgnoreCase))
+                return 1.00f;
+
+            if (string.Equals(id, "hard", StringComparison.OrdinalIgnoreCase))
+                return 1.30f;
+
+            if (IsEndlessMode(id))
+                return 1.00f;
+
+            return 1.00f;
+        }
+
+        private static int ResolveSteamRushDefaultPatternTierMax(string modeId)
+        {
+            if (string.IsNullOrWhiteSpace(modeId))
+                return 2;
+
+            var id = modeId.Trim();
+
+            if (string.Equals(id, "tutorial", StringComparison.OrdinalIgnoreCase))
+                return 0;
+
+            if (string.Equals(id, "easy", StringComparison.OrdinalIgnoreCase))
+                return 1;
+
+            if (string.Equals(id, "medium", StringComparison.OrdinalIgnoreCase))
+                return 2;
+
+            if (string.Equals(id, "hard", StringComparison.OrdinalIgnoreCase))
+                return 3;
+
+            if (IsEndlessMode(id))
+                return 3;
+
+            return 2;
+        }
+
+        private static float ResolveSteamRushDefaultDurationSeconds(string modeId)
+        {
+            if (string.IsNullOrWhiteSpace(modeId))
+                return 60f;
+
+            var id = modeId.Trim();
+
+            if (string.Equals(id, "tutorial", StringComparison.OrdinalIgnoreCase))
+                return 30f;
+
+            if (string.Equals(id, "easy", StringComparison.OrdinalIgnoreCase))
+                return 60f;
+
+            if (string.Equals(id, "medium", StringComparison.OrdinalIgnoreCase))
+                return 180f;
+
+            if (string.Equals(id, "hard", StringComparison.OrdinalIgnoreCase))
+                return 300f;
+
+            return 60f;
         }
 
         private SettingsFolder BuildMemoryModeFolder(string modeId)
@@ -465,6 +681,7 @@ namespace Project.Games.Module.Settings
                 g.prefs.selectedSeed = 0;
 
                 RemoveCustomByPrefix(g, "mode.");
+                RemoveCustomByPrefix(g, "steamrush.");
             }
 
             SaveStoreSafe();
@@ -501,6 +718,94 @@ namespace Project.Games.Module.Settings
                     if (iv < min) iv = min;
                     if (iv > max) iv = max;
                     SetCustomString(customKey, iv.ToString());
+                }
+            );
+        }
+
+        private SettingsRange BuildIntRangeSetting(
+            string labelKey,
+            string descriptionKey,
+            string customKey,
+            int min,
+            int max,
+            int step,
+            int defaultValue)
+        {
+            if (max < min) (min, max) = (max, min);
+            if (step <= 0) step = 1;
+
+            return new SettingsRange(
+                labelKey: labelKey,
+                descriptionKey: descriptionKey,
+                min: min,
+                max: max,
+                step: step,
+                getValue: () =>
+                {
+                    string s = GetCustomString(customKey, defaultValue.ToString(CultureInfo.InvariantCulture));
+                    if (!int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out int v))
+                        v = defaultValue;
+
+                    if (v < min) v = min;
+                    if (v > max) v = max;
+                    return v;
+                },
+                setValue: v =>
+                {
+                    int iv = (int)v;
+                    if (iv < min) iv = min;
+                    if (iv > max) iv = max;
+
+                    SetCustomString(customKey, iv.ToString(CultureInfo.InvariantCulture));
+                }
+            );
+        }
+
+        private SettingsRange BuildFloatRangeSetting(
+            string labelKey,
+            string descriptionKey,
+            string customKey,
+            float min,
+            float max,
+            float step,
+            float defaultValue)
+        {
+            if (max < min) (min, max) = (max, min);
+            if (step <= 0f) step = 0.01f;
+
+            return new SettingsRange(
+                labelKey: labelKey,
+                descriptionKey: descriptionKey,
+                min: min,
+                max: max,
+                step: step,
+                getValue: () =>
+                {
+                    string s = GetCustomString(customKey, defaultValue.ToString("0.###", CultureInfo.InvariantCulture));
+
+                    float v = defaultValue;
+                    try
+                    {
+                        if (!float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out v))
+                            v = defaultValue;
+                    }
+                    catch { v = defaultValue; }
+
+                    if (float.IsNaN(v) || float.IsInfinity(v))
+                        v = defaultValue;
+
+                    v = Mathf.Clamp(v, min, max);
+                    return v;
+                },
+                setValue: v =>
+                {
+                    float fv = v;
+                    if (float.IsNaN(fv) || float.IsInfinity(fv))
+                        fv = defaultValue;
+
+                    fv = Mathf.Clamp(fv, min, max);
+
+                    SetCustomString(customKey, fv.ToString("0.###", CultureInfo.InvariantCulture));
                 }
             );
         }

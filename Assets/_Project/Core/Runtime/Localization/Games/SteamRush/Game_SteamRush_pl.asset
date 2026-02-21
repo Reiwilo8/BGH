@@ -27,6 +27,92 @@ MonoBehaviour:
       pomi\u0119dzy trzema torami."
     m_Metadata:
       m_Items: []
+  - m_Id: 6167136952020992
+    m_Localized: Parametry podstawowe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032448
+    m_Localized: "Podstawowe parametry rozgrywki definiuj\u0105ce bazowe czasy i
+      skalowanie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032449
+    m_Localized: "Bazowy czas nadje\u017Cd\u017Cania"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032450
+    m_Localized: "Czas w sekundach od pojawienia si\u0119 poci\u0105gu do kolizji,
+      przed zastosowaniem skalowania trudno\u015Bci."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032451
+    m_Localized: Bazowy czas przejazdu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032452
+    m_Localized: "Czas w sekundach, przez jaki poci\u0105g pozostaje aktywny po mini\u0119ciu
+      punktu kolizji."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032453
+    m_Localized: Bazowa skala tempa generowania
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6167138269032454
+    m_Localized: "Mno\u017Cnik okre\u015Blaj\u0105cy cz\u0119stotliwo\u015B\u0107
+      generowania poci\u0105g\xF3w, przed zastosowaniem skalowania trybu."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235352034340864
+    m_Localized: "Skala trudno\u015Bci"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683968
+    m_Localized: "Mno\u017Cnik dla danego trybu u\u017Cywany do skalowania trudno\u015Bci."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683969
+    m_Localized: "Maksymalny poziom wzorc\xF3w"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683970
+    m_Localized: "Maksymalny poziom wzorc\xF3w u\u017Cywany w tym trybie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683971
+    m_Localized: Czas trwania trybu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683972
+    m_Localized: "Czas trwania w sekundach dla tryb\xF3w z zako\u0144czeniem (nie
+      dotyczy trybu niesko\u0144czonego)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683973
+    m_Localized: Moment gwizdka
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6235353401683974
+    m_Localized: "Warto\u015B\u0107 od 0 do 1 okre\u015Blaj\u0105ca, kiedy podczas
+      nadje\u017Cd\u017Cania odtwarzany jest gwizdek ostrzegawczy."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976151310823424
+    m_Localized: "Twoim zadaniem jest unikanie nadje\u017Cd\u017Caj\u0105cych poci\u0105g\xF3w.
+      Zmieniaj tory, aby by\u0107 na wolnym pasie i przetrwa\u0107 do ko\u0144ca
+      czasu."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976415497449472
+    m_Localized: "Przeci\u0105gnij palcem w lewo lub w prawo, aby zmieni\u0107 tor.
+      Przytrzymaj palec na ekranie, aby spauzowa\u0107 gr\u0119."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976827612983296
+    m_Localized: "U\u017Cyj strza\u0142ek w lewo lub w prawo, aby zmieni\u0107 tor.
+      Wci\u015Bnij Backspace, aby spauzowa\u0107 gr\u0119."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

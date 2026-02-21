@@ -42,6 +42,12 @@ namespace Project.Core.AudioFx
             Source.panStereo = Mathf.Clamp(panStereo, -1f, 1f);
         }
 
+        public void SetVolume01(float volume01)
+        {
+            if (!IsValid) return;
+            Source.volume = Mathf.Clamp01(volume01);
+        }
+
         public void Seek(float timeSeconds)
         {
             if (!IsValid) return;

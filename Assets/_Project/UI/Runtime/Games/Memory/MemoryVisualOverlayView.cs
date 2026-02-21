@@ -27,10 +27,15 @@ namespace Project.UI.Games.Memory
 
         [Header("Colors (Border)")]
         [SerializeField] private Color borderColor = new Color(0.82f, 0.82f, 0.82f, 1f);
+        [SerializeField] private Color activeBorderColor = new Color(1f, 0.92f, 0.35f, 1f);
 
         [Header("Colors (Text)")]
-        [SerializeField] private Color revealedTextColor = new Color(1f, 0f, 0f, 1f);
+        [SerializeField] private Color activeTextColor = new Color(1f, 0.92f, 0.35f, 1f);
         [SerializeField] private Color matchedTextColor = new Color(0.78f, 0.78f, 0.78f, 1f);
+
+        [Header("Typography (All States)")]
+        [Tooltip("Sta³y rozmiar czcionki dla wszystkich stanów (zmiana globalna w ca³ej grze). 0 = nie nadpisuj.")]
+        [SerializeField] private float valueFontSizeOverride = 0f;
 
         [Header("Value Visibility")]
         [SerializeField] private bool hideValueOnCovered = true;
@@ -63,7 +68,8 @@ namespace Project.UI.Games.Memory
             if (cardRoot != null)
                 _basePos = cardRoot.anchoredPosition;
 
-            ApplyBorderImmediate();
+            ApplyTypographyImmediate();
+            ApplyBorderImmediate(borderColor);
             ApplyStateImmediate(LocalState.Covered, value: "");
             SetVisible(false);
         }
@@ -110,38 +116,43 @@ namespace Project.UI.Games.Memory
 
         private void ApplyState(LocalState s, string value)
         {
+            ApplyTypographyImmediate();
+
             if (_state == s)
             {
-                if (s == LocalState.Revealed)
-                    SetValue(value, revealedTextColor, forceVisible: true);
+                ApplyVisualsForState(s);
+
+                if (s == LocalState.Revealed || s == LocalState.Covered)
+                {
+                    bool forceVisible = (s == LocalState.Revealed) || (!hideValueOnCovered);
+                    SetValue(s == LocalState.Covered && hideValueOnCovered ? "" : value, activeTextColor, forceVisible: forceVisible);
+                }
                 else if (s == LocalState.Matched && !hideValueOnMatched)
+                {
                     SetValue(value, matchedTextColor, forceVisible: true);
+                }
 
                 return;
             }
 
             _state = s;
 
+            ApplyVisualsForState(s);
+
             switch (s)
             {
                 case LocalState.Covered:
-                    SetFill(coveredFill);
-                    ApplyBorderImmediate();
                     if (hideValueOnCovered)
-                        SetValue("", revealedTextColor, forceVisible: false);
+                        SetValue("", activeTextColor, forceVisible: false);
                     else
-                        SetValue(value, revealedTextColor, forceVisible: true);
+                        SetValue(value, activeTextColor, forceVisible: true);
                     break;
 
                 case LocalState.Revealed:
-                    SetFill(revealedFill);
-                    ApplyBorderImmediate();
-                    SetValue(value, revealedTextColor, forceVisible: true);
+                    SetValue(value, activeTextColor, forceVisible: true);
                     break;
 
                 case LocalState.Matched:
-                    SetFill(matchedFill);
-                    ApplyBorderImmediate();
                     if (hideValueOnMatched)
                         SetValue("", matchedTextColor, forceVisible: false);
                     else
@@ -154,38 +165,73 @@ namespace Project.UI.Games.Memory
         {
             _state = s;
 
+            ApplyTypographyImmediate();
+            ApplyVisualsForState(s);
+
             switch (s)
             {
                 case LocalState.Covered:
-                    SetFill(coveredFill);
-                    ApplyBorderImmediate();
-                    SetValueImmediate(hideValueOnCovered ? "" : value, revealedTextColor);
+                    SetValueImmediate(hideValueOnCovered ? "" : value, activeTextColor);
                     break;
 
                 case LocalState.Revealed:
-                    SetFill(revealedFill);
-                    ApplyBorderImmediate();
-                    SetValueImmediate(value, revealedTextColor);
+                    SetValueImmediate(value, activeTextColor);
                     break;
 
                 case LocalState.Matched:
-                    SetFill(matchedFill);
-                    ApplyBorderImmediate();
                     SetValueImmediate(hideValueOnMatched ? "" : value, matchedTextColor);
                     break;
             }
         }
 
-        private void ApplyBorderImmediate()
+        private void ApplyVisualsForState(LocalState s)
+        {
+            switch (s)
+            {
+                case LocalState.Covered:
+                case LocalState.Revealed:
+                    SetFill(matchedFill);
+                    ApplyBorderImmediate(activeBorderColor);
+                    break;
+
+                case LocalState.Matched:
+                    SetFill(matchedFill);
+                    ApplyBorderImmediate(borderColor);
+                    break;
+            }
+        }
+
+        private void ApplyBorderImmediate(Color c)
         {
             if (cardBorder != null)
-                cardBorder.color = borderColor;
+                cardBorder.color = c;
         }
 
         private void SetFill(Color c)
         {
             if (cardFill != null)
                 cardFill.color = c;
+        }
+
+        private void ApplyTypographyImmediate()
+        {
+            if (valueText == null) return;
+
+            RectTransform rt = cardRoot;
+            if (rt == null) return;
+
+            float target = rt.rect.height * 0.6f;
+
+            if (valueText.enableAutoSizing)
+            {
+                valueText.fontSizeMin = target * 0.7f;
+                valueText.fontSizeMax = target;
+                valueText.fontSize = target;
+            }
+            else
+            {
+                valueText.fontSize = target;
+            }
         }
 
         private void SetValue(string text, Color color, bool forceVisible)

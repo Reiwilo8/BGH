@@ -20,6 +20,10 @@ namespace Project.UI.VisualAssist
         [SerializeField] private TMP_Text subHeaderText;
         [SerializeField] private TMP_Text centerText;
 
+        [Header("Text Color (All)")]
+        [SerializeField] private bool overrideAllTextColors = true;
+        [SerializeField] private Color overlayFontColor = new Color(1f, 0.92f, 0.35f, 1f);
+
         [Header("Dimmer")]
         [SerializeField] private bool smoothDimmer = true;
         [SerializeField] private float dimmerLerpSpeed = 12f;
@@ -129,6 +133,7 @@ namespace Project.UI.VisualAssist
             _typo = VisualAssistTypographyPresets.Get(textSizePreset);
 
             CaptureBaseTextColors();
+            ApplyAllTextColor();
         }
 
         private void OnDestroy()
@@ -145,6 +150,7 @@ namespace Project.UI.VisualAssist
         private void OnEnable()
         {
             SyncFromSettings(force: true);
+            ApplyAllTextColor();
 
             RenderNow();
             ApplyTypographyLayout();
@@ -403,6 +409,7 @@ namespace Project.UI.VisualAssist
                 _lastRootSize = Vector2.zero;
 
                 SyncFromSettings(force: true);
+                ApplyAllTextColor();
 
                 ApplyTypographyLayout();
                 _marquee?.Refresh(forceRestart: true);
@@ -579,6 +586,39 @@ namespace Project.UI.VisualAssist
 
             _headerBaseColor = headerText != null ? headerText.color : Color.white;
             _subHeaderBaseColor = subHeaderText != null ? subHeaderText.color : Color.white;
+            _baseColorsCaptured = true;
+        }
+
+        private void ApplyAllTextColor()
+        {
+            if (!overrideAllTextColors)
+                return;
+
+            CaptureBaseTextColors();
+
+            if (headerText != null)
+            {
+                headerText.color = new Color(
+                    overlayFontColor.r, overlayFontColor.g, overlayFontColor.b,
+                    headerText.color.a);
+            }
+
+            if (subHeaderText != null)
+            {
+                subHeaderText.color = new Color(
+                    overlayFontColor.r, overlayFontColor.g, overlayFontColor.b,
+                    subHeaderText.color.a);
+            }
+
+            if (centerText != null)
+            {
+                centerText.color = new Color(
+                    overlayFontColor.r, overlayFontColor.g, overlayFontColor.b,
+                    centerText.color.a);
+            }
+
+            _headerBaseColor = new Color(overlayFontColor.r, overlayFontColor.g, overlayFontColor.b, _headerBaseColor.a);
+            _subHeaderBaseColor = new Color(overlayFontColor.r, overlayFontColor.g, overlayFontColor.b, _subHeaderBaseColor.a);
             _baseColorsCaptured = true;
         }
 
