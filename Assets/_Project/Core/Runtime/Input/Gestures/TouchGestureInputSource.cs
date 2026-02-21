@@ -1,5 +1,6 @@
 using Project.Core.Activity;
 using Project.Core.App;
+using Project.Core.Input.Motion;
 using Project.Core.VisualAssist;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
@@ -264,11 +265,13 @@ namespace Project.Core.Input.Gestures
                 {
                     _input.Emit(NavAction.Next);
                     _input.EmitDirection4(NavDirection4.Down);
+                    _input.EmitMotion(MotionAction.Up);
                 }
                 else
                 {
                     _input.Emit(NavAction.Previous);
                     _input.EmitDirection4(NavDirection4.Up);
+                    _input.EmitMotion(MotionAction.Down);
                 }
             }
         }

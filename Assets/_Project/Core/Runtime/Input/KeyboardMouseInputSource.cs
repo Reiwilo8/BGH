@@ -1,5 +1,6 @@
 using Project.Core.Activity;
 using Project.Core.App;
+using Project.Core.Input.Motion;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -118,21 +119,41 @@ namespace Project.Core.Input
             if (y > ScrollThreshold)
             {
                 _input.Emit(NavAction.Previous);
+                _input.EmitMotion(MotionAction.Up);
+
                 _nextScrollAllowedTime = now + ScrollCooldownSeconds;
             }
             else if (y < -ScrollThreshold)
             {
                 _input.Emit(NavAction.Next);
+                _input.EmitMotion(MotionAction.Down);
+
                 _nextScrollAllowedTime = now + ScrollCooldownSeconds;
             }
         }
 
-        private void OnUp(InputAction.CallbackContext ctx) => _input.EmitDirection4(NavDirection4.Up);
+        private void OnUp(InputAction.CallbackContext ctx)
+        {
+            _input.EmitDirection4(NavDirection4.Up);
+            _input.EmitMotion(MotionAction.Up);
+        }
 
-        private void OnDown(InputAction.CallbackContext ctx) => _input.EmitDirection4(NavDirection4.Down);
+        private void OnDown(InputAction.CallbackContext ctx)
+        {
+            _input.EmitDirection4(NavDirection4.Down);
+            _input.EmitMotion(MotionAction.Down);
+        }
 
-        private void OnLeft(InputAction.CallbackContext ctx) => _input.EmitDirection4(NavDirection4.Left);
+        private void OnLeft(InputAction.CallbackContext ctx)
+        {
+            _input.EmitDirection4(NavDirection4.Left);
+            _input.EmitMotion(MotionAction.TiltLeft);
+        }
 
-        private void OnRight(InputAction.CallbackContext ctx) => _input.EmitDirection4(NavDirection4.Right);
+        private void OnRight(InputAction.CallbackContext ctx)
+        {
+            _input.EmitDirection4(NavDirection4.Right);
+            _input.EmitMotion(MotionAction.TiltRight);
+        }
     }
 }
