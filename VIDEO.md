@@ -1,0 +1,3 @@
+# Video recording working of the application
+
+https://polslpl-my.sharepoint.com/:v:/g/personal/oo306666_student_polsl_pl/IQCV4trlmQ73QIn2c4sLvupRAbpVFjnPmCER012fdxbtsb8?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=t2oKcS
