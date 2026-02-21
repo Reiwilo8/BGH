@@ -93,6 +93,21 @@ MonoBehaviour:
       approach.
     m_Metadata:
       m_Items: []
+  - m_Id: 7976151310823424
+    m_Localized: Your objective is to avoid oncoming trains. Switch tracks to stay
+      in a free lane and survive until time runs out.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976415497449472
+    m_Localized: Swipe left or right to change tracks. Press and hold the screen
+      to pause the game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976827612983296
+    m_Localized: Use the Left and Right arrow keys to change tracks. Press Backspace
+      to pause the game.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

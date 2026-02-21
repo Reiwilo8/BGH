@@ -97,6 +97,22 @@ MonoBehaviour:
       nadje\u017Cd\u017Cania odtwarzany jest gwizdek ostrzegawczy."
     m_Metadata:
       m_Items: []
+  - m_Id: 7976151310823424
+    m_Localized: "Twoim zadaniem jest unikanie nadje\u017Cd\u017Caj\u0105cych poci\u0105g\xF3w.
+      Zmieniaj tory, aby by\u0107 na wolnym pasie i przetrwa\u0107 do ko\u0144ca
+      czasu."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976415497449472
+    m_Localized: "Przeci\u0105gnij palcem w lewo lub w prawo, aby zmieni\u0107 tor.
+      Przytrzymaj palec na ekranie, aby spauzowa\u0107 gr\u0119."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976827612983296
+    m_Localized: "U\u017Cyj strza\u0142ek w lewo lub w prawo, aby zmieni\u0107 tor.
+      Wci\u015Bnij Backspace, aby spauzowa\u0107 gr\u0119."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

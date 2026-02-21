@@ -253,6 +253,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d692188004cf7b747ba5716d9ed93d02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fallbackSoundId: 3
+  fallbackVolume01: 1
+  lightPitch: 1.15
+  mediumPitch: 1
+  strongPitch: 0.9
+  pitchScaleMin: 0.97
+  pitchScaleMax: 1.03
+  assumedClipSeconds: 0.679
+  loopStartSeconds: 0.275
+  loopEndSeconds: 0.4
 --- !u!1 &913697826
 GameObject:
   m_ObjectHideFlags: 0
@@ -601,6 +611,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1846955393}
     m_Modifications:
+    - target: {fileID: 43555966776442471, guid: 4f6a357e5612ece468115296396e088b, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2554396327881364096, guid: 4f6a357e5612ece468115296396e088b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

@@ -83,6 +83,8 @@ namespace Project.UI.Games.SteamRush
         private bool _visible;
         private bool _paused;
 
+        private bool _pauseHidden;
+
         private int _playerLane = 1;
 
         private struct ActiveVisualTrain
@@ -150,8 +152,7 @@ namespace Project.UI.Games.SteamRush
         {
             _visible = visible;
 
-            if (root != null && root.activeSelf != visible)
-                root.SetActive(visible);
+            ApplyPauseVisibility();
 
             if (!visible)
                 Reset();
@@ -160,6 +161,7 @@ namespace Project.UI.Games.SteamRush
         public void Reset()
         {
             _paused = false;
+            _pauseHidden = false;
             _nextId = 1;
 
             _idToIndex.Clear();
@@ -174,12 +176,17 @@ namespace Project.UI.Games.SteamRush
                 for (int i = 0; i < trainPool.Length; i++)
                     if (trainPool[i] != null)
                         trainPool[i].SetActive(false);
+
+            ApplyPauseVisibility();
         }
 
         public void SetPaused(bool paused)
         {
             if (_paused == paused) return;
             _paused = paused;
+
+            // Hide visuals during pause, but keep state for resume.
+            ApplyPauseVisibility();
 
             float now = Time.unscaledTime;
 
@@ -227,6 +234,9 @@ namespace Project.UI.Games.SteamRush
         private void Update()
         {
             if (!_visible) return;
+
+            if (_pauseHidden) return;
+
             if (root != null && !root.activeInHierarchy) return;
             if (boardRoot == null) return;
 
@@ -284,6 +294,25 @@ namespace Project.UI.Games.SteamRush
                     );
                 }
             }
+        }
+
+        private void ApplyPauseVisibility()
+        {
+            bool wantActive = _visible && !_paused;
+
+            _pauseHidden = _visible && _paused;
+
+            SetActiveSafe(root, wantActive);
+
+            if (trainsLayer != null)
+                SetActiveSafe(trainsLayer.gameObject, wantActive);
+        }
+
+        private static void SetActiveSafe(GameObject go, bool active)
+        {
+            if (go == null) return;
+            if (go.activeSelf == active) return;
+            go.SetActive(active);
         }
 
         private bool EnsureBoardReady()

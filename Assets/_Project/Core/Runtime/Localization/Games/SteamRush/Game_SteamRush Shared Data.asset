@@ -87,6 +87,18 @@ MonoBehaviour:
     m_Key: settings.mode.whistle_moment.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 7976151310823424
+    m_Key: hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976415497449472
+    m_Key: hint.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7976827612983296
+    m_Key: hint.keyboard
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

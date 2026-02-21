@@ -297,6 +297,9 @@ MonoBehaviour:
   car1Img: {fileID: 12103837}
   link2Img: {fileID: 12103835}
   car2Img: {fileID: 12103833}
+  carHeightMul: 1.45
+  linkHeightMulOfCar: 0.12
+  linkWidthMulOfTrain: 0.5
 --- !u!1 &42022233
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,6 +553,9 @@ MonoBehaviour:
   car1Img: {fileID: 172974850}
   link2Img: {fileID: 172974848}
   car2Img: {fileID: 172974846}
+  carHeightMul: 1.45
+  linkHeightMulOfCar: 0.12
+  linkWidthMulOfTrain: 0.5
 --- !u!1 &251445647
 GameObject:
   m_ObjectHideFlags: 0
@@ -1041,6 +1047,9 @@ MonoBehaviour:
   car1Img: {fileID: 928066919}
   link2Img: {fileID: 928066917}
   car2Img: {fileID: 928066915}
+  carHeightMul: 1.45
+  linkHeightMulOfCar: 0.12
+  linkWidthMulOfTrain: 0.5
 --- !u!1001 &1052592584
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1219,6 +1228,9 @@ MonoBehaviour:
   car1Img: {fileID: 1052592592}
   link2Img: {fileID: 1052592590}
   car2Img: {fileID: 1052592588}
+  carHeightMul: 1.45
+  linkHeightMulOfCar: 0.12
+  linkWidthMulOfTrain: 0.5
 --- !u!1 &1164045483
 GameObject:
   m_ObjectHideFlags: 0
@@ -1472,6 +1484,9 @@ MonoBehaviour:
   car1Img: {fileID: 1326754410}
   link2Img: {fileID: 1326754408}
   car2Img: {fileID: 1326754406}
+  carHeightMul: 1.45
+  linkHeightMulOfCar: 0.12
+  linkWidthMulOfTrain: 0.5
 --- !u!1 &1471211409
 GameObject:
   m_ObjectHideFlags: 0
@@ -1762,6 +1777,9 @@ MonoBehaviour:
   car1Img: {fileID: 1828586576}
   link2Img: {fileID: 1828586574}
   car2Img: {fileID: 1828586572}
+  carHeightMul: 1.45
+  linkHeightMulOfCar: 0.12
+  linkWidthMulOfTrain: 0.5
 --- !u!1 &1964799746
 GameObject:
   m_ObjectHideFlags: 0
@@ -1886,10 +1904,15 @@ MonoBehaviour:
   player: {fileID: 1164045484}
   trainPool: []
   autoCollectTrainPoolIfEmpty: 1
-  laneFillFactor: 0.82
-  playerSizeFactor: 0.46
-  playerY01: 0.22
-  spawnTopY01: 1.08
+  laneFillFactor: 0.55
+  laneCompactness: 0.9
+  playerSizeFactor: 0.4
+  playerY01Base: 0.1
+  playerAutoShiftMax01: 0.04
+  trainWidthFactor: 0.48
+  spawnMargin01: 0.03
+  despawnMargin01: 0.06
+  afterPassMinSeconds: 0.5
   logTrainActivationProblems: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

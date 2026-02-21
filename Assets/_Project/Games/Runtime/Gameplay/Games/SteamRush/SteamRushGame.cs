@@ -1,9 +1,11 @@
-﻿using Project.Core.App;
+﻿using Project.Core.Audio;
+using Project.Core.Audio.Steps;
 using Project.Core.AudioFx;
 using Project.Core.Haptics;
 using Project.Core.Input;
 using Project.Core.Localization;
 using Project.Core.Settings;
+using Project.Core.Speech;
 using Project.Core.Visual;
 using Project.Core.Visual.Games.SteamRush;
 using Project.Games.Gameplay.Contracts;
@@ -93,15 +95,24 @@ namespace Project.Games.SteamRush
         private const string EndlessRunKey3 = "steamrush.endless.run3";
         private const string EndlessRunKey4 = "steamrush.endless.run4";
 
+        private const string KeyHintObjective = "hint";
+        private const string KeyHintTouch = "hint.touch";
+        private const string KeyHintKeyboard = "hint.keyboard";
+
+        private const float TutorialPostOnboardingDelaySeconds = 1.0f;
+        private const float TutorialSpeechStableFalseSeconds = 0.50f;
+
         [Header("Visual (optional)")]
         [SerializeField] private MonoBehaviour visualDriver;
         private ISteamRushVisualDriver _visual;
 
         private IAudioFxService _audioFx;
+        private IUiAudioOrchestrator _uiAudio;
         private IHapticsService _haptics;
         private IVisualModeService _visualMode;
         private ILocalizationService _loc;
         private ISettingsService _settings;
+        private ISpeechService _speech;
 
         private bool _initialized;
         private bool _running;
@@ -154,6 +165,10 @@ namespace Project.Games.SteamRush
         private int _nextTrainId;
 
         private bool _visualShown;
+
+        private bool _tutorialOnboardingSpoken;
+        private Coroutine _tutorialOnboardingCo;
+        private bool _gameplayActive;
 
         private struct Train
         {
@@ -307,6 +322,7 @@ namespace Project.Games.SteamRush
 
             ComputeEndlessAdaptationIfNeeded();
             _prepDelaySeconds = ComputePreparationDelaySeconds();
+
             _nextEmitTime = Mathf.Max(0.01f, _prepDelaySeconds);
 
             _trains.Clear();
@@ -318,6 +334,10 @@ namespace Project.Games.SteamRush
             _visualShown = false;
             try { _visual?.Reset(); } catch { }
             ApplyVisualVisibility(forceVisible: false);
+
+            StopTutorialOnboardingRoutine();
+            _tutorialOnboardingSpoken = false;
+            _gameplayActive = false;
         }
 
         public void StartGame()
@@ -329,12 +349,27 @@ namespace Project.Games.SteamRush
 
             ApplyVisualVisibility();
             ApplyVisualState();
+
+            if (IsTutorialMode(_modeId) && !_tutorialOnboardingSpoken)
+            {
+                _tutorialOnboardingSpoken = true;
+                _gameplayActive = false;
+
+                StopTutorialOnboardingRoutine();
+                _tutorialOnboardingCo = StartCoroutine(TutorialOnboardingRoutine());
+            }
+            else
+            {
+                BeginGameplayNow(resetTiming: true);
+            }
         }
 
         public void StopGame()
         {
             _running = false;
             _paused = false;
+
+            StopTutorialOnboardingRoutine();
 
             StopCollisionRoutineIfAny();
             StopWinRoutineIfAny();
@@ -345,6 +380,8 @@ namespace Project.Games.SteamRush
             _visualShown = false;
             try { _visual?.Reset(); } catch { }
             ApplyVisualVisibility(forceVisible: false);
+
+            _gameplayActive = false;
         }
 
         public void PauseGame()
@@ -372,6 +409,9 @@ namespace Project.Games.SteamRush
             if (_finishQueued)
                 return;
 
+            if (!_gameplayActive)
+                return;
+
             _gameTime += Time.unscaledDeltaTime;
 
             PruneInvalidHandles();
@@ -394,15 +434,11 @@ namespace Project.Games.SteamRush
             switch (action)
             {
                 case NavAction.Next:
-                    TryMoveLane(+1);
+                    if (_gameplayActive) TryMoveLane(+1);
                     break;
 
                 case NavAction.Previous:
-                    TryMoveLane(-1);
-                    break;
-
-                case NavAction.Confirm:
-                    OnRepeatRequested();
+                    if (_gameplayActive) TryMoveLane(-1);
                     break;
             }
         }
@@ -432,8 +468,187 @@ namespace Project.Games.SteamRush
             ApplyVisualState();
         }
 
-        public void OnRepeatRequested()
+        public void OnRepeatRequested() { }
+
+        private IEnumerator TutorialOnboardingRoutine()
         {
+            if (_uiAudio == null || _speech == null)
+            {
+                yield return WaitUnscaledSecondsWhileRunning(TutorialPostOnboardingDelaySeconds);
+                if (_running && !_finishQueued)
+                    BeginGameplayNow(resetTiming: true);
+
+                _tutorialOnboardingCo = null;
+                yield break;
+            }
+
+            SpeakGameKey(KeyHintObjective);
+            yield return WaitForSpeechToFinishStable(TutorialSpeechStableFalseSeconds);
+
+            if (!_running || _finishQueued) { _tutorialOnboardingCo = null; yield break; }
+            string controlsKey = ResolveControlsHintKey();
+            SpeakGameKey(controlsKey);
+            yield return WaitForSpeechToFinishStable(TutorialSpeechStableFalseSeconds);
+
+            yield return WaitUnscaledSecondsWhileRunning(TutorialPostOnboardingDelaySeconds);
+
+            if (_running && !_finishQueued)
+                BeginGameplayNow(resetTiming: true);
+
+            _tutorialOnboardingCo = null;
+        }
+
+        private IEnumerator WaitUnscaledSecondsWhileRunning(float seconds)
+        {
+            float d = Mathf.Clamp(seconds, 0f, 10f);
+            float t = 0f;
+
+            while (t < d)
+            {
+                if (!_running) yield break;
+                if (_finishQueued) yield break;
+
+                if (_paused)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                t += Time.unscaledDeltaTime;
+                yield return null;
+            }
+        }
+
+        private IEnumerator WaitForSpeechToFinishStable(float stableFalseSeconds)
+        {
+            if (_speech == null)
+                yield break;
+
+            stableFalseSeconds = Mathf.Clamp(stableFalseSeconds, 0.05f, 2.0f);
+
+            float stable = 0f;
+
+            while (true)
+            {
+                if (!_running) yield break;
+                if (_finishQueued) yield break;
+
+                if (_paused)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                bool speaking = false;
+                try { speaking = _speech.IsSpeaking; } catch { speaking = false; }
+
+                if (speaking)
+                {
+                    stable = 0f;
+                    yield return null;
+                    continue;
+                }
+
+                stable += Time.unscaledDeltaTime;
+                if (stable >= stableFalseSeconds)
+                    yield break;
+
+                yield return null;
+            }
+        }
+
+        private void SpeakGameKey(string key, params object[] args)
+        {
+            if (_uiAudio == null) return;
+
+            _uiAudio.Play(
+                UiAudioScope.Gameplay,
+                ctx => SpeakGameKeyAndWait(ctx, key, args),
+                SpeechPriority.Normal,
+                interruptible: true
+            );
+        }
+
+        private IEnumerator SpeakGameKeyAndWait(UiAudioContext ctx, string key, params object[] args)
+        {
+            if (ctx?.Handle == null || ctx.Handle.IsCancelled)
+                yield break;
+
+            string localized = null;
+
+            try
+            {
+                if (_loc != null)
+                {
+                    localized = (args == null || args.Length == 0)
+                        ? _loc.GetFromTable(GameTable, key)
+                        : _loc.GetFromTable(GameTable, key, args);
+                }
+            }
+            catch
+            {
+                localized = null;
+            }
+
+            if (string.IsNullOrWhiteSpace(localized))
+                localized = key;
+
+            yield return UiAudioSteps.SpeakKeyAndWait(ctx, "common.text", localized);
+        }
+
+        private void BeginGameplayNow(bool resetTiming)
+        {
+            _gameplayActive = true;
+
+            if (resetTiming)
+            {
+                _finishQueued = false;
+
+                _gameTime = 0f;
+
+                _spawnTokens = 0f;
+                _spawnTokenLastT = 0f;
+
+                _trains.Clear();
+                _nextTrainId = 1;
+
+                _nextEmitTime = Mathf.Max(0.01f, _prepDelaySeconds);
+            }
+
+            ApplyVisualVisibility();
+            ApplyVisualState();
+        }
+
+        private void StopTutorialOnboardingRoutine()
+        {
+            if (_tutorialOnboardingCo != null)
+            {
+                StopCoroutine(_tutorialOnboardingCo);
+                _tutorialOnboardingCo = null;
+            }
+        }
+
+        private string ResolveControlsHintKey()
+        {
+            ControlHintMode mode = ControlHintMode.Auto;
+
+            try
+            {
+                if (_settings != null)
+                    mode = _settings.Current.controlHintMode;
+            }
+            catch
+            {
+                mode = ControlHintMode.Auto;
+            }
+
+            if (mode == ControlHintMode.Auto)
+            {
+                try { mode = StartupDefaultsResolver.ResolvePlatformPreferredHintMode(); }
+                catch { mode = ControlHintMode.KeyboardMouse; }
+            }
+
+            return mode == ControlHintMode.Touch ? KeyHintTouch : KeyHintKeyboard;
         }
 
         private void TickEmit(float nowT)
@@ -1240,6 +1455,9 @@ namespace Project.Games.SteamRush
 
             while (t < d)
             {
+                if (!_running) { _winCo = null; yield break; }
+                if (_paused) { yield return null; continue; }
+
                 t += Time.unscaledDeltaTime;
                 yield return null;
             }
@@ -1280,6 +1498,9 @@ namespace Project.Games.SteamRush
 
             while (t < d)
             {
+                if (!_running) { _collisionCo = null; yield break; }
+                if (_paused) { yield return null; continue; }
+
                 t += Time.unscaledDeltaTime;
                 yield return null;
             }
@@ -1804,10 +2025,12 @@ namespace Project.Games.SteamRush
             var services = Core.App.AppContext.Services;
 
             try { _audioFx = services.Resolve<IAudioFxService>(); } catch { _audioFx = null; }
+            try { _uiAudio = services.Resolve<IUiAudioOrchestrator>(); } catch { _uiAudio = null; }
             try { _haptics = services.Resolve<IHapticsService>(); } catch { _haptics = null; }
             try { _visualMode = services.Resolve<IVisualModeService>(); } catch { _visualMode = null; }
             try { _loc = services.Resolve<ILocalizationService>(); } catch { _loc = null; }
             try { _settings = services.Resolve<ISettingsService>(); } catch { _settings = null; }
+            try { _speech = services.Resolve<ISpeechService>(); } catch { _speech = null; }
         }
 
         private void ResolveVisual()
@@ -1841,7 +2064,7 @@ namespace Project.Games.SteamRush
         {
             bool wantVisible =
                 forceVisible.HasValue ? forceVisible.Value :
-                (_running && !_paused && _visualMode != null && _visualMode.Mode == VisualMode.VisualAssist);
+                (_running && _visualMode != null && _visualMode.Mode == VisualMode.VisualAssist);
 
             if (_visual == null)
                 return;
