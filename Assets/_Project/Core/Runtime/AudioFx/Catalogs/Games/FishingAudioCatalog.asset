@@ -13,4 +13,40 @@ MonoBehaviour:
   m_Name: FishingAudioCatalog
   m_EditorClassIdentifier: 
   gameId: fishing
-  sounds: []
+  sounds:
+  - soundId: RodCast
+    clip: {fileID: 8300000, guid: a8993d98af2533e4d9fcdd53510f7686, type: 3}
+    defaultVolume01: 1
+  - soundId: Move
+    clip: {fileID: 8300000, guid: 711d1fc0a3142be418e275583b2814bd, type: 3}
+    defaultVolume01: 1
+  - soundId: Turn
+    clip: {fileID: 8300000, guid: fc3864002ae69404786350daa8314aed, type: 3}
+    defaultVolume01: 1
+  - soundId: HookBite
+    clip: {fileID: 8300000, guid: 4a198fbe1e3296b43ac997ebe7a70be7, type: 3}
+    defaultVolume01: 1
+  - soundId: Burst
+    clip: {fileID: 8300000, guid: 7dd24e19eac9b004d8efaacbae30c522, type: 3}
+    defaultVolume01: 1
+  - soundId: Idle
+    clip: {fileID: 8300000, guid: 82d2f475d62034342a6b1a78c48937aa, type: 3}
+    defaultVolume01: 1
+  - soundId: Reel
+    clip: {fileID: 8300000, guid: f710f40297af5d54eadc92303b480dd9, type: 3}
+    defaultVolume01: 1
+  - soundId: LineBreak
+    clip: {fileID: 8300000, guid: 0d53244b0cfeb604c9f627c42d5e9caa, type: 3}
+    defaultVolume01: 1
+  - soundId: Splashing
+    clip: {fileID: 8300000, guid: 4df66abf15911464b920bf6f5a53d1f9, type: 3}
+    defaultVolume01: 1
+  - soundId: RodPullOut
+    clip: {fileID: 8300000, guid: c60c6200c1ce78c4fa86226be5fed493, type: 3}
+    defaultVolume01: 1
+  - soundId: Catch
+    clip: {fileID: 8300000, guid: 4aedd904ef492a347bb61d72e7f5da60, type: 3}
+    defaultVolume01: 1
+  - soundId: Win
+    clip: {fileID: 8300000, guid: d5527b6acf2092b439bade7f4a865867, type: 3}
+    defaultVolume01: 1

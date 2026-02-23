@@ -1,29 +1,29 @@
-# Wykorzystanie zewnętrznych plików dźwiękowych
+# Use of external audio files
 
-Niniejszy projekt wykorzystuje zewnętrzne pliki dźwiękowe (sound effects, SFX) pochodzące z ogólnodostępnych bibliotek audio. Pliki te nie zostały stworzone przez autora projektu i są wykorzystywane zgodnie z warunkami licencyjnymi udostępnionymi przez ich autorów oraz platformy dystrybucyjne.
+This project uses external audio files (sound effects, SFX) from publicly available audio libraries. These files were not created by the projects author and are used according to licensing rules provided by their authors and distribution platforms.
 
-Głównym źródłem dźwięków jest serwis **Pixabay**, który udostępnia materiały audio do użytku niekomercyjnego i komercyjnego, bez konieczności przypisywania autorstwa (o ile nie zaznaczono inaczej). W projekcie zachowano jednak informacje o autorach oraz linki do oryginalnych źródeł w celach dokumentacyjnych i akademickich.
-
----
-
-## Konwencja nazewnictwa
-
-Pliki dźwiękowe w projekcie zostały nazwane zgodnie z wewnętrzną konwencją autora i **nie odzwierciedlają oryginalnych nazw plików źródłowych**.
-
-Format opisu:
-```
-[nazwa ogólna – nazwa robocza autora] – autor / właściciel | link do źródła
-[nazwa lub nazwy używane w aplikacji]
-```
-
+The main source of sound effects is **Pixabay** service, which provides audio materials for non-commercial and commercial use, without the need to attribute the author (unless otherwise stated). However in this project informations about authors and links to original audio sources were kept for documentary and academic purposes.
 
 ---
 
-## UI – dźwięki interfejsu użytkownika
+## Naming convention
+
+Audio files in the project were named according to the authors naming convention and **don't correspond to the original source file names**.
+
+Format description:
+```
+[functional name] – [author / owner]
+[source link]
+[file name in project]
+```
+
+---
+
+## UI – user interface sounds
 
 **Confirm cue** – Arnav_Geddada  
 https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-ui-sound-374228/  
-`ui_confirm_cue`, `game_unpause`
+`ui_confirm_cue`
 
 **Back cue** – KieranKeegan (Freesound) / freesound_community  
 https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-ui-back-sound-100590/  
@@ -67,7 +67,7 @@ https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-unpause-106278/
 
 ---
 
-## Vibration / SFX systemowe
+## Vibration / System SFX
 
 **Vibration** – kakaist  
 https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-mobile-vibrate-sfx-323777/  
@@ -75,9 +75,7 @@ https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-mobile-vibrate-sfx
 
 ---
 
-## Gry – dźwięki wspólne
-
-### Common
+## Games – common sounds
 
 **Game start** – FoxBoyTails  
 https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-game-start-317318/  
@@ -87,9 +85,13 @@ https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-game-start-317318/
 https://pixabay.com/pl/sound-effects/musical-pause-piano-sound-40579/  
 `game_pause`
 
+**Game unpause** – Arnav_Geddada  
+https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-ui-sound-374228/  
+`game_unpause`
+
 ---
 
-## Gry - SteamRush
+## Game - SteamRush
 
 **Horizontal swish** - DJARTMUSIC
 https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-real-swish-3-304242/ 
@@ -117,7 +119,43 @@ https://pixabay.com/pl/sound-effects/gaming-victory-464016/
 
 ---
 
-## Gry – Memory
+## Game - Fishing
+
+**Rod cast** - floraphonic
+https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-water-droplet-1-165637/
+`fishing_rod_cast`
+
+**Ringing** - RossenKarpuzov
+https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-bell-ringing-true-sound-recorded-295372/
+`fishing_move`, `fishing_turn`, `fishing_hook_bite`, `fishing_burst`, `fishing_idle`
+
+**Reel** - AudioPapkin
+https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-fishing-reel-302355/
+`fishing_reel`
+
+**Line break** - Universfield
+https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-whip-05-323597/
+`fishing_line_break`
+
+**Splashing** - do_what_you_want
+https://pixabay.com/pl/sound-effects/natura-splashing-water-417576/
+`fishing_splashing`
+
+**Rod pull out** - swordofkings128 (Freesound) / freesound_community
+https://pixabay.com/pl/sound-effects/natura-splash-6213/
+`fishing_rod_pull_out`
+
+**Catch fish** - ALEXIS_GAMING_CAM
+https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-bell-notification-337658/
+`fishing_catch`
+
+**Win game** - Tuudurt (Freesound) / freesound_community
+https://pixabay.com/pl/sound-effects/musical-level-win-6416/
+`fishing_win`
+
+---
+
+## Game – Memory
 
 **Horizontal swish** – DJARTMUSIC  
 https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-real-swish-3-304242/  
@@ -145,8 +183,8 @@ https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-winner-game-sound-
 
 ---
 
-## Uwagi końcowe
+## final remarks
 
-Wszystkie zewnętrzne pliki audio zostały wykorzystane wyłącznie jako element funkcjonalny aplikacji (interfejs użytkownika oraz mechaniki gier). Projekt nie rości sobie praw autorskich do wymienionych materiałów dźwiękowych.
+All external audio files were used only as applications functional element (user interface and game mechanics). The project does not claim copyright to the audio materials mentioned.
 
-Dokumentacja ta stanowi jednocześnie wykaz źródeł audio wykorzystanych w projekcie, zgodnie z zasadami rzetelności akademickiej.
+This documentation also constitutes a list of audio sources used in the project, in accordance with the principles of academic integrity.
