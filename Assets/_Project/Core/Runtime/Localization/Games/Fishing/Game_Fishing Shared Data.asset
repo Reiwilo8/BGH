@@ -23,6 +23,270 @@ MonoBehaviour:
     m_Key: description
     m_Metadata:
       m_Items: []
+  - m_Id: 9699510910349312
+    m_Key: settings.base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9700196658081792
+    m_Key: settings.base.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029155008512
+    m_Key: settings.base.bite_wait_min
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397120
+    m_Key: settings.base.bite_wait_min.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397121
+    m_Key: settings.base.bite_wait_max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397122
+    m_Key: settings.base.bite_wait_max.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397123
+    m_Key: settings.base.reaction_window_base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397124
+    m_Key: settings.base.reaction_window_base.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397125
+    m_Key: settings.base.catch_distance_base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397126
+    m_Key: settings.base.catch_distance_base.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397127
+    m_Key: settings.base.spawn_distance_base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397128
+    m_Key: settings.base.spawn_distance_base.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397129
+    m_Key: settings.base.spawn_distance_jitter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397130
+    m_Key: settings.base.spawn_distance_jitter.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397131
+    m_Key: settings.base.spawn_bias_by_difficulty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397132
+    m_Key: settings.base.spawn_bias_by_difficulty.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397133
+    m_Key: settings.base.tension_decay_idle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397134
+    m_Key: settings.base.tension_decay_idle.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397135
+    m_Key: settings.base.tension_decay_up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397136
+    m_Key: settings.base.tension_decay_up.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397137
+    m_Key: settings.base.tension_reel_factor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397138
+    m_Key: settings.base.tension_reel_factor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397139
+    m_Key: settings.base.move_chance_base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397140
+    m_Key: settings.base.move_chance_base.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397141
+    m_Key: settings.base.burst_chance_base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397142
+    m_Key: settings.base.burst_chance_base.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397143
+    m_Key: settings.base.idle_speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397144
+    m_Key: settings.base.idle_speed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397145
+    m_Key: settings.base.normal_speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397146
+    m_Key: settings.base.normal_speed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397147
+    m_Key: settings.base.burst_speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397148
+    m_Key: settings.base.burst_speed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397149
+    m_Key: settings.base.fatigue_gain_speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397150
+    m_Key: settings.base.fatigue_gain_speed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397151
+    m_Key: settings.base.fatigue_gain_fight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397152
+    m_Key: settings.base.fatigue_gain_fight.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397153
+    m_Key: settings.base.fatigue_recovery_idle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397154
+    m_Key: settings.base.fatigue_recovery_idle.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397155
+    m_Key: settings.base.burst_fatigue_cutoff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397156
+    m_Key: settings.base.burst_fatigue_cutoff.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591424
+    m_Key: settings.base.fatigue_surrender_threshold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591425
+    m_Key: settings.base.fatigue_surrender_threshold.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591426
+    m_Key: settings.mode.difficulty_scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591427
+    m_Key: settings.mode.difficulty_scale.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222094
+    m_Key: settings.mode.target_fish_count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222095
+    m_Key: settings.mode.target_fish_count.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222096
+    m_Key: settings.mode.reaction_window_scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222097
+    m_Key: settings.mode.reaction_window_scale.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222098
+    m_Key: settings.mode.aggression_min
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222099
+    m_Key: settings.mode.aggression_min.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222100
+    m_Key: settings.mode.aggression_max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222101
+    m_Key: settings.mode.aggression_max.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222102
+    m_Key: settings.mode.resistance_min
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222103
+    m_Key: settings.mode.resistance_min.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222104
+    m_Key: settings.mode.resistance_max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222105
+    m_Key: settings.mode.resistance_max.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222106
+    m_Key: settings.custom.target_fish_count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222107
+    m_Key: settings.custom.target_fish_count.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222108
+    m_Key: settings.custom.difficulty_preset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222109
+    m_Key: settings.custom.difficulty_preset.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222110
+    m_Key: settings.custom.aggression_max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222111
+    m_Key: settings.custom.aggression_max.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222112
+    m_Key: settings.preset.tutorial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222113
+    m_Key: settings.preset.easy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222114
+    m_Key: settings.preset.medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222115
+    m_Key: settings.preset.hard
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

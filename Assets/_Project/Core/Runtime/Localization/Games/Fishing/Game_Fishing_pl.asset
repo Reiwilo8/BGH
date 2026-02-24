@@ -26,6 +26,279 @@ MonoBehaviour:
     m_Localized: "\u0141\xF3w ryby poprzez wci\u0105ganie i kontrowanie ich ruch\xF3w."
     m_Metadata:
       m_Items: []
+  - m_Id: 9699510910349312
+    m_Localized: Parametry podstawowe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9700196658081792
+    m_Localized: "Podstawowe parametry \u0142owienia okre\u015Blaj\u0105ce czasy,
+      dystanse, napi\u0119cie i zachowanie ryb."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222094
+    m_Localized: "Liczba ryb do z\u0142owienia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222095
+    m_Localized: "Liczba ryb wymagana do uko\u0144czenia tego trybu."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222096
+    m_Localized: Skala okna reakcji
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222097
+    m_Localized: "Mno\u017Cnik trybu stosowany do bazowego okna reakcji."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222098
+    m_Localized: "Minimalna agresywno\u015B\u0107"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222099
+    m_Localized: "Minimalna agresywno\u015B\u0107 ryb w tym trybie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222100
+    m_Localized: "Maksymalna agresywno\u015B\u0107"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222101
+    m_Localized: "Maksymalna agresywno\u015B\u0107 ryb w tym trybie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222102
+    m_Localized: "Minimalny op\xF3r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222103
+    m_Localized: "Minimalny mno\u017Cnik oporu ryb w tym trybie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222104
+    m_Localized: "Maksymalny op\xF3r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222105
+    m_Localized: "Maksymalny mno\u017Cnik oporu ryb w tym trybie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222106
+    m_Localized: "Liczba ryb do z\u0142owienia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222107
+    m_Localized: "Liczba ryb wymagana do uko\u0144czenia gry w trybie W\u0142asnym."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222108
+    m_Localized: "Preset trudno\u015Bci"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222109
+    m_Localized: "Bazowy preset trudno\u015Bci u\u017Cywany w trybie W\u0142asnym."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222110
+    m_Localized: "Maksymalna agresywno\u015B\u0107 ryb"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222111
+    m_Localized: "G\xF3rny limit agresywno\u015Bci ryb w trybie W\u0142asnym. Rzeczywista
+      agresywno\u015B\u0107 jest losowana dla ka\u017Cdej ryby."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222112
+    m_Localized: Samouczek
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222113
+    m_Localized: "\u0141atwy"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222114
+    m_Localized: "\u015Aredni"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222115
+    m_Localized: Trudny
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029155008512
+    m_Localized: Minimalny czas do brania
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397120
+    m_Localized: Minimalna liczba sekund do brania.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397121
+    m_Localized: Maksymalny czas do brania
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397122
+    m_Localized: Maksymalna liczba sekund do brania.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397123
+    m_Localized: Bazowe okno reakcji
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397124
+    m_Localized: "Bazowa liczba sekund na reakcj\u0119 po braniu, przed skalowaniem
+      trybu."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397125
+    m_Localized: "Bazowy dystans z\u0142owienia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397126
+    m_Localized: "Bazowy dystans z\u0142owienia jako u\u0142amek d\u0142ugo\u015Bci
+      planszy (prz\xF3d\u2013ty\u0142)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397127
+    m_Localized: Bazowy dystans startu ryby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397128
+    m_Localized: "Bazowy dystans startu ryby jako u\u0142amek d\u0142ugo\u015Bci
+      planszy (prz\xF3d\u2013ty\u0142)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397129
+    m_Localized: "Losowo\u015B\u0107 dystansu startu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397130
+    m_Localized: "Losowy offset dystansu startu (\xB1 warto\u015B\u0107)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397131
+    m_Localized: "Bias startu wzgl\u0119dem trudno\u015Bci"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397132
+    m_Localized: "Ma\u0142y bias dodawany do dystansu startu zale\u017Cnie od trudno\u015Bci."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397133
+    m_Localized: "Spadek napi\u0119cia bez akcji"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397134
+    m_Localized: "Bazowy spadek napi\u0119cia na sekund\u0119, gdy nie wci\u0105gasz."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397135
+    m_Localized: "Spadek napi\u0119cia przy luzowaniu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397136
+    m_Localized: "Spadek napi\u0119cia na sekund\u0119 podczas luzowania \u017Cy\u0142ki
+      (Up)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397137
+    m_Localized: "Waga napi\u0119cia przy wci\u0105ganiu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397138
+    m_Localized: "Waga balansu u\u017Cywana do zmiany napi\u0119cia podczas wci\u0105gania
+      (Down)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397139
+    m_Localized: Bazowa szansa ruchu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397140
+    m_Localized: "Bazowe prawdopodobie\u0144stwo, \u017Ce ryba wybierze aktywny ruch."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397141
+    m_Localized: Bazowa szansa zrywu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397142
+    m_Localized: "Bazowe prawdopodobie\u0144stwo zrywu, gdy ryba si\u0119 porusza."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397143
+    m_Localized: "Pr\u0119dko\u015B\u0107 bezczynna"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397144
+    m_Localized: "Pr\u0119dko\u015B\u0107 bezczynna ryby, gdy nie wykonuje aktywnego
+      ruchu."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397145
+    m_Localized: "Pr\u0119dko\u015B\u0107 normalna"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397146
+    m_Localized: "Pr\u0119dko\u015B\u0107 normalnego ruchu ryby."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397147
+    m_Localized: "Pr\u0119dko\u015B\u0107 zrywu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397148
+    m_Localized: "Pr\u0119dko\u015B\u0107 zrywu ryby."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397149
+    m_Localized: "Przyrost zm\u0119czenia z pr\u0119dko\u015Bci"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397150
+    m_Localized: "Jak szybko ro\u015Bnie zm\u0119czenie od pr\u0119dko\u015Bci ruchu."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397151
+    m_Localized: "Przyrost zm\u0119czenia z walki"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397152
+    m_Localized: "Jak szybko ro\u015Bnie zm\u0119czenie podczas walki ryby."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397153
+    m_Localized: "Regeneracja zm\u0119czenia w bezruchu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397154
+    m_Localized: "Jak szybko spada zm\u0119czenie, gdy ryba jest spokojna/bezczynna."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397155
+    m_Localized: "Pr\xF3g zm\u0119czenia dla zrywu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397156
+    m_Localized: "Powy\u017Cej tej warto\u015Bci zm\u0119czenia zryw jest niedost\u0119pny."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591424
+    m_Localized: "Pr\xF3g poddania ze zm\u0119czenia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591425
+    m_Localized: "Powy\u017Cej tej warto\u015Bci zm\u0119czenia ryba staje si\u0119
+      bardzo uleg\u0142a."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591426
+    m_Localized: "Skala trudno\u015Bci"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591427
+    m_Localized: "Mno\u017Cnik dla danego trybu u\u017Cywany do skalowania trudno\u015Bci."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

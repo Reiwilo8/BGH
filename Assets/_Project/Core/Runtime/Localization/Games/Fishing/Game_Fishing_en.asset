@@ -26,6 +26,274 @@ MonoBehaviour:
     m_Localized: Catch fish by reeling and countering their movements.
     m_Metadata:
       m_Items: []
+  - m_Id: 9699510910349312
+    m_Localized: Base parameters
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9700196658081792
+    m_Localized: Core fishing parameters defining timing, distances, tension and
+      fish behavior.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222094
+    m_Localized: Fish to catch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222095
+    m_Localized: Number of fish required to complete this mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222096
+    m_Localized: Reaction window scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222097
+    m_Localized: Per-mode multiplier applied to base reaction window.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222098
+    m_Localized: Aggression min
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222099
+    m_Localized: Minimum aggression for fish in this mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222100
+    m_Localized: Aggression max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222101
+    m_Localized: Maximum aggression for fish in this mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222102
+    m_Localized: Resistance min
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222103
+    m_Localized: Minimum resistance multiplier for fish in this mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222104
+    m_Localized: Resistance max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222105
+    m_Localized: Maximum resistance multiplier for fish in this mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222106
+    m_Localized: Fish to catch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222107
+    m_Localized: Number of fish required to complete the game in Custom mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222108
+    m_Localized: Difficulty preset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222109
+    m_Localized: Base difficulty preset used by Custom mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222110
+    m_Localized: Max fish aggression
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222111
+    m_Localized: Upper limit for fish aggression in Custom mode. Actual aggression
+      is randomized per fish.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222112
+    m_Localized: Tutorial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222113
+    m_Localized: Easy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222114
+    m_Localized: Medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222115
+    m_Localized: Hard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029155008512
+    m_Localized: Bite wait min
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397120
+    m_Localized: Minimum seconds before a fish bites.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397121
+    m_Localized: Bite wait max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397122
+    m_Localized: Maximum seconds before a fish bites.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397123
+    m_Localized: Reaction window base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397124
+    m_Localized: Base seconds for reaction window after bite, before mode scaling.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397125
+    m_Localized: Catch distance base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397126
+    m_Localized: Base catch distance expressed as a fraction of the board forward
+      range.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397127
+    m_Localized: Spawn distance base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397128
+    m_Localized: Base spawn distance expressed as a fraction of the board forward
+      range.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397129
+    m_Localized: Spawn distance jitter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397130
+    m_Localized: "Random offset applied to spawn distance (\xB1 value)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397131
+    m_Localized: Spawn bias by difficulty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397132
+    m_Localized: Small additive bias applied to spawn distance based on difficulty.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397133
+    m_Localized: Tension decay idle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397134
+    m_Localized: Base tension decrease per second when not reeling.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397135
+    m_Localized: Tension decay up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397136
+    m_Localized: Tension decrease per second while releasing the line (Up).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397137
+    m_Localized: Tension reel factor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397138
+    m_Localized: Balance factor used in tension change while reeling (Down).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397139
+    m_Localized: Move chance base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397140
+    m_Localized: Base probability that a fish chooses an active movement step.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397141
+    m_Localized: Burst chance base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397142
+    m_Localized: Base probability of burst movement when fish is moving.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397143
+    m_Localized: Idle speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397144
+    m_Localized: Fish idle speed used when not actively moving.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397145
+    m_Localized: Normal speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397146
+    m_Localized: Fish normal movement speed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397147
+    m_Localized: Burst speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397148
+    m_Localized: Fish burst movement speed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397149
+    m_Localized: Fatigue gain from speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397150
+    m_Localized: How quickly fatigue increases from movement speed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397151
+    m_Localized: Fatigue gain from fight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397152
+    m_Localized: How quickly fatigue increases while the fish is fighting.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397153
+    m_Localized: Fatigue recovery idle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397154
+    m_Localized: How quickly fatigue decreases when the fish is calm/idle.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397155
+    m_Localized: Burst fatigue cutoff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397156
+    m_Localized: Above this fatigue value, burst becomes unavailable.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591424
+    m_Localized: Fatigue surrender threshold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591425
+    m_Localized: Above this fatigue value, fish becomes highly submissive.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591426
+    m_Localized: Difficulty scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591427
+    m_Localized: Per-mode multiplier used for difficulty scaling.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
