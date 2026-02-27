@@ -35,6 +35,12 @@ MonoBehaviour:
   - soundId: Reel
     clip: {fileID: 8300000, guid: f710f40297af5d54eadc92303b480dd9, type: 3}
     defaultVolume01: 1
+  - soundId: Loosen
+    clip: {fileID: 8300000, guid: f7c611d3cb19c874697584ba70fb1dda, type: 3}
+    defaultVolume01: 1
+  - soundId: Pull
+    clip: {fileID: 8300000, guid: bdb1ece0cec8a514c800f96e1a2560f4, type: 3}
+    defaultVolume01: 1
   - soundId: LineBreak
     clip: {fileID: 8300000, guid: 0d53244b0cfeb604c9f627c42d5e9caa, type: 3}
     defaultVolume01: 1

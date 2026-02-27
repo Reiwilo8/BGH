@@ -17,24 +17,26 @@ namespace Project.Games.Run
         private const string KeyFishingCatchDistanceBase = FishingBasePrefix + "catchDistanceBase";
         private const string KeyFishingSpawnDistanceBase = FishingBasePrefix + "spawnDistanceBase";
         private const string KeyFishingSpawnDistanceJitter = FishingBasePrefix + "spawnDistanceJitter";
-        private const string KeyFishingDifficultySpawnBias = FishingBasePrefix + "difficultySpawnBias";
 
-        private const string KeyFishingTensionDecayIdle = FishingBasePrefix + "tensionDecayIdle";
-        private const string KeyFishingTensionDecayUp = FishingBasePrefix + "tensionDecayUp";
-        private const string KeyFishingTensionReelFactor = FishingBasePrefix + "tensionReelFactor";
+        private const string KeyFishingTensionMaxTicks = FishingBasePrefix + "tensionMaxTicks";
 
-        private const string KeyFishingMoveChanceBase = FishingBasePrefix + "moveChanceBase";
-        private const string KeyFishingBurstChanceBase = FishingBasePrefix + "burstChanceBase";
+        private const string KeyFishingActionMinSeconds = FishingBasePrefix + "actionMinSeconds";
+        private const string KeyFishingActionMaxSeconds = FishingBasePrefix + "actionMaxSeconds";
 
-        private const string KeyFishingIdleSpeed = FishingBasePrefix + "idleSpeed";
-        private const string KeyFishingNormalSpeed = FishingBasePrefix + "normalSpeed";
-        private const string KeyFishingBurstSpeed = FishingBasePrefix + "burstSpeed";
+        private const string KeyFishingMoveLateralSpeedMin = FishingBasePrefix + "moveLateralSpeedMin";
+        private const string KeyFishingMoveLateralSpeedMax = FishingBasePrefix + "moveLateralSpeedMax";
 
-        private const string KeyFishingFatigueGainFromSpeed = FishingBasePrefix + "fatigueGainFromSpeed";
-        private const string KeyFishingFatigueGainFromFight = FishingBasePrefix + "fatigueGainFromFight";
-        private const string KeyFishingFatigueRecoveryIdle = FishingBasePrefix + "fatigueRecoveryIdle";
-        private const string KeyFishingBurstFatigueCutoff = FishingBasePrefix + "burstFatigueCutoff";
-        private const string KeyFishingFatigueSurrenderThreshold = FishingBasePrefix + "fatigueSurrenderThreshold";
+        private const string KeyFishingBurstForwardSpeedMin = FishingBasePrefix + "burstForwardSpeedMin";
+        private const string KeyFishingBurstForwardSpeedMax = FishingBasePrefix + "burstForwardSpeedMax";
+
+        private const string KeyFishingFailGraceSeconds = FishingBasePrefix + "failGraceSeconds";
+
+        private const string KeyFishingLoosenDistancePenaltyMin = FishingBasePrefix + "loosenDistancePenaltyMin";
+        private const string KeyFishingLoosenDistancePenaltyMax = FishingBasePrefix + "loosenDistancePenaltyMax";
+
+        private const string KeyFishingFatigueGainOnCorrect = FishingBasePrefix + "fatigueGainOnCorrect";
+        private const string KeyFishingFatigueLossOnWrong = FishingBasePrefix + "fatigueLossOnWrong";
+        private const string KeyFishingFatigueLossOnLoosen = FishingBasePrefix + "fatigueLossOnLoosen";
 
         private const string ModePrefix = "mode.";
         private const string FishingPerModeMid = ".fishing.";
@@ -59,24 +61,26 @@ namespace Project.Games.Run
         private const string PCatchDistanceBase = "fishing.catchDistanceBase";
         private const string PSpawnDistanceBase = "fishing.spawnDistanceBase";
         private const string PSpawnDistanceJitter = "fishing.spawnDistanceJitter";
-        private const string PDifficultySpawnBias = "fishing.difficultySpawnBias";
 
-        private const string PTensionDecayIdle = "fishing.tensionDecayIdle";
-        private const string PTensionDecayUp = "fishing.tensionDecayUp";
-        private const string PTensionReelFactor = "fishing.tensionReelFactor";
+        private const string PTensionMaxTicks = "fishing.tensionMaxTicks";
 
-        private const string PMoveChanceBase = "fishing.moveChanceBase";
-        private const string PBurstChanceBase = "fishing.burstChanceBase";
+        private const string PActionMinSeconds = "fishing.actionMinSeconds";
+        private const string PActionMaxSeconds = "fishing.actionMaxSeconds";
 
-        private const string PIdleSpeed = "fishing.idleSpeed";
-        private const string PNormalSpeed = "fishing.normalSpeed";
-        private const string PBurstSpeed = "fishing.burstSpeed";
+        private const string PMoveLateralSpeedMin = "fishing.moveLateralSpeedMin";
+        private const string PMoveLateralSpeedMax = "fishing.moveLateralSpeedMax";
 
-        private const string PFatigueGainFromSpeed = "fishing.fatigueGainFromSpeed";
-        private const string PFatigueGainFromFight = "fishing.fatigueGainFromFight";
-        private const string PFatigueRecoveryIdle = "fishing.fatigueRecoveryIdle";
-        private const string PBurstFatigueCutoff = "fishing.burstFatigueCutoff";
-        private const string PFatigueSurrenderThreshold = "fishing.fatigueSurrenderThreshold";
+        private const string PBurstForwardSpeedMin = "fishing.burstForwardSpeedMin";
+        private const string PBurstForwardSpeedMax = "fishing.burstForwardSpeedMax";
+
+        private const string PFailGraceSeconds = "fishing.failGraceSeconds";
+
+        private const string PLoosenDistancePenaltyMin = "fishing.loosenDistancePenaltyMin";
+        private const string PLoosenDistancePenaltyMax = "fishing.loosenDistancePenaltyMax";
+
+        private const string PFatigueGainOnCorrect = "fishing.fatigueGainOnCorrect";
+        private const string PFatigueLossOnWrong = "fishing.fatigueLossOnWrong";
+        private const string PFatigueLossOnLoosen = "fishing.fatigueLossOnLoosen";
 
         private const string PDifficultyScale = "fishing.difficultyScale";
         private const string PTargetFishCount = "fishing.targetFishCount";
@@ -103,6 +107,9 @@ namespace Project.Games.Run
 
             string m = NormalizeModeId(modeId);
 
+            ResolveFishingBaseDefaults(out FishingBaseDefaults baseDef);
+            ResolveFishingModeDefaults(m, out FishingModeDefaults modeDef);
+
             if (_store == null)
             {
                 AppendDefaults(m, initialParameters);
@@ -118,9 +125,6 @@ namespace Project.Games.Run
 
             bool isCustom = string.Equals(m, "custom", StringComparison.OrdinalIgnoreCase);
 
-            ResolveFishingBaseDefaults(out FishingBaseDefaults baseDef);
-
-            FishingModeDefaults modeDef;
             if (isCustom)
             {
                 string presetRaw = GetCustomString(g, KeyFishingDifficultyPreset, "medium");
@@ -138,37 +142,6 @@ namespace Project.Games.Run
                 modeDef.aggressionMin = aggMin;
             }
             else
-            {
-                ResolveFishingModeDefaults(m, out modeDef);
-            }
-
-            string biteMin = GetCustomString(g, KeyFishingBiteWaitMin, FloatToInv(baseDef.biteWaitMinSeconds));
-            string biteMax = GetCustomString(g, KeyFishingBiteWaitMax, FloatToInv(baseDef.biteWaitMaxSeconds));
-            string reactBase = GetCustomString(g, KeyFishingReactionWindowBase, FloatToInv(baseDef.reactionWindowBaseSeconds));
-
-            string catchDist = GetCustomString(g, KeyFishingCatchDistanceBase, FloatToInv(baseDef.catchDistanceBase));
-            string spawnBase = GetCustomString(g, KeyFishingSpawnDistanceBase, FloatToInv(baseDef.spawnDistanceBase));
-            string spawnJit = GetCustomString(g, KeyFishingSpawnDistanceJitter, FloatToInv(baseDef.spawnDistanceJitter));
-            string spawnBias = GetCustomString(g, KeyFishingDifficultySpawnBias, FloatToInv(baseDef.difficultySpawnBias));
-
-            string tIdle = GetCustomString(g, KeyFishingTensionDecayIdle, FloatToInv(baseDef.tensionDecayIdle));
-            string tUp = GetCustomString(g, KeyFishingTensionDecayUp, FloatToInv(baseDef.tensionDecayUp));
-            string tReel = GetCustomString(g, KeyFishingTensionReelFactor, FloatToInv(baseDef.tensionReelFactor));
-
-            string moveChance = GetCustomString(g, KeyFishingMoveChanceBase, FloatToInv(baseDef.moveChanceBase));
-            string burstChance = GetCustomString(g, KeyFishingBurstChanceBase, FloatToInv(baseDef.burstChanceBase));
-
-            string idleSpeed = GetCustomString(g, KeyFishingIdleSpeed, FloatToInv(baseDef.idleSpeed));
-            string normalSpeed = GetCustomString(g, KeyFishingNormalSpeed, FloatToInv(baseDef.normalSpeed));
-            string burstSpeed = GetCustomString(g, KeyFishingBurstSpeed, FloatToInv(baseDef.burstSpeed));
-
-            string fatSpd = GetCustomString(g, KeyFishingFatigueGainFromSpeed, FloatToInv(baseDef.fatigueGainFromSpeed));
-            string fatFight = GetCustomString(g, KeyFishingFatigueGainFromFight, FloatToInv(baseDef.fatigueGainFromFight));
-            string fatRec = GetCustomString(g, KeyFishingFatigueRecoveryIdle, FloatToInv(baseDef.fatigueRecoveryIdle));
-            string fatCut = GetCustomString(g, KeyFishingBurstFatigueCutoff, FloatToInv(baseDef.burstFatigueCutoff));
-            string fatSurr = GetCustomString(g, KeyFishingFatigueSurrenderThreshold, FloatToInv(baseDef.fatigueSurrenderThreshold));
-
-            if (!isCustom)
             {
                 string keyDifficulty = BuildFishingPerModeKey(m, KeyFishingModeDifficultyScaleSuffix);
                 string keyTarget = BuildFishingPerModeKey(m, KeyFishingModeTargetFishCountSuffix);
@@ -192,6 +165,34 @@ namespace Project.Games.Run
             if (modeDef.aggressionMin > modeDef.aggressionMax) modeDef.aggressionMin = modeDef.aggressionMax;
             if (modeDef.resistanceMin > modeDef.resistanceMax) modeDef.resistanceMin = modeDef.resistanceMax;
 
+            string biteMin = GetCustomString(g, KeyFishingBiteWaitMin, FloatToInv(baseDef.biteWaitMinSeconds));
+            string biteMax = GetCustomString(g, KeyFishingBiteWaitMax, FloatToInv(baseDef.biteWaitMaxSeconds));
+            string reactBase = GetCustomString(g, KeyFishingReactionWindowBase, FloatToInv(baseDef.reactionWindowBaseSeconds));
+
+            string catchDist = GetCustomString(g, KeyFishingCatchDistanceBase, FloatToInv(baseDef.catchDistanceBase));
+            string spawnBase = GetCustomString(g, KeyFishingSpawnDistanceBase, FloatToInv(baseDef.spawnDistanceBase));
+            string spawnJit = GetCustomString(g, KeyFishingSpawnDistanceJitter, FloatToInv(baseDef.spawnDistanceJitter));
+
+            string tensionMaxTicks = GetCustomString(g, KeyFishingTensionMaxTicks, baseDef.tensionMaxTicks.ToString(CultureInfo.InvariantCulture));
+
+            string actionMin = GetCustomString(g, KeyFishingActionMinSeconds, FloatToInv(baseDef.actionMinSeconds));
+            string actionMax = GetCustomString(g, KeyFishingActionMaxSeconds, FloatToInv(baseDef.actionMaxSeconds));
+
+            string moveMin = GetCustomString(g, KeyFishingMoveLateralSpeedMin, FloatToInv(baseDef.moveLateralSpeedMin));
+            string moveMax = GetCustomString(g, KeyFishingMoveLateralSpeedMax, FloatToInv(baseDef.moveLateralSpeedMax));
+
+            string burstMin = GetCustomString(g, KeyFishingBurstForwardSpeedMin, FloatToInv(baseDef.burstForwardSpeedMin));
+            string burstMax = GetCustomString(g, KeyFishingBurstForwardSpeedMax, FloatToInv(baseDef.burstForwardSpeedMax));
+
+            string failGrace = GetCustomString(g, KeyFishingFailGraceSeconds, FloatToInv(baseDef.failGraceSeconds));
+
+            string loosenMin = GetCustomString(g, KeyFishingLoosenDistancePenaltyMin, FloatToInv(baseDef.loosenDistancePenaltyMin));
+            string loosenMax = GetCustomString(g, KeyFishingLoosenDistancePenaltyMax, FloatToInv(baseDef.loosenDistancePenaltyMax));
+
+            string fatGain = GetCustomString(g, KeyFishingFatigueGainOnCorrect, FloatToInv(baseDef.fatigueGainOnCorrect));
+            string fatWrong = GetCustomString(g, KeyFishingFatigueLossOnWrong, FloatToInv(baseDef.fatigueLossOnWrong));
+            string fatLoosen = GetCustomString(g, KeyFishingFatigueLossOnLoosen, FloatToInv(baseDef.fatigueLossOnLoosen));
+
             initialParameters[PBaseBiteWaitMin] = biteMin;
             initialParameters[PBaseBiteWaitMax] = biteMax;
             initialParameters[PBaseReactionWindowBase] = reactBase;
@@ -199,24 +200,26 @@ namespace Project.Games.Run
             initialParameters[PCatchDistanceBase] = catchDist;
             initialParameters[PSpawnDistanceBase] = spawnBase;
             initialParameters[PSpawnDistanceJitter] = spawnJit;
-            initialParameters[PDifficultySpawnBias] = spawnBias;
 
-            initialParameters[PTensionDecayIdle] = tIdle;
-            initialParameters[PTensionDecayUp] = tUp;
-            initialParameters[PTensionReelFactor] = tReel;
+            initialParameters[PTensionMaxTicks] = tensionMaxTicks;
 
-            initialParameters[PMoveChanceBase] = moveChance;
-            initialParameters[PBurstChanceBase] = burstChance;
+            initialParameters[PActionMinSeconds] = actionMin;
+            initialParameters[PActionMaxSeconds] = actionMax;
 
-            initialParameters[PIdleSpeed] = idleSpeed;
-            initialParameters[PNormalSpeed] = normalSpeed;
-            initialParameters[PBurstSpeed] = burstSpeed;
+            initialParameters[PMoveLateralSpeedMin] = moveMin;
+            initialParameters[PMoveLateralSpeedMax] = moveMax;
 
-            initialParameters[PFatigueGainFromSpeed] = fatSpd;
-            initialParameters[PFatigueGainFromFight] = fatFight;
-            initialParameters[PFatigueRecoveryIdle] = fatRec;
-            initialParameters[PBurstFatigueCutoff] = fatCut;
-            initialParameters[PFatigueSurrenderThreshold] = fatSurr;
+            initialParameters[PBurstForwardSpeedMin] = burstMin;
+            initialParameters[PBurstForwardSpeedMax] = burstMax;
+
+            initialParameters[PFailGraceSeconds] = failGrace;
+
+            initialParameters[PLoosenDistancePenaltyMin] = loosenMin;
+            initialParameters[PLoosenDistancePenaltyMax] = loosenMax;
+
+            initialParameters[PFatigueGainOnCorrect] = fatGain;
+            initialParameters[PFatigueLossOnWrong] = fatWrong;
+            initialParameters[PFatigueLossOnLoosen] = fatLoosen;
 
             initialParameters[PDifficultyScale] = FloatToInv(modeDef.difficultyScale);
             initialParameters[PTargetFishCount] = modeDef.targetFishCount.ToString(CultureInfo.InvariantCulture);
@@ -273,7 +276,6 @@ namespace Project.Games.Run
         private static void AppendDefaults(string modeId, IDictionary<string, string> dict)
         {
             ResolveFishingBaseDefaults(out FishingBaseDefaults baseDef);
-
             ResolveFishingModeDefaults(modeId, out FishingModeDefaults modeDef);
 
             dict[PBaseBiteWaitMin] = FloatToInv(baseDef.biteWaitMinSeconds);
@@ -283,24 +285,26 @@ namespace Project.Games.Run
             dict[PCatchDistanceBase] = FloatToInv(baseDef.catchDistanceBase);
             dict[PSpawnDistanceBase] = FloatToInv(baseDef.spawnDistanceBase);
             dict[PSpawnDistanceJitter] = FloatToInv(baseDef.spawnDistanceJitter);
-            dict[PDifficultySpawnBias] = FloatToInv(baseDef.difficultySpawnBias);
 
-            dict[PTensionDecayIdle] = FloatToInv(baseDef.tensionDecayIdle);
-            dict[PTensionDecayUp] = FloatToInv(baseDef.tensionDecayUp);
-            dict[PTensionReelFactor] = FloatToInv(baseDef.tensionReelFactor);
+            dict[PTensionMaxTicks] = baseDef.tensionMaxTicks.ToString(CultureInfo.InvariantCulture);
 
-            dict[PMoveChanceBase] = FloatToInv(baseDef.moveChanceBase);
-            dict[PBurstChanceBase] = FloatToInv(baseDef.burstChanceBase);
+            dict[PActionMinSeconds] = FloatToInv(baseDef.actionMinSeconds);
+            dict[PActionMaxSeconds] = FloatToInv(baseDef.actionMaxSeconds);
 
-            dict[PIdleSpeed] = FloatToInv(baseDef.idleSpeed);
-            dict[PNormalSpeed] = FloatToInv(baseDef.normalSpeed);
-            dict[PBurstSpeed] = FloatToInv(baseDef.burstSpeed);
+            dict[PMoveLateralSpeedMin] = FloatToInv(baseDef.moveLateralSpeedMin);
+            dict[PMoveLateralSpeedMax] = FloatToInv(baseDef.moveLateralSpeedMax);
 
-            dict[PFatigueGainFromSpeed] = FloatToInv(baseDef.fatigueGainFromSpeed);
-            dict[PFatigueGainFromFight] = FloatToInv(baseDef.fatigueGainFromFight);
-            dict[PFatigueRecoveryIdle] = FloatToInv(baseDef.fatigueRecoveryIdle);
-            dict[PBurstFatigueCutoff] = FloatToInv(baseDef.burstFatigueCutoff);
-            dict[PFatigueSurrenderThreshold] = FloatToInv(baseDef.fatigueSurrenderThreshold);
+            dict[PBurstForwardSpeedMin] = FloatToInv(baseDef.burstForwardSpeedMin);
+            dict[PBurstForwardSpeedMax] = FloatToInv(baseDef.burstForwardSpeedMax);
+
+            dict[PFailGraceSeconds] = FloatToInv(baseDef.failGraceSeconds);
+
+            dict[PLoosenDistancePenaltyMin] = FloatToInv(baseDef.loosenDistancePenaltyMin);
+            dict[PLoosenDistancePenaltyMax] = FloatToInv(baseDef.loosenDistancePenaltyMax);
+
+            dict[PFatigueGainOnCorrect] = FloatToInv(baseDef.fatigueGainOnCorrect);
+            dict[PFatigueLossOnWrong] = FloatToInv(baseDef.fatigueLossOnWrong);
+            dict[PFatigueLossOnLoosen] = FloatToInv(baseDef.fatigueLossOnLoosen);
 
             dict[PDifficultyScale] = FloatToInv(modeDef.difficultyScale);
             dict[PTargetFishCount] = modeDef.targetFishCount.ToString(CultureInfo.InvariantCulture);
@@ -349,27 +353,29 @@ namespace Project.Games.Run
                 biteWaitMaxSeconds = 6.0f,
                 reactionWindowBaseSeconds = 1.25f,
 
-                catchDistanceBase = 0.08f,
-                spawnDistanceBase = 0.60f,
-                spawnDistanceJitter = 0.15f,
-                difficultySpawnBias = 0.03f,
+                catchDistanceBase = 0.075f,
+                spawnDistanceBase = 0.62f,
+                spawnDistanceJitter = 0.16f,
 
-                tensionDecayIdle = 0.06f,
-                tensionDecayUp = 0.35f,
-                tensionReelFactor = 0.30f,
+                tensionMaxTicks = 4,
 
-                moveChanceBase = 0.55f,
-                burstChanceBase = 0.12f,
+                actionMinSeconds = 1.30f,
+                actionMaxSeconds = 2.60f,
 
-                idleSpeed = 0.00f,
-                normalSpeed = 0.22f,
-                burstSpeed = 0.45f,
+                moveLateralSpeedMin = 0.16f,
+                moveLateralSpeedMax = 0.34f,
 
-                fatigueGainFromSpeed = 0.10f,
-                fatigueGainFromFight = 0.18f,
-                fatigueRecoveryIdle = 0.12f,
-                burstFatigueCutoff = 0.65f,
-                fatigueSurrenderThreshold = 0.85f
+                burstForwardSpeedMin = 0.42f,
+                burstForwardSpeedMax = 0.80f,
+
+                failGraceSeconds = 0.28f,
+
+                loosenDistancePenaltyMin = 0.015f,
+                loosenDistancePenaltyMax = 0.045f,
+
+                fatigueGainOnCorrect = 0.10f,
+                fatigueLossOnWrong = 0.18f,
+                fatigueLossOnLoosen = 0.35f
             };
         }
 
@@ -385,10 +391,10 @@ namespace Project.Games.Run
                     difficultyScale = 0.50f,
                     targetFishCount = 1,
                     aggressionMin = 0.00f,
-                    aggressionMax = 0.30f,
-                    resistanceMin = 0.75f,
-                    resistanceMax = 1.00f,
-                    reactionWindowScale = 1.25f
+                    aggressionMax = 0.20f,
+                    resistanceMin = 0.70f,
+                    resistanceMax = 0.95f,
+                    reactionWindowScale = 1.30f
                 };
                 return;
             }
@@ -399,12 +405,12 @@ namespace Project.Games.Run
             {
                 d = new FishingModeDefaults
                 {
-                    difficultyScale = 0.70f,
+                    difficultyScale = 0.80f,
                     targetFishCount = 3,
                     aggressionMin = 0.10f,
-                    aggressionMax = 0.50f,
-                    resistanceMin = 0.85f,
-                    resistanceMax = 1.20f,
+                    aggressionMax = 0.55f,
+                    resistanceMin = 0.90f,
+                    resistanceMax = 1.25f,
                     reactionWindowScale = 1.10f
                 };
                 return;
@@ -416,12 +422,12 @@ namespace Project.Games.Run
             {
                 d = new FishingModeDefaults
                 {
-                    difficultyScale = 1.00f,
+                    difficultyScale = 1.10f,
                     targetFishCount = 5,
-                    aggressionMin = 0.20f,
-                    aggressionMax = 0.70f,
-                    resistanceMin = 0.95f,
-                    resistanceMax = 1.40f,
+                    aggressionMin = 0.25f,
+                    aggressionMax = 0.80f,
+                    resistanceMin = 1.05f,
+                    resistanceMax = 1.55f,
                     reactionWindowScale = 1.00f
                 };
                 return;
@@ -432,25 +438,25 @@ namespace Project.Games.Run
             {
                 d = new FishingModeDefaults
                 {
-                    difficultyScale = 1.30f,
+                    difficultyScale = 1.35f,
                     targetFishCount = 7,
-                    aggressionMin = 0.40f,
-                    aggressionMax = 0.90f,
-                    resistanceMin = 1.10f,
-                    resistanceMax = 1.70f,
-                    reactionWindowScale = 0.90f
+                    aggressionMin = 0.55f,
+                    aggressionMax = 0.98f,
+                    resistanceMin = 1.20f,
+                    resistanceMax = 1.90f,
+                    reactionWindowScale = 0.92f
                 };
                 return;
             }
 
             d = new FishingModeDefaults
             {
-                difficultyScale = 1.00f,
+                difficultyScale = 1.10f,
                 targetFishCount = 5,
-                aggressionMin = 0.20f,
-                aggressionMax = 0.70f,
-                resistanceMin = 0.95f,
-                resistanceMax = 1.40f,
+                aggressionMin = 0.25f,
+                aggressionMax = 0.80f,
+                resistanceMin = 1.05f,
+                resistanceMax = 1.55f,
                 reactionWindowScale = 1.00f
             };
         }
@@ -506,24 +512,26 @@ namespace Project.Games.Run
             public float catchDistanceBase;
             public float spawnDistanceBase;
             public float spawnDistanceJitter;
-            public float difficultySpawnBias;
 
-            public float tensionDecayIdle;
-            public float tensionDecayUp;
-            public float tensionReelFactor;
+            public int tensionMaxTicks;
 
-            public float moveChanceBase;
-            public float burstChanceBase;
+            public float actionMinSeconds;
+            public float actionMaxSeconds;
 
-            public float idleSpeed;
-            public float normalSpeed;
-            public float burstSpeed;
+            public float moveLateralSpeedMin;
+            public float moveLateralSpeedMax;
 
-            public float fatigueGainFromSpeed;
-            public float fatigueGainFromFight;
-            public float fatigueRecoveryIdle;
-            public float burstFatigueCutoff;
-            public float fatigueSurrenderThreshold;
+            public float burstForwardSpeedMin;
+            public float burstForwardSpeedMax;
+
+            public float failGraceSeconds;
+
+            public float loosenDistancePenaltyMin;
+            public float loosenDistancePenaltyMax;
+
+            public float fatigueGainOnCorrect;
+            public float fatigueLossOnWrong;
+            public float fatigueLossOnLoosen;
         }
 
         private struct FishingModeDefaults

@@ -131,7 +131,11 @@ https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-bell-ringing-true-
 
 **Reel** - AudioPapkin
 https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-fishing-reel-302355/
-`fishing_reel`
+`fishing_reel`, `fishing_loosen`
+
+**Pull** - u_vlcuq4wxwj
+https://pixabay.com/sound-effects/film-special-effects-your-plastic-bucket-is-full-of-water-142159/
+`fishing_pull`
 
 **Line break** - Universfield
 https://pixabay.com/pl/sound-effects/filmy-i-efekty-specjalne-whip-05-323597/

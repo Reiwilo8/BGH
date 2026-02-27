@@ -79,116 +79,116 @@ MonoBehaviour:
     m_Key: settings.base.spawn_distance_jitter.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397131
-    m_Key: settings.base.spawn_bias_by_difficulty
+  - m_Id: 10589539081809920
+    m_Key: settings.advanced
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397132
-    m_Key: settings.base.spawn_bias_by_difficulty.desc
+  - m_Id: 10589554453934080
+    m_Key: settings.advanced.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397133
-    m_Key: settings.base.tension_decay_idle
+  - m_Id: 10589554453934081
+    m_Key: settings.base.tension_max_ticks
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397134
-    m_Key: settings.base.tension_decay_idle.desc
+  - m_Id: 10589554453934082
+    m_Key: settings.base.tension_max_ticks.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397135
-    m_Key: settings.base.tension_decay_up
+  - m_Id: 10589554453934083
+    m_Key: settings.base.fail_grace
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397136
-    m_Key: settings.base.tension_decay_up.desc
+  - m_Id: 10589554453934084
+    m_Key: settings.base.fail_grace.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397137
-    m_Key: settings.base.tension_reel_factor
+  - m_Id: 10589554453934085
+    m_Key: settings.base.action_min_seconds
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397138
-    m_Key: settings.base.tension_reel_factor.desc
+  - m_Id: 10589554453934086
+    m_Key: settings.base.action_min_seconds.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397139
-    m_Key: settings.base.move_chance_base
+  - m_Id: 10589554453934087
+    m_Key: settings.base.action_max_seconds
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397140
-    m_Key: settings.base.move_chance_base.desc
+  - m_Id: 10589554453934088
+    m_Key: settings.base.action_max_seconds.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397141
-    m_Key: settings.base.burst_chance_base
+  - m_Id: 10589554453934089
+    m_Key: settings.base.move_speed_min
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397142
-    m_Key: settings.base.burst_chance_base.desc
+  - m_Id: 10589554453934090
+    m_Key: settings.base.move_speed_min.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397143
-    m_Key: settings.base.idle_speed
+  - m_Id: 10589554453934091
+    m_Key: settings.base.move_speed_max
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397144
-    m_Key: settings.base.idle_speed.desc
+  - m_Id: 10589554458128384
+    m_Key: settings.base.move_speed_max.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397145
-    m_Key: settings.base.normal_speed
+  - m_Id: 10589554458128385
+    m_Key: settings.base.burst_speed_min
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397146
-    m_Key: settings.base.normal_speed.desc
+  - m_Id: 10589554458128386
+    m_Key: settings.base.burst_speed_min.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397147
-    m_Key: settings.base.burst_speed
+  - m_Id: 10589554458128387
+    m_Key: settings.base.burst_speed_max
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397148
-    m_Key: settings.base.burst_speed.desc
+  - m_Id: 10589554458128388
+    m_Key: settings.base.burst_speed_max.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397149
-    m_Key: settings.base.fatigue_gain_speed
+  - m_Id: 10589554458128389
+    m_Key: settings.base.loosen_penalty_min
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397150
-    m_Key: settings.base.fatigue_gain_speed.desc
+  - m_Id: 10589554458128390
+    m_Key: settings.base.loosen_penalty_min.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397151
-    m_Key: settings.base.fatigue_gain_fight
+  - m_Id: 10589554458128391
+    m_Key: settings.base.loosen_penalty_max
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397152
-    m_Key: settings.base.fatigue_gain_fight.desc
+  - m_Id: 10589554458128392
+    m_Key: settings.base.loosen_penalty_max.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397153
-    m_Key: settings.base.fatigue_recovery_idle
+  - m_Id: 10589554458128393
+    m_Key: settings.base.fatigue_gain_correct
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397154
-    m_Key: settings.base.fatigue_recovery_idle.desc
+  - m_Id: 10589554458128394
+    m_Key: settings.base.fatigue_gain_correct.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397155
-    m_Key: settings.base.burst_fatigue_cutoff
+  - m_Id: 10589554458128395
+    m_Key: settings.base.fatigue_loss_wrong
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029163397156
-    m_Key: settings.base.burst_fatigue_cutoff.desc
+  - m_Id: 10589554458128396
+    m_Key: settings.base.fatigue_loss_wrong.desc
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029167591424
-    m_Key: settings.base.fatigue_surrender_threshold
+  - m_Id: 10589554458128397
+    m_Key: settings.base.fatigue_loss_loosen
     m_Metadata:
       m_Items: []
-  - m_Id: 9717029167591425
-    m_Key: settings.base.fatigue_surrender_threshold.desc
+  - m_Id: 10589554458128398
+    m_Key: settings.base.fatigue_loss_loosen.desc
     m_Metadata:
       m_Items: []
   - m_Id: 9717029167591426
@@ -205,14 +205,6 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 9711634722222095
     m_Key: settings.mode.target_fish_count.desc
-    m_Metadata:
-      m_Items: []
-  - m_Id: 9711634722222096
-    m_Key: settings.mode.reaction_window_scale
-    m_Metadata:
-      m_Items: []
-  - m_Id: 9711634722222097
-    m_Key: settings.mode.reaction_window_scale.desc
     m_Metadata:
       m_Items: []
   - m_Id: 9711634722222098
@@ -245,6 +237,14 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 9711634722222105
     m_Key: settings.mode.resistance_max.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222096
+    m_Key: settings.mode.reaction_window_scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222097
+    m_Key: settings.mode.reaction_window_scale.desc
     m_Metadata:
       m_Items: []
   - m_Id: 9711634722222106

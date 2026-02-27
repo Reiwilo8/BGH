@@ -1,6 +1,7 @@
 using Project.Core.Activity;
 using Project.Core.App;
 using Project.Core.Input;
+using Project.Core.Input.Motion;
 using Project.Core.VisualAssist;
 using UnityEngine;
 
@@ -34,6 +35,7 @@ namespace Project.Games.Gameplay
             {
                 _input.OnNavAction += HandleNavAction;
                 _input.OnNavDirection4 += HandleNavDirection4;
+                _input.OnMotionAction += HandleMotionAction;
             }
 
             if (_repeat != null)
@@ -46,6 +48,7 @@ namespace Project.Games.Gameplay
             {
                 _input.OnNavAction -= HandleNavAction;
                 _input.OnNavDirection4 -= HandleNavDirection4;
+                _input.OnMotionAction -= HandleMotionAction;
             }
 
             if (_repeat != null)
@@ -68,6 +71,13 @@ namespace Project.Games.Gameplay
             if (_focus.Current != InputScope.Gameplay) return;
 
             controller?.Handle(dir);
+        }
+
+        private void HandleMotionAction(MotionAction action)
+        {
+            if (_focus.Current != InputScope.Gameplay) return;
+
+            controller?.Handle(action);
         }
 
         private void HandleRepeat()

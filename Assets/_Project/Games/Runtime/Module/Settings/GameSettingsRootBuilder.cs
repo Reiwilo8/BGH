@@ -40,24 +40,26 @@ namespace Project.Games.Module.Settings
         private const string KeyFishingCatchDistanceBase = FishingBasePrefix + "catchDistanceBase";
         private const string KeyFishingSpawnDistanceBase = FishingBasePrefix + "spawnDistanceBase";
         private const string KeyFishingSpawnDistanceJitter = FishingBasePrefix + "spawnDistanceJitter";
-        private const string KeyFishingDifficultySpawnBias = FishingBasePrefix + "difficultySpawnBias";
 
-        private const string KeyFishingTensionDecayIdle = FishingBasePrefix + "tensionDecayIdle";
-        private const string KeyFishingTensionDecayUp = FishingBasePrefix + "tensionDecayUp";
-        private const string KeyFishingTensionReelFactor = FishingBasePrefix + "tensionReelFactor";
+        private const string KeyFishingTensionMaxTicks = FishingBasePrefix + "tensionMaxTicks";
 
-        private const string KeyFishingMoveChanceBase = FishingBasePrefix + "moveChanceBase";
-        private const string KeyFishingBurstChanceBase = FishingBasePrefix + "burstChanceBase";
+        private const string KeyFishingActionMinSeconds = FishingBasePrefix + "actionMinSeconds";
+        private const string KeyFishingActionMaxSeconds = FishingBasePrefix + "actionMaxSeconds";
 
-        private const string KeyFishingIdleSpeed = FishingBasePrefix + "idleSpeed";
-        private const string KeyFishingNormalSpeed = FishingBasePrefix + "normalSpeed";
-        private const string KeyFishingBurstSpeed = FishingBasePrefix + "burstSpeed";
+        private const string KeyFishingMoveLateralSpeedMin = FishingBasePrefix + "moveLateralSpeedMin";
+        private const string KeyFishingMoveLateralSpeedMax = FishingBasePrefix + "moveLateralSpeedMax";
 
-        private const string KeyFishingFatigueGainFromSpeed = FishingBasePrefix + "fatigueGainFromSpeed";
-        private const string KeyFishingFatigueGainFromFight = FishingBasePrefix + "fatigueGainFromFight";
-        private const string KeyFishingFatigueRecoveryIdle = FishingBasePrefix + "fatigueRecoveryIdle";
-        private const string KeyFishingBurstFatigueCutoff = FishingBasePrefix + "burstFatigueCutoff";
-        private const string KeyFishingFatigueSurrenderThreshold = FishingBasePrefix + "fatigueSurrenderThreshold";
+        private const string KeyFishingBurstForwardSpeedMin = FishingBasePrefix + "burstForwardSpeedMin";
+        private const string KeyFishingBurstForwardSpeedMax = FishingBasePrefix + "burstForwardSpeedMax";
+
+        private const string KeyFishingFailGraceSeconds = FishingBasePrefix + "failGraceSeconds";
+
+        private const string KeyFishingLoosenDistancePenaltyMin = FishingBasePrefix + "loosenDistancePenaltyMin";
+        private const string KeyFishingLoosenDistancePenaltyMax = FishingBasePrefix + "loosenDistancePenaltyMax";
+
+        private const string KeyFishingFatigueGainOnCorrect = FishingBasePrefix + "fatigueGainOnCorrect";
+        private const string KeyFishingFatigueLossOnWrong = FishingBasePrefix + "fatigueLossOnWrong";
+        private const string KeyFishingFatigueLossOnLoosen = FishingBasePrefix + "fatigueLossOnLoosen";
 
         private const string FishingPerModeMid = ".fishing.";
         private const string KeyFishingModeDifficultyScaleSuffix = "difficultyScale";
@@ -317,174 +319,208 @@ namespace Project.Games.Module.Settings
             const float defBiteWaitMax = 6.0f;
             const float defReactionBase = 1.25f;
 
-            const float defCatchDistanceBase = 0.08f;
-            const float defSpawnDistanceBase = 0.60f;
-            const float defSpawnJitter = 0.15f;
-            const float defDifficultySpawnBias = 0.03f;
+            const float defCatchDistanceBase = 0.075f;
+            const float defSpawnDistanceBase = 0.62f;
+            const float defSpawnJitter = 0.16f;
 
-            const float defTensionDecayIdle = 0.06f;
-            const float defTensionDecayUp = 0.35f;
-            const float defTensionReelFactor = 0.30f;
+            const int defTensionMaxTicks = 4;
 
-            const float defMoveChanceBase = 0.55f;
-            const float defBurstChanceBase = 0.12f;
+            const float defActionMinSeconds = 1.30f;
+            const float defActionMaxSeconds = 2.60f;
 
-            const float defIdleSpeed = 0.00f;
-            const float defNormalSpeed = 0.22f;
-            const float defBurstSpeed = 0.45f;
+            const float defMoveSpeedMin = 0.16f;
+            const float defMoveSpeedMax = 0.34f;
 
-            const float defFatigueGainSpeed = 0.10f;
-            const float defFatigueGainFight = 0.18f;
-            const float defFatigueRecoveryIdle = 0.12f;
-            const float defBurstFatigueCutoff = 0.65f;
-            const float defFatigueSurrender = 0.85f;
+            const float defBurstSpeedMin = 0.42f;
+            const float defBurstSpeedMax = 0.80f;
+
+            const float defFailGraceSeconds = 0.28f;
+
+            const float defLoosenPenaltyMin = 0.015f;
+            const float defLoosenPenaltyMax = 0.045f;
+
+            const float defFatigueGainOnCorrect = 0.10f;
+            const float defFatigueLossOnWrong = 0.18f;
+            const float defFatigueLossOnLoosen = 0.35f;
+
+            float GetBiteMin() => GetCustomFloat(KeyFishingBiteWaitMin, defBiteWaitMin, min: 1.0f, max: 5.0f);
+            float GetBiteMax() => GetCustomFloat(KeyFishingBiteWaitMax, defBiteWaitMax, min: 2.0f, max: 8.0f);
+
+            float GetActionMin() => GetCustomFloat(KeyFishingActionMinSeconds, defActionMinSeconds, min: 0.75f, max: 2.00f);
+            float GetActionMax() => GetCustomFloat(KeyFishingActionMaxSeconds, defActionMaxSeconds, min: 1.50f, max: 3.25f);
+
+            float GetMoveMin() => GetCustomFloat(KeyFishingMoveLateralSpeedMin, defMoveSpeedMin, min: 0.10f, max: 0.40f);
+            float GetMoveMax() => GetCustomFloat(KeyFishingMoveLateralSpeedMax, defMoveSpeedMax, min: 0.20f, max: 0.60f);
+
+            float GetBurstMin() => GetCustomFloat(KeyFishingBurstForwardSpeedMin, defBurstSpeedMin, min: 0.20f, max: 0.90f);
+            float GetBurstMax() => GetCustomFloat(KeyFishingBurstForwardSpeedMax, defBurstSpeedMax, min: 0.40f, max: 1.20f);
+
+            float GetLoosenMin() => GetCustomFloat(KeyFishingLoosenDistancePenaltyMin, defLoosenPenaltyMin, min: 0.00f, max: 0.08f);
+            float GetLoosenMax() => GetCustomFloat(KeyFishingLoosenDistancePenaltyMax, defLoosenPenaltyMax, min: 0.00f, max: 0.08f);
 
             return new SettingsFolder(
                 labelKey: "settings.base",
                 descriptionKey: "settings.base.desc",
-                buildChildren: () => new List<SettingsItem>
+                buildChildren: () =>
                 {
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.bite_wait_min",
-                        descriptionKey: "settings.base.bite_wait_min.desc",
-                        customKey: KeyFishingBiteWaitMin,
-                        min: 0.5f, max: 15.0f, step: 0.1f,
-                        defaultValue: defBiteWaitMin),
+                    var items = new List<SettingsItem>
+                    {
+                        BuildFloatRangeSetting(
+                            labelKey: "settings.base.bite_wait_min",
+                            descriptionKey: "settings.base.bite_wait_min.desc",
+                            customKey: KeyFishingBiteWaitMin,
+                            min: 1.0f, max: 5.0f, step: 0.5f,
+                            defaultValue: defBiteWaitMin),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.bite_wait_max",
-                        descriptionKey: "settings.base.bite_wait_max.desc",
-                        customKey: KeyFishingBiteWaitMax,
-                        min: 0.5f, max: 20.0f, step: 0.1f,
-                        defaultValue: defBiteWaitMax),
+                        BuildFloatRangeSettingDynamic(
+                            labelKey: "settings.base.bite_wait_max",
+                            descriptionKey: "settings.base.bite_wait_max.desc",
+                            customKey: KeyFishingBiteWaitMax,
+                            minProvider: () => Mathf.Clamp(GetBiteMin(), 1.0f, 5.0f),
+                            maxProvider: () => 8.0f,
+                            step: 0.5f,
+                            defaultValue: defBiteWaitMax),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.reaction_window_base",
-                        descriptionKey: "settings.base.reaction_window_base.desc",
-                        customKey: KeyFishingReactionWindowBase,
-                        min: 0.2f, max: 5.0f, step: 0.05f,
-                        defaultValue: defReactionBase),
+                        BuildFloatRangeSetting(
+                            labelKey: "settings.base.reaction_window_base",
+                            descriptionKey: "settings.base.reaction_window_base.desc",
+                            customKey: KeyFishingReactionWindowBase,
+                            min: 0.75f, max: 1.75f, step: 0.05f,
+                            defaultValue: defReactionBase),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.catch_distance_base",
-                        descriptionKey: "settings.base.catch_distance_base.desc",
-                        customKey: KeyFishingCatchDistanceBase,
-                        min: 0.01f, max: 0.50f, step: 0.01f,
-                        defaultValue: defCatchDistanceBase),
+                        BuildFloatRangeSetting(
+                            labelKey: "settings.base.catch_distance_base",
+                            descriptionKey: "settings.base.catch_distance_base.desc",
+                            customKey: KeyFishingCatchDistanceBase,
+                            min: 0.05f, max: 0.10f, step: 0.005f,
+                            defaultValue: defCatchDistanceBase),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.spawn_distance_base",
-                        descriptionKey: "settings.base.spawn_distance_base.desc",
-                        customKey: KeyFishingSpawnDistanceBase,
-                        min: 0.05f, max: 0.95f, step: 0.01f,
-                        defaultValue: defSpawnDistanceBase),
+                        BuildFloatRangeSetting(
+                            labelKey: "settings.base.spawn_distance_base",
+                            descriptionKey: "settings.base.spawn_distance_base.desc",
+                            customKey: KeyFishingSpawnDistanceBase,
+                            min: 0.56f, max: 0.68f, step: 0.01f,
+                            defaultValue: defSpawnDistanceBase),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.spawn_distance_jitter",
-                        descriptionKey: "settings.base.spawn_distance_jitter.desc",
-                        customKey: KeyFishingSpawnDistanceJitter,
-                        min: 0.00f, max: 0.40f, step: 0.01f,
-                        defaultValue: defSpawnJitter),
+                        BuildFloatRangeSetting(
+                            labelKey: "settings.base.spawn_distance_jitter",
+                            descriptionKey: "settings.base.spawn_distance_jitter.desc",
+                            customKey: KeyFishingSpawnDistanceJitter,
+                            min: 0.10f, max: 0.22f, step: 0.01f,
+                            defaultValue: defSpawnJitter),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.spawn_bias_by_difficulty",
-                        descriptionKey: "settings.base.spawn_bias_by_difficulty.desc",
-                        customKey: KeyFishingDifficultySpawnBias,
-                        min: 0.00f, max: 0.20f, step: 0.01f,
-                        defaultValue: defDifficultySpawnBias),
+                        new SettingsFolder(
+                            labelKey: "settings.advanced",
+                            descriptionKey: "settings.advanced.desc",
+                            buildChildren: () => new List<SettingsItem>
+                            {
+                                BuildIntRangeSetting(
+                                    labelKey: "settings.base.tension_max_ticks",
+                                    descriptionKey: "settings.base.tension_max_ticks.desc",
+                                    customKey: KeyFishingTensionMaxTicks,
+                                    min: 3, max: 5, step: 1,
+                                    defaultValue: defTensionMaxTicks),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.tension_decay_idle",
-                        descriptionKey: "settings.base.tension_decay_idle.desc",
-                        customKey: KeyFishingTensionDecayIdle,
-                        min: 0.00f, max: 1.00f, step: 0.01f,
-                        defaultValue: defTensionDecayIdle),
+                                BuildFloatRangeSetting(
+                                    labelKey: "settings.base.fail_grace",
+                                    descriptionKey: "settings.base.fail_grace.desc",
+                                    customKey: KeyFishingFailGraceSeconds,
+                                    min: 0.12f, max: 0.40f, step: 0.02f,
+                                    defaultValue: defFailGraceSeconds),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.tension_decay_up",
-                        descriptionKey: "settings.base.tension_decay_up.desc",
-                        customKey: KeyFishingTensionDecayUp,
-                        min: 0.00f, max: 2.00f, step: 0.01f,
-                        defaultValue: defTensionDecayUp),
+                                BuildFloatRangeSetting(
+                                    labelKey: "settings.base.action_min_seconds",
+                                    descriptionKey: "settings.base.action_min_seconds.desc",
+                                    customKey: KeyFishingActionMinSeconds,
+                                    min: 0.75f, max: 2.00f, step: 0.05f,
+                                    defaultValue: defActionMinSeconds),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.tension_reel_factor",
-                        descriptionKey: "settings.base.tension_reel_factor.desc",
-                        customKey: KeyFishingTensionReelFactor,
-                        min: 0.00f, max: 2.00f, step: 0.01f,
-                        defaultValue: defTensionReelFactor),
+                                BuildFloatRangeSettingDynamic(
+                                    labelKey: "settings.base.action_max_seconds",
+                                    descriptionKey: "settings.base.action_max_seconds.desc",
+                                    customKey: KeyFishingActionMaxSeconds,
+                                    minProvider: () => Mathf.Clamp(GetActionMin(), 0.75f, 2.00f),
+                                    maxProvider: () => 3.25f,
+                                    step: 0.05f,
+                                    defaultValue: defActionMaxSeconds),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.move_chance_base",
-                        descriptionKey: "settings.base.move_chance_base.desc",
-                        customKey: KeyFishingMoveChanceBase,
-                        min: 0.00f, max: 1.00f, step: 0.01f,
-                        defaultValue: defMoveChanceBase),
+                                BuildFloatRangeSetting(
+                                    labelKey: "settings.base.move_speed_min",
+                                    descriptionKey: "settings.base.move_speed_min.desc",
+                                    customKey: KeyFishingMoveLateralSpeedMin,
+                                    min: 0.10f, max: 0.40f, step: 0.02f,
+                                    defaultValue: defMoveSpeedMin),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.burst_chance_base",
-                        descriptionKey: "settings.base.burst_chance_base.desc",
-                        customKey: KeyFishingBurstChanceBase,
-                        min: 0.00f, max: 1.00f, step: 0.01f,
-                        defaultValue: defBurstChanceBase),
+                                BuildFloatRangeSettingDynamic(
+                                    labelKey: "settings.base.move_speed_max",
+                                    descriptionKey: "settings.base.move_speed_max.desc",
+                                    customKey: KeyFishingMoveLateralSpeedMax,
+                                    minProvider: () => Mathf.Clamp(GetMoveMin(), 0.10f, 0.40f),
+                                    maxProvider: () => 0.60f,
+                                    step: 0.02f,
+                                    defaultValue: defMoveSpeedMax),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.idle_speed",
-                        descriptionKey: "settings.base.idle_speed.desc",
-                        customKey: KeyFishingIdleSpeed,
-                        min: 0.00f, max: 1.50f, step: 0.01f,
-                        defaultValue: defIdleSpeed),
+                                BuildFloatRangeSetting(
+                                    labelKey: "settings.base.burst_speed_min",
+                                    descriptionKey: "settings.base.burst_speed_min.desc",
+                                    customKey: KeyFishingBurstForwardSpeedMin,
+                                    min: 0.20f, max: 0.90f, step: 0.02f,
+                                    defaultValue: defBurstSpeedMin),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.normal_speed",
-                        descriptionKey: "settings.base.normal_speed.desc",
-                        customKey: KeyFishingNormalSpeed,
-                        min: 0.00f, max: 2.00f, step: 0.01f,
-                        defaultValue: defNormalSpeed),
+                                BuildFloatRangeSettingDynamic(
+                                    labelKey: "settings.base.burst_speed_max",
+                                    descriptionKey: "settings.base.burst_speed_max.desc",
+                                    customKey: KeyFishingBurstForwardSpeedMax,
+                                    minProvider: () => Mathf.Clamp(GetBurstMin(), 0.20f, 0.90f),
+                                    maxProvider: () => 1.20f,
+                                    step: 0.02f,
+                                    defaultValue: defBurstSpeedMax),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.burst_speed",
-                        descriptionKey: "settings.base.burst_speed.desc",
-                        customKey: KeyFishingBurstSpeed,
-                        min: 0.00f, max: 3.00f, step: 0.01f,
-                        defaultValue: defBurstSpeed),
+                                BuildFloatRangeSetting(
+                                    labelKey: "settings.base.loosen_penalty_min",
+                                    descriptionKey: "settings.base.loosen_penalty_min.desc",
+                                    customKey: KeyFishingLoosenDistancePenaltyMin,
+                                    min: 0.00f, max: 0.08f, step: 0.005f,
+                                    defaultValue: defLoosenPenaltyMin),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.fatigue_gain_speed",
-                        descriptionKey: "settings.base.fatigue_gain_speed.desc",
-                        customKey: KeyFishingFatigueGainFromSpeed,
-                        min: 0.00f, max: 2.00f, step: 0.01f,
-                        defaultValue: defFatigueGainSpeed),
+                                BuildFloatRangeSettingDynamic(
+                                    labelKey: "settings.base.loosen_penalty_max",
+                                    descriptionKey: "settings.base.loosen_penalty_max.desc",
+                                    customKey: KeyFishingLoosenDistancePenaltyMax,
+                                    minProvider: () => Mathf.Clamp(GetLoosenMin(), 0.00f, 0.08f),
+                                    maxProvider: () => 0.08f,
+                                    step: 0.005f,
+                                    defaultValue: defLoosenPenaltyMax),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.fatigue_gain_fight",
-                        descriptionKey: "settings.base.fatigue_gain_fight.desc",
-                        customKey: KeyFishingFatigueGainFromFight,
-                        min: 0.00f, max: 2.00f, step: 0.01f,
-                        defaultValue: defFatigueGainFight),
+                                BuildFloatRangeSetting(
+                                    labelKey: "settings.base.fatigue_gain_correct",
+                                    descriptionKey: "settings.base.fatigue_gain_correct.desc",
+                                    customKey: KeyFishingFatigueGainOnCorrect,
+                                    min: 0.00f, max: 0.30f, step: 0.01f,
+                                    defaultValue: defFatigueGainOnCorrect),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.fatigue_recovery_idle",
-                        descriptionKey: "settings.base.fatigue_recovery_idle.desc",
-                        customKey: KeyFishingFatigueRecoveryIdle,
-                        min: 0.00f, max: 2.00f, step: 0.01f,
-                        defaultValue: defFatigueRecoveryIdle),
+                                BuildFloatRangeSetting(
+                                    labelKey: "settings.base.fatigue_loss_wrong",
+                                    descriptionKey: "settings.base.fatigue_loss_wrong.desc",
+                                    customKey: KeyFishingFatigueLossOnWrong,
+                                    min: 0.00f, max: 0.40f, step: 0.01f,
+                                    defaultValue: defFatigueLossOnWrong),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.burst_fatigue_cutoff",
-                        descriptionKey: "settings.base.burst_fatigue_cutoff.desc",
-                        customKey: KeyFishingBurstFatigueCutoff,
-                        min: 0.00f, max: 1.00f, step: 0.01f,
-                        defaultValue: defBurstFatigueCutoff),
+                                BuildFloatRangeSetting(
+                                    labelKey: "settings.base.fatigue_loss_loosen",
+                                    descriptionKey: "settings.base.fatigue_loss_loosen.desc",
+                                    customKey: KeyFishingFatigueLossOnLoosen,
+                                    min: 0.00f, max: 0.60f, step: 0.01f,
+                                    defaultValue: defFatigueLossOnLoosen),
 
-                    BuildFloatRangeSetting(
-                        labelKey: "settings.base.fatigue_surrender_threshold",
-                        descriptionKey: "settings.base.fatigue_surrender_threshold.desc",
-                        customKey: KeyFishingFatigueSurrenderThreshold,
-                        min: 0.00f, max: 1.00f, step: 0.01f,
-                        defaultValue: defFatigueSurrender),
+                                new SettingsAction("common.back", execute: () => { })
+                            }
+                        ),
 
-                    new SettingsAction("common.back", execute: () => { })
+                        new SettingsAction("common.back", execute: () => { })
+                    };
+
+                    return items;
                 }
             );
         }
@@ -713,6 +749,9 @@ namespace Project.Games.Module.Settings
             string keyResMax = BuildFishingPerModeKey(modeId, KeyFishingModeResistanceMaxSuffix);
             string keyReactionScale = BuildFishingPerModeKey(modeId, KeyFishingModeReactionWindowScaleSuffix);
 
+            float GetAggMin() => GetCustomFloat(keyAggMin, defAggMin, min: 0.0f, max: 1.0f);
+            float GetResMin() => GetCustomFloat(keyResMin, defResMin, min: 0.70f, max: 2.00f);
+
             return new SettingsFolder(
                 labelKey: $"mode.{modeId}",
                 descriptionKey: null,
@@ -722,7 +761,7 @@ namespace Project.Games.Module.Settings
                         labelKey: "settings.mode.difficulty_scale",
                         descriptionKey: "settings.mode.difficulty_scale.desc",
                         customKey: keyDifficulty,
-                        min: 0.30f, max: 2.50f, step: 0.05f,
+                        min: 0.50f, max: 1.35f, step: 0.05f,
                         defaultValue: defDifficultyScale),
 
                     BuildIntRangeSetting(
@@ -736,7 +775,7 @@ namespace Project.Games.Module.Settings
                         labelKey: "settings.mode.reaction_window_scale",
                         descriptionKey: "settings.mode.reaction_window_scale.desc",
                         customKey: keyReactionScale,
-                        min: 0.50f, max: 2.00f, step: 0.05f,
+                        min: 0.80f, max: 1.40f, step: 0.02f,
                         defaultValue: defReactionScale),
 
                     BuildFloatRangeSetting(
@@ -746,25 +785,29 @@ namespace Project.Games.Module.Settings
                         min: 0.00f, max: 1.00f, step: 0.05f,
                         defaultValue: defAggMin),
 
-                    BuildFloatRangeSetting(
+                    BuildFloatRangeSettingDynamic(
                         labelKey: "settings.mode.aggression_max",
                         descriptionKey: "settings.mode.aggression_max.desc",
                         customKey: keyAggMax,
-                        min: 0.00f, max: 1.00f, step: 0.05f,
+                        minProvider: () => Mathf.Clamp(GetAggMin(), 0.00f, 1.00f),
+                        maxProvider: () => 1.00f,
+                        step: 0.05f,
                         defaultValue: defAggMax),
 
                     BuildFloatRangeSetting(
                         labelKey: "settings.mode.resistance_min",
                         descriptionKey: "settings.mode.resistance_min.desc",
                         customKey: keyResMin,
-                        min: 0.30f, max: 3.00f, step: 0.05f,
+                        min: 0.70f, max: 2.00f, step: 0.05f,
                         defaultValue: defResMin),
 
-                    BuildFloatRangeSetting(
+                    BuildFloatRangeSettingDynamic(
                         labelKey: "settings.mode.resistance_max",
                         descriptionKey: "settings.mode.resistance_max.desc",
                         customKey: keyResMax,
-                        min: 0.30f, max: 3.00f, step: 0.05f,
+                        minProvider: () => Mathf.Clamp(GetResMin(), 0.70f, 2.00f),
+                        maxProvider: () => 2.00f,
+                        step: 0.05f,
                         defaultValue: defResMax),
 
                     new SettingsAction("common.back", execute: () => { })
@@ -795,10 +838,10 @@ namespace Project.Games.Module.Settings
                 difficultyScale = 0.50f;
                 targetFishCount = 1;
                 aggressionMin = 0.00f;
-                aggressionMax = 0.30f;
-                resistanceMin = 0.75f;
-                resistanceMax = 1.00f;
-                reactionWindowScale = 1.25f;
+                aggressionMax = 0.20f;
+                resistanceMin = 0.70f;
+                resistanceMax = 0.95f;
+                reactionWindowScale = 1.30f;
                 return;
             }
 
@@ -806,12 +849,12 @@ namespace Project.Games.Module.Settings
                 || string.Equals(id, "latwy", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(id, "³atwy", StringComparison.OrdinalIgnoreCase))
             {
-                difficultyScale = 0.70f;
+                difficultyScale = 0.80f;
                 targetFishCount = 3;
                 aggressionMin = 0.10f;
-                aggressionMax = 0.50f;
-                resistanceMin = 0.85f;
-                resistanceMax = 1.20f;
+                aggressionMax = 0.55f;
+                resistanceMin = 0.90f;
+                resistanceMax = 1.25f;
                 reactionWindowScale = 1.10f;
                 return;
             }
@@ -820,12 +863,12 @@ namespace Project.Games.Module.Settings
                 || string.Equals(id, "sredni", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(id, "œredni", StringComparison.OrdinalIgnoreCase))
             {
-                difficultyScale = 1.00f;
+                difficultyScale = 1.10f;
                 targetFishCount = 5;
-                aggressionMin = 0.20f;
-                aggressionMax = 0.70f;
-                resistanceMin = 0.95f;
-                resistanceMax = 1.40f;
+                aggressionMin = 0.25f;
+                aggressionMax = 0.80f;
+                resistanceMin = 1.05f;
+                resistanceMax = 1.55f;
                 reactionWindowScale = 1.00f;
                 return;
             }
@@ -833,22 +876,22 @@ namespace Project.Games.Module.Settings
             if (string.Equals(id, "hard", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(id, "trudny", StringComparison.OrdinalIgnoreCase))
             {
-                difficultyScale = 1.30f;
+                difficultyScale = 1.35f;
                 targetFishCount = 7;
-                aggressionMin = 0.40f;
-                aggressionMax = 0.90f;
-                resistanceMin = 1.10f;
-                resistanceMax = 1.70f;
-                reactionWindowScale = 0.90f;
+                aggressionMin = 0.55f;
+                aggressionMax = 0.98f;
+                resistanceMin = 1.20f;
+                resistanceMax = 1.90f;
+                reactionWindowScale = 0.92f;
                 return;
             }
 
-            difficultyScale = 1.00f;
+            difficultyScale = 1.10f;
             targetFishCount = 5;
-            aggressionMin = 0.20f;
-            aggressionMax = 0.70f;
-            resistanceMin = 0.95f;
-            resistanceMax = 1.40f;
+            aggressionMin = 0.25f;
+            aggressionMax = 0.80f;
+            resistanceMin = 1.05f;
+            resistanceMax = 1.55f;
             reactionWindowScale = 1.00f;
         }
 
@@ -1300,10 +1343,87 @@ namespace Project.Games.Module.Settings
             );
         }
 
+        private SettingsRange BuildFloatRangeSettingDynamic(
+            string labelKey,
+            string descriptionKey,
+            string customKey,
+            Func<float> minProvider,
+            Func<float> maxProvider,
+            float step,
+            float defaultValue)
+        {
+            if (minProvider == null) minProvider = () => 0f;
+            if (maxProvider == null) maxProvider = () => 1f;
+            if (step <= 0f) step = 0.01f;
+
+            return new SettingsRange(
+                labelKey: labelKey,
+                descriptionKey: descriptionKey,
+                minProvider: minProvider,
+                maxProvider: maxProvider,
+                step: step,
+                getValue: () =>
+                {
+                    float min = minProvider();
+                    float max = maxProvider();
+                    if (max < min) (min, max) = (max, min);
+
+                    string s = GetCustomString(customKey, defaultValue.ToString("0.###", CultureInfo.InvariantCulture));
+
+                    float v = defaultValue;
+                    try
+                    {
+                        if (!float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out v))
+                            v = defaultValue;
+                    }
+                    catch { v = defaultValue; }
+
+                    if (float.IsNaN(v) || float.IsInfinity(v))
+                        v = defaultValue;
+
+                    v = Mathf.Clamp(v, min, max);
+                    return v;
+                },
+                setValue: v =>
+                {
+                    float min = minProvider();
+                    float max = maxProvider();
+                    if (max < min) (min, max) = (max, min);
+
+                    float fv = v;
+                    if (float.IsNaN(fv) || float.IsInfinity(fv))
+                        fv = defaultValue;
+
+                    fv = Mathf.Clamp(fv, min, max);
+
+                    SetCustomString(customKey, fv.ToString("0.###", CultureInfo.InvariantCulture));
+                }
+            );
+        }
+
         private static int SafeParseDefaultInt(string s, int fallback)
         {
             if (int.TryParse(s, out int v)) return v;
             return fallback;
+        }
+
+        private float GetCustomFloat(string key, float defaultValue, float min, float max)
+        {
+            string s = GetCustomString(key, defaultValue.ToString("0.###", CultureInfo.InvariantCulture));
+            float v = defaultValue;
+
+            try
+            {
+                if (!float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out v))
+                    v = defaultValue;
+            }
+            catch { v = defaultValue; }
+
+            if (float.IsNaN(v) || float.IsInfinity(v))
+                v = defaultValue;
+
+            v = Mathf.Clamp(v, min, max);
+            return v;
         }
 
         private string GetCustomString(string key, string defaultValue)

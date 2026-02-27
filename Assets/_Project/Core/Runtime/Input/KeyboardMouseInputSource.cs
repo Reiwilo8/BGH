@@ -28,9 +28,19 @@ namespace Project.Core.Input
         private InputAction _left;
         private InputAction _right;
 
+        private InputAction _motionShake;
+        private InputAction _motionUp;
+        private InputAction _motionDown;
+        private InputAction _motionTilt;
+
         private float _nextScrollAllowedTime;
         private const float ScrollCooldownSeconds = 0.08f;
         private const float ScrollThreshold = 0.10f;
+
+        private float _tiltValue;
+        private float _nextTiltAllowedTime;
+        private const float TiltCooldownSeconds = 0.05f;
+        private const float TiltDeadzone = 0.10f;
 
         private void Awake()
         {
@@ -42,6 +52,7 @@ namespace Project.Core.Input
             }
 
             _input = AppContext.Services.Resolve<IInputService>();
+            _repeat = AppContext.Services.Resolve<IRepeatService>();
 
             _nav = actionsAsset.FindActionMap("Navigation", throwIfNotFound: true);
 
@@ -51,8 +62,6 @@ namespace Project.Core.Input
             _back = _nav.FindAction("Back", true);
             _toggle = _nav.FindAction("ToggleVisualAssist", true);
 
-            _repeat = AppContext.Services.Resolve<IRepeatService>();
-
             _repeatAction = _nav.FindAction("Repeat", true);
             _scroll = _nav.FindAction("Scroll", true);
 
@@ -60,6 +69,11 @@ namespace Project.Core.Input
             _down = _nav.FindAction("Down", throwIfNotFound: false);
             _left = _nav.FindAction("Left", throwIfNotFound: false);
             _right = _nav.FindAction("Right", throwIfNotFound: false);
+
+            _motionShake = _nav.FindAction("MotionShake", throwIfNotFound: false);
+            _motionUp = _nav.FindAction("MotionUp", throwIfNotFound: false);
+            _motionDown = _nav.FindAction("MotionDown", throwIfNotFound: false);
+            _motionTilt = _nav.FindAction("MotionTilt", throwIfNotFound: false);
         }
 
         private void OnEnable()
@@ -79,6 +93,16 @@ namespace Project.Core.Input
             if (_down != null) _down.performed += OnDown;
             if (_left != null) _left.performed += OnLeft;
             if (_right != null) _right.performed += OnRight;
+
+            if (_motionShake != null) _motionShake.performed += OnMotionShake;
+            if (_motionUp != null) _motionUp.performed += OnMotionUp;
+            if (_motionDown != null) _motionDown.performed += OnMotionDown;
+
+            if (_motionTilt != null)
+            {
+                _motionTilt.performed += OnMotionTilt;
+                _motionTilt.canceled += OnMotionTilt;
+            }
         }
 
         private void OnDisable()
@@ -97,12 +121,45 @@ namespace Project.Core.Input
             if (_left != null) _left.performed -= OnLeft;
             if (_right != null) _right.performed -= OnRight;
 
+            if (_motionShake != null) _motionShake.performed -= OnMotionShake;
+            if (_motionUp != null) _motionUp.performed -= OnMotionUp;
+            if (_motionDown != null) _motionDown.performed -= OnMotionDown;
+
+            if (_motionTilt != null)
+            {
+                _motionTilt.performed -= OnMotionTilt;
+                _motionTilt.canceled -= OnMotionTilt;
+            }
+
             _nav?.Disable();
+        }
+
+        private void Update()
+        {
+            if (_motionTilt == null) return;
+
+            if (Mathf.Abs(_tiltValue) < TiltDeadzone) return;
+
+            var now = Time.unscaledTime;
+            if (now < _nextTiltAllowedTime) return;
+
+            if (_tiltValue < 0f) _input.EmitMotion(MotionAction.TiltLeft);
+            else _input.EmitMotion(MotionAction.TiltRight);
+
+            _nextTiltAllowedTime = now + TiltCooldownSeconds;
         }
 
         private void OnNext(InputAction.CallbackContext ctx) => _input.Emit(NavAction.Next);
         private void OnPrev(InputAction.CallbackContext ctx) => _input.Emit(NavAction.Previous);
-        private void OnConfirm(InputAction.CallbackContext ctx) => _input.Emit(NavAction.Confirm);
+
+        private void OnConfirm(InputAction.CallbackContext ctx)
+        {
+            _input.Emit(NavAction.Confirm);
+
+            if (_motionShake == null)
+                _input.EmitMotion(MotionAction.Shake);
+        }
+
         private void OnBack(InputAction.CallbackContext ctx) => _input.Emit(NavAction.Back);
         private void OnToggle(InputAction.CallbackContext ctx) => _input.Emit(NavAction.ToggleVisualAssist);
 
@@ -135,25 +192,49 @@ namespace Project.Core.Input
         private void OnUp(InputAction.CallbackContext ctx)
         {
             _input.EmitDirection4(NavDirection4.Up);
-            _input.EmitMotion(MotionAction.Up);
+
+            if (_motionUp == null)
+                _input.EmitMotion(MotionAction.Up);
         }
 
         private void OnDown(InputAction.CallbackContext ctx)
         {
             _input.EmitDirection4(NavDirection4.Down);
-            _input.EmitMotion(MotionAction.Down);
+
+            if (_motionDown == null)
+                _input.EmitMotion(MotionAction.Down);
         }
 
         private void OnLeft(InputAction.CallbackContext ctx)
         {
             _input.EmitDirection4(NavDirection4.Left);
-            _input.EmitMotion(MotionAction.TiltLeft);
+
+            if (_motionTilt == null)
+                _input.EmitMotion(MotionAction.TiltLeft);
         }
 
         private void OnRight(InputAction.CallbackContext ctx)
         {
             _input.EmitDirection4(NavDirection4.Right);
-            _input.EmitMotion(MotionAction.TiltRight);
+
+            if (_motionTilt == null)
+                _input.EmitMotion(MotionAction.TiltRight);
+        }
+
+        private void OnMotionShake(InputAction.CallbackContext ctx)
+            => _input.EmitMotion(MotionAction.Shake);
+
+        private void OnMotionUp(InputAction.CallbackContext ctx)
+            => _input.EmitMotion(MotionAction.Up);
+
+        private void OnMotionDown(InputAction.CallbackContext ctx)
+            => _input.EmitMotion(MotionAction.Down);
+
+        private void OnMotionTilt(InputAction.CallbackContext ctx)
+        {
+            _tiltValue = ctx.ReadValue<float>();
+            if (Mathf.Abs(_tiltValue) >= TiltDeadzone)
+                _nextTiltAllowedTime = 0f;
         }
     }
 }
