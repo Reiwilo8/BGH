@@ -2,6 +2,7 @@ using Project.Core.App;
 using Project.Core.Audio;
 using Project.Core.AudioFx;
 using Project.Core.Input;
+using Project.Core.Input.Motion;
 using Project.Core.Localization;
 using Project.Core.Settings;
 using Project.Core.Speech;
@@ -41,6 +42,7 @@ namespace Project.Games.Gameplay
         private IGameplayGame _game;
         private IGameplayInputHandler _gameInput;
         private IGameplayDirection4Handler _gameDir4;
+        private IGameplayMotionHandler _gameMotion;
 
         private IGameplayRuntimeStatsProvider _runtimeStatsProvider;
 
@@ -220,6 +222,17 @@ namespace Project.Games.Gameplay
             _gameDir4?.Handle(direction);
         }
 
+        public void Handle(MotionAction action)
+        {
+            if (_state == GameplayState.Exiting)
+                return;
+
+            if (_state != GameplayState.Running)
+                return;
+
+            _gameMotion?.Handle(action);
+        }
+
         public void OnRepeatRequested()
         {
             if (_state == GameplayState.Paused)
@@ -259,6 +272,7 @@ namespace Project.Games.Gameplay
             _game = null;
             _gameInput = null;
             _gameDir4 = null;
+            _gameMotion = null;
             _runtimeStatsProvider = null;
 
             for (int i = 0; i < all.Length; i++)
@@ -269,6 +283,7 @@ namespace Project.Games.Gameplay
 
                     _gameInput = all[i] as IGameplayInputHandler;
                     _gameDir4 = all[i] as IGameplayDirection4Handler;
+                    _gameMotion = all[i] as IGameplayMotionHandler;
 
                     _runtimeStatsProvider = all[i] as IGameplayRuntimeStatsProvider;
 

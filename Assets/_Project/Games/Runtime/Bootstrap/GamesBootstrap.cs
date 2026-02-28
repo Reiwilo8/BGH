@@ -32,7 +32,8 @@ namespace Project.Games.Bootstrap
 
             var initialParamsProvider = new CompositeGameInitialParametersProvider(
                 new MemoryInitialParametersProvider(store),
-                new SteamRushInitialParametersProvider(store)
+                new SteamRushInitialParametersProvider(store),
+                new FishingInitialParametersProvider(store)
             );
             AppContext.Services.Register<IGameInitialParametersProvider>(initialParamsProvider);
 

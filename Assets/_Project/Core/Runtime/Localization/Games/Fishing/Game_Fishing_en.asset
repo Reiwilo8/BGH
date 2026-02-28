@@ -26,6 +26,298 @@ MonoBehaviour:
     m_Localized: Catch fish by reeling and countering their movements.
     m_Metadata:
       m_Items: []
+  - m_Id: 9699510910349312
+    m_Localized: Base parameters
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9700196658081792
+    m_Localized: Core fishing parameters defining timing, distances, tension and
+      fish behavior.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222094
+    m_Localized: Target fish count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222095
+    m_Localized: Numer of fish which must be caught to win.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222096
+    m_Localized: Reaction window scaling
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222097
+    m_Localized: Scales the reaction window duration for the selected mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222098
+    m_Localized: Minimum fish aggression
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222099
+    m_Localized: Minimum aggression that a fish can have.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222100
+    m_Localized: Maximum fish aggression
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222101
+    m_Localized: Maximum aggression that a fish can have.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222102
+    m_Localized: Minimum fish resistance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222103
+    m_Localized: Minimum resistance that a fish can have.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222104
+    m_Localized: Maximum fish resistance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222105
+    m_Localized: Maximum resistance that a fish can have.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222106
+    m_Localized: Target fish count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222107
+    m_Localized: Number of fish which must be caught to win.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222108
+    m_Localized: Difficulty preset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222109
+    m_Localized: Selects which difficulty preset is used as the base for custom mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222110
+    m_Localized: Maximum fish aggression
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222111
+    m_Localized: Maximum aggression that a fish can have in custom mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222112
+    m_Localized: Tutorial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222113
+    m_Localized: Easy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222114
+    m_Localized: Medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9711634722222115
+    m_Localized: Hard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029155008512
+    m_Localized: Minimum time before a fish bites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397120
+    m_Localized: Controls how long the game waits, at minimum, before the bite phase
+      can start.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397121
+    m_Localized: Maximum time before a fish bites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397122
+    m_Localized: Controls how long the game waits, at maximum, before the bite phase
+      can start.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397123
+    m_Localized: Base reaction window duration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397124
+    m_Localized: The base duration of the reaction window, before difficulty scaling
+      is applied.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397125
+    m_Localized: Base catch distance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397126
+    m_Localized: Controls how close the fish must be to be caught, before resistance
+      is applied.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397127
+    m_Localized: Base spawn distance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397128
+    m_Localized: Average starting distance of the fish.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397129
+    m_Localized: Spawn distance variation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029163397130
+    m_Localized: Controls how much the starting distance can vary around the base
+      value.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591426
+    m_Localized: Difficulty scale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9717029167591427
+    m_Localized: Scales difficulty for the selected mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589539081809920
+    m_Localized: Advanced
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554453934080
+    m_Localized: These settings provide additional tuning parameters for the fishing
+      gameplay.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554453934081
+    m_Localized: Maximum tension tick count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554453934082
+    m_Localized: Number of tension ticks that can occur before the line breaks.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554453934083
+    m_Localized: Grace period after a failure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554453934084
+    m_Localized: Sets how long inputs are ignored after a missed reaction, before
+      gameplay continues normally.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554453934085
+    m_Localized: Minimum action cadence
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554453934086
+    m_Localized: Minimum time before the fish can choose a new action.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554453934087
+    m_Localized: Maximum action cadence
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554453934088
+    m_Localized: Maximum time before the fish can choose a new action.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554453934089
+    m_Localized: Minimum movement speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554453934090
+    m_Localized: Minimum lateral speed during the movement action.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554453934091
+    m_Localized: Maximum movement speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128384
+    m_Localized: Maximum lateral speed during the movement action.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128385
+    m_Localized: Minimum burst speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128386
+    m_Localized: Minimum forward speed during the burst action.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128387
+    m_Localized: Maximum burst speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128388
+    m_Localized: Maximum forward speed during the burst action.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128389
+    m_Localized: Minimum loosening penalty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128390
+    m_Localized: Minimum distance penalty applied after loosening the line.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128391
+    m_Localized: Maximum loosening penalty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128392
+    m_Localized: Maximum distance penalty applied after loosening the line.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128393
+    m_Localized: Fatigue gain on a correct action
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128394
+    m_Localized: Controls how much fatigue increases when the player performs a correct
+      action.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128395
+    m_Localized: Fatigue loss on an incorrect action
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128396
+    m_Localized: Controls how much fatigue decreases when the player performs an
+      incorrect action or reacts too late.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128397
+    m_Localized: Fatigue loss after loosening the line
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10589554458128398
+    m_Localized: Controls how much fatigue decreases when the player loosens the
+      line.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10822314426789888
+    m_Localized: Catch the fish. React to its moves and bring it close enough to
+      land it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10822466260594688
+    m_Localized: 'Tap with two fingers to cast and to pull. Swipe down to reel in.
+      Swipe up is a rescue: it lowers tension but costs progress. When the fish moves
+      sideways, tilt against it and reel in right away.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10822659613814784
+    m_Localized: 'Press Enter to cast and to pull. Press Down to reel in. Press Up
+      is a rescue: it lowers tension but costs progress. When the fish moves sideways,
+      press Left/Right against it and press Down right away.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

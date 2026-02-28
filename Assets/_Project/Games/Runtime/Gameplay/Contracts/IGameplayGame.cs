@@ -1,4 +1,5 @@
 using Project.Core.Input;
+using Project.Core.Input.Motion;
 using System;
 
 namespace Project.Games.Gameplay.Contracts
@@ -23,5 +24,10 @@ namespace Project.Games.Gameplay.Contracts
     public interface IGameplayDirection4Handler
     {
         void Handle(NavDirection4 direction);
+    }
+
+    public interface IGameplayMotionHandler
+    {
+        void Handle(MotionAction action);
     }
 }
