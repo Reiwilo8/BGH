@@ -208,38 +208,51 @@ namespace Project.UI.VisualAssist
 
             ApplyRootVisibility();
 
-            if (dimmerPanel != null)
+            bool isVa = _mode != null && _mode.Mode == VisualMode.VisualAssist;
+
+            if (!isVa)
             {
-                float dimmerStrength01 = GetDimmerStrength01Safe();
-                float vaA = Mathf.Clamp01(_va.DimAlpha01);
+                if (_currentDim != 0f)
+                    _currentDim = 0f;
 
-                float target;
-                if (vaA <= 0.0001f)
+                if (dimmerPanel != null)
+                    SetDimmerAlpha(0f);
+            }
+            else
+            {
+                if (dimmerPanel != null)
                 {
-                    target = 0f;
-                }
-                else if (dimmerStrength01 >= 0.999f)
-                {
-                    target = 1f;
-                }
-                else
-                {
-                    target = vaA * dimmerStrength01;
-                }
+                    float dimmerStrength01 = GetDimmerStrength01Safe();
+                    float vaA = Mathf.Clamp01(_va.DimAlpha01);
 
-                if (smoothDimmer)
-                {
-                    _currentDim = Mathf.MoveTowards(
-                        _currentDim,
-                        target,
-                        dimmerLerpSpeed * Time.unscaledDeltaTime);
-                }
-                else
-                {
-                    _currentDim = target;
-                }
+                    float target;
+                    if (vaA <= 0.0001f)
+                    {
+                        target = 0f;
+                    }
+                    else if (dimmerStrength01 >= 0.999f)
+                    {
+                        target = 1f;
+                    }
+                    else
+                    {
+                        target = vaA * dimmerStrength01;
+                    }
 
-                SetDimmerAlpha(_currentDim);
+                    if (smoothDimmer)
+                    {
+                        _currentDim = Mathf.MoveTowards(
+                            _currentDim,
+                            target,
+                            dimmerLerpSpeed * Time.unscaledDeltaTime);
+                    }
+                    else
+                    {
+                        _currentDim = target;
+                    }
+
+                    SetDimmerAlpha(_currentDim);
+                }
             }
 
             if (transitionFade)

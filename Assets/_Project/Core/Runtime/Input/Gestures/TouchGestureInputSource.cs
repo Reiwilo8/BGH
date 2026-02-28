@@ -224,7 +224,6 @@ namespace Project.Core.Input.Gestures
 
                     _lastTapTime = -999f;
                     _input.Emit(NavAction.Confirm);
-                    //_input.EmitMotion(MotionAction.Shake);
                 }
                 else
                 {
@@ -329,6 +328,7 @@ namespace Project.Core.Input.Gestures
 
             if (!_twoCanceledByPinch && timeOk && moveOk)
             {
+                _input.EmitMotion(MotionAction.Shake);
                 _input.Emit(NavAction.ToggleVisualAssist);
             }
 

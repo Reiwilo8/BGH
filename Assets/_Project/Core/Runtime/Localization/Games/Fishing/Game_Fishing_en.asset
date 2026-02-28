@@ -307,9 +307,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 10822466260594688
-    m_Localized: 'Shake to cast and to pull. Swipe down to reel in. Swipe up is a
-      rescue: it lowers tension but costs progress. When the fish moves sideways,
-      tilt against it and reel in right away.'
+    m_Localized: 'Tap with two fingers to cast and to pull. Swipe down to reel in.
+      Swipe up is a rescue: it lowers tension but costs progress. When the fish moves
+      sideways, tilt against it and reel in right away.'
     m_Metadata:
       m_Items: []
   - m_Id: 10822659613814784

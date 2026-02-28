@@ -104,8 +104,7 @@ namespace Project.UI.Games.Fishing
             ApplyLayoutIfNeeded(force: true);
             ApplyVisibility();
             ApplyImmediateStateDefaults();
-
-            FinalizeTensionAfterLayout();
+            ApplyTensionSafe01(_lastSafe01, _lastAtLastChance);
         }
 
         private void OnEnable()
@@ -118,13 +117,13 @@ namespace Project.UI.Games.Fishing
             ApplyLayoutIfNeeded(force: true);
             ApplyVisibility();
             ApplyImmediateStateDefaults();
-
-            FinalizeTensionAfterLayout();
+            ApplyTensionSafe01(_lastSafe01, _lastAtLastChance);
         }
 
         private void OnRectTransformDimensionsChange()
         {
             ApplyLayoutIfNeeded(force: false);
+            ApplyTensionSafe01(_lastSafe01, _lastAtLastChance);
         }
 
         public void SetVisible(bool visible)
@@ -155,7 +154,7 @@ namespace Project.UI.Games.Fishing
             _lastAtLastChance = false;
 
             ApplyImmediateStateDefaults();
-            FinalizeTensionAfterLayout();
+            ApplyTensionSafe01(_lastSafe01, _lastAtLastChance);
         }
 
         public void SetPaused(bool paused)
@@ -177,7 +176,6 @@ namespace Project.UI.Games.Fishing
             _visible = state.Visible;
             _paused = state.Paused;
 
-            ApplyLayoutIfNeeded(force: false);
             ApplyVisibility();
 
             ApplyTension(state);
@@ -243,9 +241,7 @@ namespace Project.UI.Games.Fishing
             if (_paused) return;
             if (root != null && !root.activeInHierarchy) return;
 
-            ApplyLayoutIfNeeded(force: false);
-
-            ApplyTension(_lastState);
+            TickTensionPulse();
 
             bool floatActive = floatRect != null && floatRect.gameObject.activeInHierarchy;
             if (!floatActive) return;
@@ -304,6 +300,23 @@ namespace Project.UI.Games.Fishing
             ApplyTensionSafe01(safe01, atLastChance);
         }
 
+        private void TickTensionPulse()
+        {
+            if (!_lastAtLastChance)
+                return;
+
+            if (leftFill == null || rightFill == null)
+                return;
+
+            float t = Time.unscaledTime;
+            float s = Mathf.Sin(t * Mathf.PI * 2f * Mathf.Max(0.01f, panelPulseHz));
+            float alpha = Mathf.Lerp(pulseMinAlpha, pulseMaxAlpha, 0.5f + 0.5f * s);
+            float a = (_lastSafe01 <= 0.0001f) ? 0f : Mathf.Clamp01(alpha);
+
+            SetImageAlpha(leftFill, a);
+            SetImageAlpha(rightFill, a);
+        }
+
         private void ApplyTensionSafe01(float safe01, bool atLastChance)
         {
             if (leftFill == null || rightFill == null) return;
@@ -354,12 +367,6 @@ namespace Project.UI.Games.Fishing
             ap.x = 0f;
             ap.y = y;
             rt.anchoredPosition = ap;
-        }
-
-        private void FinalizeTensionAfterLayout()
-        {
-            Canvas.ForceUpdateCanvases();
-            ApplyTensionSafe01(_lastSafe01, _lastAtLastChance);
         }
 
         private static void SetupTensionSide(Image baseImg, Image fillImg)
@@ -578,8 +585,6 @@ namespace Project.UI.Games.Fishing
 
                 ConfigureTensionBase(leftBase, isLeft: true, panelW);
                 ConfigureTensionBase(rightBase, isLeft: false, panelW);
-
-                Canvas.ForceUpdateCanvases();
 
                 ApplyTensionSafe01(_lastSafe01, _lastAtLastChance);
 

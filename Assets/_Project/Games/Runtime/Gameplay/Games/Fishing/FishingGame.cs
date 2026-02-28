@@ -7,6 +7,7 @@ using Project.Core.Input.Motion;
 using Project.Core.Localization;
 using Project.Core.Settings;
 using Project.Core.Speech;
+using Project.Core.Visual;
 using Project.Core.Visual.Games.Fishing;
 using Project.Games.Gameplay.Contracts;
 using System;
@@ -18,7 +19,6 @@ namespace Project.Games.Fishing
 {
     public sealed class FishingGame : MonoBehaviour,
         IGameplayGame,
-        IGameplayInputHandler,
         IGameplayMotionHandler,
         IGameplayRuntimeStatsProvider,
         IGameplayRepeatHandler
@@ -160,8 +160,14 @@ namespace Project.Games.Fishing
 
         private const float ActionOneShotMinRestartGapSeconds = 0.08f;
 
+        private const float VisualPushMinIntervalSeconds = 0.05f;
+        private const float VisualPushIdleIntervalSeconds = 0.20f;
+        private const float VisualDistanceEpsilon = 0.0025f;
+        private const float VisualLateralEpsilon = 0.0035f;
+
         private IAudioFxService _audioFx;
         private IHapticsService _haptics;
+        private IVisualModeService _visualMode;
         private IFishingVisualDriver _visual;
 
         private IUiAudioOrchestrator _uiAudio;
@@ -330,14 +336,92 @@ namespace Project.Games.Fishing
         private bool _tutorialOnboardingSpoken;
         private Coroutine _tutorialOnboardingCo;
 
+        private bool _visualAssistActive;
+        private bool _visualDirty;
+        private float _nextVisualPushAtT;
+
+        private FishingVisualState _lastPushedVisual;
+        private bool _hasLastPushedVisual;
+
         public event Action<GameplayGameResult> GameFinished;
+
+        private bool IsVisualAssistEnabled
+        {
+            get
+            {
+                try { return _visualMode != null && _visualMode.Mode == VisualMode.VisualAssist; }
+                catch { return false; }
+            }
+        }
+
+        private void EnsureVisualDriverResolvedIfNeeded()
+        {
+            if (!_visualAssistActive)
+                return;
+
+            if (_visual != null)
+                return;
+
+            ResolveVisual();
+        }
+
+        private void ReleaseVisualDriverIfAny()
+        {
+            if (_visual == null)
+                return;
+
+            try { _visual.SetVisible(false); } catch { }
+            try { _visual.Reset(); } catch { }
+            _visual = null;
+        }
+
+        private void SyncVisualModeState(bool forcePush)
+        {
+            bool want = IsVisualAssistEnabled;
+            if (want == _visualAssistActive && !forcePush)
+                return;
+
+            _visualAssistActive = want;
+
+            if (_visualAssistActive)
+            {
+                EnsureVisualDriverResolvedIfNeeded();
+                _visualDirty = true;
+                if (forcePush) TryPushVisualState(force: true);
+            }
+            else
+            {
+                ReleaseVisualDriverIfAny();
+                _visualDirty = false;
+                _hasLastPushedVisual = false;
+                _nextVisualPushAtT = 0f;
+            }
+        }
+
+        private void MarkVisualDirty()
+        {
+            if (!_visualAssistActive) return;
+            _visualDirty = true;
+        }
+
+        private void RequestVisualPush(bool force)
+        {
+            if (!_visualAssistActive) return;
+            MarkVisualDirty();
+            TryPushVisualState(force);
+        }
 
         public void Initialize(GameplayGameContext context)
         {
             _ctx = context;
 
             ResolveServices();
-            ResolveVisual();
+
+            _visualAssistActive = IsVisualAssistEnabled;
+            if (_visualAssistActive)
+                ResolveVisual();
+            else
+                _visual = null;
 
             _biteWaitMin = GetRequiredFloat(_ctx.InitialParameters, PBaseBiteWaitMin, min: 0.10f, max: 30f);
             _biteWaitMax = GetRequiredFloat(_ctx.InitialParameters, PBaseBiteWaitMax, min: 0.10f, max: 30f);
@@ -412,10 +496,24 @@ namespace Project.Games.Fishing
             StopTutorialOnboardingRoutine();
             _tutorialOnboardingSpoken = false;
 
-            TryVisualSetVisible(false);
-            TryVisualReset();
-            TryVisualSetPaused(false);
-            PushVisualState();
+            _visualDirty = true;
+            _hasLastPushedVisual = false;
+            _nextVisualPushAtT = 0f;
+
+            SyncVisualModeState(forcePush: false);
+
+            if (_visualAssistActive)
+            {
+                EnsureVisualDriverResolvedIfNeeded();
+                TryVisualSetVisible(false);
+                TryVisualReset();
+                TryVisualSetPaused(false);
+                RequestVisualPush(force: true);
+            }
+            else
+            {
+                ReleaseVisualDriverIfAny();
+            }
         }
 
         public void StartGame()
@@ -432,10 +530,20 @@ namespace Project.Games.Fishing
             ResetRuntimeState(fullReset: true);
             EnterIdle();
 
-            TryVisualReset();
-            TryVisualSetPaused(false);
-            TryVisualSetVisible(true);
-            PushVisualState();
+            SyncVisualModeState(forcePush: false);
+
+            if (_visualAssistActive)
+            {
+                EnsureVisualDriverResolvedIfNeeded();
+                TryVisualReset();
+                TryVisualSetPaused(false);
+                TryVisualSetVisible(true);
+                RequestVisualPush(force: true);
+            }
+            else
+            {
+                ReleaseVisualDriverIfAny();
+            }
 
             if (string.Equals(_ctx.ModeId, "tutorial", StringComparison.OrdinalIgnoreCase) && !_tutorialOnboardingSpoken)
             {
@@ -457,9 +565,19 @@ namespace Project.Games.Fishing
 
             _phase = Phase.Idle;
 
-            TryVisualSetPaused(false);
-            TryVisualSetVisible(false);
-            PushVisualState();
+            SyncVisualModeState(forcePush: false);
+
+            if (_visualAssistActive)
+            {
+                EnsureVisualDriverResolvedIfNeeded();
+                TryVisualSetPaused(false);
+                TryVisualSetVisible(false);
+                RequestVisualPush(force: true);
+            }
+            else
+            {
+                ReleaseVisualDriverIfAny();
+            }
         }
 
         public void PauseGame()
@@ -467,8 +585,14 @@ namespace Project.Games.Fishing
             _paused = true;
             PauseKnownHandles();
 
-            TryVisualSetPaused(true);
-            PushVisualState();
+            SyncVisualModeState(forcePush: false);
+
+            if (_visualAssistActive)
+            {
+                EnsureVisualDriverResolvedIfNeeded();
+                TryVisualSetPaused(true);
+                RequestVisualPush(force: true);
+            }
         }
 
         public void ResumeGame()
@@ -476,8 +600,14 @@ namespace Project.Games.Fishing
             _paused = false;
             ResumeKnownHandles();
 
-            TryVisualSetPaused(false);
-            PushVisualState();
+            SyncVisualModeState(forcePush: false);
+
+            if (_visualAssistActive)
+            {
+                EnsureVisualDriverResolvedIfNeeded();
+                TryVisualSetPaused(false);
+                RequestVisualPush(force: true);
+            }
         }
 
         private void Update()
@@ -500,20 +630,12 @@ namespace Project.Games.Fishing
             TickReactionDeadline();
             TickPhase(dt);
 
-            PushVisualState();
-        }
+            SyncVisualModeState(forcePush: false);
 
-        public void Handle(NavAction action)
-        {
-            if (!_initialized || !_running || _paused)
-                return;
-
-            if (_finishQueued)
-                return;
-
-            if (action == NavAction.Confirm)
+            if (_visualAssistActive)
             {
-                OnShake();
+                EnsureVisualDriverResolvedIfNeeded();
+                TryPushVisualState(force: false);
             }
         }
 
@@ -550,7 +672,13 @@ namespace Project.Games.Fishing
                     break;
             }
 
-            PushVisualState();
+            SyncVisualModeState(forcePush: false);
+
+            if (_visualAssistActive)
+            {
+                EnsureVisualDriverResolvedIfNeeded();
+                RequestVisualPush(force: true);
+            }
         }
 
         public void OnRepeatRequested() { }
@@ -767,7 +895,7 @@ namespace Project.Games.Fishing
                         TickHaptics();
 
                         BeginPostBurstPullGap();
-                        PushVisualState();
+                        RequestVisualPush(force: true);
                         return;
                     }
 
@@ -1022,6 +1150,8 @@ namespace Project.Games.Fishing
                 on = Mathf.Clamp(on, 0.12f, 3.5f);
                 _biteSwitchAtT = _gameTime + on;
             }
+
+            MarkVisualDirty();
         }
 
         private void EnterIdle()
@@ -1093,7 +1223,7 @@ namespace Project.Games.Fishing
             _idleSfxEndsAtT = 0f;
             _moveSfxEndsAtT = 0f;
 
-            PushVisualState();
+            RequestVisualPush(force: true);
         }
 
         private void StartRound()
@@ -1153,7 +1283,7 @@ namespace Project.Games.Fishing
             _idleSfxEndsAtT = 0f;
             _moveSfxEndsAtT = 0f;
 
-            PushVisualState();
+            RequestVisualPush(force: true);
         }
 
         private void EnterBiting()
@@ -1175,7 +1305,7 @@ namespace Project.Games.Fishing
 
             _suppressIdleSfxUntilT = 0f;
 
-            PushVisualState();
+            RequestVisualPush(force: true);
         }
 
         private void BeginReeling(bool fromBite)
@@ -1211,7 +1341,7 @@ namespace Project.Games.Fishing
             _biteIsOn = false;
             _biteSwitchAtT = 0f;
 
-            PushVisualState();
+            RequestVisualPush(force: true);
         }
 
         private void BeginCatch()
@@ -1234,7 +1364,7 @@ namespace Project.Games.Fishing
             PlayCatchOneShot();
 
             TryVisualPulseCatch();
-            PushVisualState();
+            RequestVisualPush(force: true);
 
             if (_caught >= _targetFishCount)
             {
@@ -1271,7 +1401,7 @@ namespace Project.Games.Fishing
             _pendingTurnBPlays = 0;
             _nextTurnBAtT = 0f;
 
-            PushVisualState();
+            RequestVisualPush(force: true);
 
             StopFinishRoutineIfAny();
             _finishCo = StartCoroutine(WinRoutine());
@@ -1318,7 +1448,7 @@ namespace Project.Games.Fishing
         {
             _phase = Phase.RoundEnd;
 
-            PushVisualState();
+            RequestVisualPush(force: true);
 
             StopFinishRoutineIfAny();
             _finishCo = StartCoroutine(RoundEndRoutine(delaySeconds));
@@ -1372,6 +1502,8 @@ namespace Project.Games.Fishing
 
             UpdateSplashingLoop();
             TickHaptics();
+
+            MarkVisualDirty();
         }
 
         private void TickFishMotion(float dt)
@@ -1476,6 +1608,7 @@ namespace Project.Games.Fishing
             if (r < wIdle)
             {
                 EnterFishActionIdle(forceCue: true);
+                RequestVisualPush(force: true);
                 return;
             }
 
@@ -1484,10 +1617,12 @@ namespace Project.Games.Fishing
             if (r < wMove)
             {
                 EnterFishActionMove();
+                RequestVisualPush(force: true);
                 return;
             }
 
             EnterFishActionBurst();
+            RequestVisualPush(force: true);
         }
 
         private bool IsTurnSequenceActive()
@@ -1636,6 +1771,8 @@ namespace Project.Games.Fishing
                 EnterFishActionMove();
             else
                 EnterFishActionBurst();
+
+            RequestVisualPush(force: true);
         }
 
         private void PlayTurnBSegment(float pan)
@@ -1823,6 +1960,8 @@ namespace Project.Games.Fishing
             _moveSfxCueIndex = 0;
 
             EnterFishActionIdle(forceCue: true);
+
+            MarkVisualDirty();
         }
 
         private int ResolveMistakeStepBackCount()
@@ -1900,7 +2039,7 @@ namespace Project.Games.Fishing
 
             TickHaptics();
 
-            PushVisualState();
+            RequestVisualPush(force: true);
         }
 
         private void RegisterTimeoutAndResetToIdle()
@@ -1946,7 +2085,7 @@ namespace Project.Games.Fishing
 
             TickHaptics();
 
-            PushVisualState();
+            RequestVisualPush(force: true);
         }
 
         private void RegisterCorrectAction()
@@ -1996,7 +2135,7 @@ namespace Project.Games.Fishing
 
             RestartLineBreakOneShot();
 
-            PushVisualState();
+            RequestVisualPush(force: true);
 
             BeginRoundEnd(delaySeconds: PostRoundResetDelaySeconds);
         }
@@ -2059,7 +2198,7 @@ namespace Project.Games.Fishing
             _idleSfxEndsAtT = 0f;
             _moveSfxEndsAtT = 0f;
 
-            PushVisualState();
+            RequestVisualPush(force: true);
         }
 
         private void ResolvePullsToCatchTarget(out int min, out int max)
@@ -2130,6 +2269,8 @@ namespace Project.Games.Fishing
 
             if (_pullsToCatchProgress >= _pullsToCatchTarget)
                 _fishDistance = Mathf.Min(_fishDistance, _catchDistance);
+
+            MarkVisualDirty();
         }
 
         private void UpdateDistanceFromProgress(bool withSlack)
@@ -2209,8 +2350,18 @@ namespace Project.Games.Fishing
                 runtimeStats: GetRuntimeStatsSnapshot()
             );
 
-            TryVisualSetVisible(false);
-            PushVisualState();
+            SyncVisualModeState(forcePush: false);
+
+            if (_visualAssistActive)
+            {
+                EnsureVisualDriverResolvedIfNeeded();
+                TryVisualSetVisible(false);
+                RequestVisualPush(force: true);
+            }
+            else
+            {
+                ReleaseVisualDriverIfAny();
+            }
 
             try { GameFinished?.Invoke(result); } catch { }
         }
@@ -2353,6 +2504,8 @@ namespace Project.Games.Fishing
             _nextActionResampleAtT = Mathf.Max(_nextActionResampleAtT, _idleSfxEndsAtT + PostCueSafetyGapSeconds);
 
             _nextFishSfxCheckAtT = Mathf.Max(_nextFishSfxCheckAtT, _idleSfxEndsAtT + AfterFishCueMinGap);
+
+            MarkVisualDirty();
         }
 
         private void PlayMoveCueOneShot(float forcePan)
@@ -2377,6 +2530,8 @@ namespace Project.Games.Fishing
             _moveSfxEndsAtT = _gameTime + Mathf.Max(0.01f, MoveCueClipSeconds);
 
             _reactionDeadlineAtT = Mathf.Max(_reactionDeadlineAtT, _moveSfxEndsAtT + PostCueSafetyGapSeconds);
+
+            MarkVisualDirty();
         }
 
         private void PlayCatchOneShot()
@@ -2596,6 +2751,7 @@ namespace Project.Games.Fishing
 
             try { _audioFx = services.Resolve<IAudioFxService>(); } catch { _audioFx = null; }
             try { _haptics = services.Resolve<IHapticsService>(); } catch { _haptics = null; }
+            try { _visualMode = services.Resolve<IVisualModeService>(); } catch { _visualMode = null; }
 
             try { _uiAudio = services.Resolve<IUiAudioOrchestrator>(); } catch { _uiAudio = null; }
             try { _loc = services.Resolve<ILocalizationService>(); } catch { _loc = null; }
@@ -2606,6 +2762,9 @@ namespace Project.Games.Fishing
         private void ResolveVisual()
         {
             _visual = null;
+
+            if (!_visualAssistActive)
+                return;
 
             try
             {
@@ -2731,8 +2890,9 @@ namespace Project.Games.Fishing
             }
         }
 
-        private void PushVisualState()
+        private void TryPushVisualState(bool force)
         {
+            if (!_visualAssistActive) return;
             if (_visual == null) return;
 
             bool floatVisible =
@@ -2763,35 +2923,79 @@ namespace Project.Games.Fishing
                 tensionWarnTick: Mathf.Clamp(_tensionHapticsTick, 0, Mathf.Max(0, _tensionMaxTicks))
             );
 
+            float interval = floatVisible ? VisualPushMinIntervalSeconds : VisualPushIdleIntervalSeconds;
+
+            if (!force)
+            {
+                if (_gameTime < _nextVisualPushAtT && !_visualDirty)
+                    return;
+
+                if (_hasLastPushedVisual)
+                {
+                    bool changed =
+                        _lastPushedVisual.Visible != s.Visible ||
+                        _lastPushedVisual.Paused != s.Paused ||
+                        _lastPushedVisual.Phase != s.Phase ||
+                        _lastPushedVisual.FishAction != s.FishAction ||
+                        _lastPushedVisual.FloatVisible != s.FloatVisible ||
+                        _lastPushedVisual.BiteIsOn != s.BiteIsOn ||
+                        _lastPushedVisual.CanCatchNow != s.CanCatchNow ||
+                        _lastPushedVisual.TensionTicks != s.TensionTicks ||
+                        _lastPushedVisual.TensionMaxTicks != s.TensionMaxTicks ||
+                        _lastPushedVisual.TensionWarnTick != s.TensionWarnTick ||
+                        Mathf.Abs(_lastPushedVisual.FishDistance01 - s.FishDistance01) >= VisualDistanceEpsilon ||
+                        Mathf.Abs(_lastPushedVisual.FishLateral01 - s.FishLateral01) >= VisualLateralEpsilon;
+
+                    if (!changed && !_visualDirty && _gameTime < _nextVisualPushAtT)
+                        return;
+
+                    if (!changed && !_visualDirty)
+                    {
+                        _nextVisualPushAtT = _gameTime + interval;
+                        return;
+                    }
+                }
+            }
+
             try { _visual.Apply(in s); } catch { }
+
+            _lastPushedVisual = s;
+            _hasLastPushedVisual = true;
+            _visualDirty = false;
+            _nextVisualPushAtT = _gameTime + interval;
         }
 
         private void TryVisualReset()
         {
+            if (!_visualAssistActive) return;
             if (_visual == null) return;
             try { _visual.Reset(); } catch { }
         }
 
         private void TryVisualSetVisible(bool visible)
         {
+            if (!_visualAssistActive) return;
             if (_visual == null) return;
             try { _visual.SetVisible(visible); } catch { }
         }
 
         private void TryVisualSetPaused(bool paused)
         {
+            if (!_visualAssistActive) return;
             if (_visual == null) return;
             try { _visual.SetPaused(paused); } catch { }
         }
 
         private void TryVisualPulseMistakeBlink()
         {
+            if (!_visualAssistActive) return;
             if (_visual == null) return;
             try { _visual.PulseMistakeBlink(); } catch { }
         }
 
         private void TryVisualPulseCatch()
         {
+            if (!_visualAssistActive) return;
             if (_visual == null) return;
             try { _visual.PulseCatch(); } catch { }
         }

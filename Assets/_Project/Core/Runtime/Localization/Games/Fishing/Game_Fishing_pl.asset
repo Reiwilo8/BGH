@@ -313,10 +313,10 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 10822466260594688
-    m_Localized: "Potrz\u0105\u015Bnij, aby zarzuci\u0107 i szarpn\u0105\u0107. Przeci\u0105gnij
-      w d\xF3\u0142, aby zwija\u0107. Przeci\u0105gni\u0119cie w g\xF3r\u0119 to
-      ratunek: zmniejsza napi\u0119cie, ale kosztuje post\u0119p. Gdy ryba ucieka
-      w bok, przechyl przeciwnie i od razu zwijaj."
+    m_Localized: "Stuknij dwoma palcami, aby zarzuci\u0107 i szarpn\u0105\u0107.
+      Przeci\u0105gnij w d\xF3\u0142, aby zwija\u0107. Przeci\u0105gni\u0119cie w
+      g\xF3r\u0119 to ratunek: zmniejsza napi\u0119cie, ale kosztuje post\u0119p.
+      Gdy ryba ucieka w bok, przechyl przeciwnie i od razu zwijaj."
     m_Metadata:
       m_Items: []
   - m_Id: 10822659613814784

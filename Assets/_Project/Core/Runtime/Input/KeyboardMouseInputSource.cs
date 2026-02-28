@@ -28,7 +28,7 @@ namespace Project.Core.Input
         private InputAction _left;
         private InputAction _right;
 
-        //private InputAction _motionShake;
+        private InputAction _motionShake;
         private InputAction _motionUp;
         private InputAction _motionDown;
         private InputAction _motionTilt;
@@ -70,7 +70,7 @@ namespace Project.Core.Input
             _left = _nav.FindAction("Left", throwIfNotFound: false);
             _right = _nav.FindAction("Right", throwIfNotFound: false);
 
-            //_motionShake = _nav.FindAction("MotionShake", throwIfNotFound: false);
+            _motionShake = _nav.FindAction("MotionShake", throwIfNotFound: false);
             _motionUp = _nav.FindAction("MotionUp", throwIfNotFound: false);
             _motionDown = _nav.FindAction("MotionDown", throwIfNotFound: false);
             _motionTilt = _nav.FindAction("MotionTilt", throwIfNotFound: false);
@@ -94,7 +94,7 @@ namespace Project.Core.Input
             if (_left != null) _left.performed += OnLeft;
             if (_right != null) _right.performed += OnRight;
 
-            //if (_motionShake != null) _motionShake.performed += OnMotionShake;
+            if (_motionShake != null) _motionShake.performed += OnMotionShake;
             if (_motionUp != null) _motionUp.performed += OnMotionUp;
             if (_motionDown != null) _motionDown.performed += OnMotionDown;
 
@@ -121,7 +121,7 @@ namespace Project.Core.Input
             if (_left != null) _left.performed -= OnLeft;
             if (_right != null) _right.performed -= OnRight;
 
-            ///if (_motionShake != null) _motionShake.performed -= OnMotionShake;
+            if (_motionShake != null) _motionShake.performed -= OnMotionShake;
             if (_motionUp != null) _motionUp.performed -= OnMotionUp;
             if (_motionDown != null) _motionDown.performed -= OnMotionDown;
 
@@ -156,8 +156,8 @@ namespace Project.Core.Input
         {
             _input.Emit(NavAction.Confirm);
 
-/*            if (_motionShake == null)
-                _input.EmitMotion(MotionAction.Shake);*/
+            if (_motionShake == null)
+                _input.EmitMotion(MotionAction.Shake);
         }
 
         private void OnBack(InputAction.CallbackContext ctx) => _input.Emit(NavAction.Back);
@@ -221,8 +221,8 @@ namespace Project.Core.Input
                 _input.EmitMotion(MotionAction.TiltRight);
         }
 
-/*        private void OnMotionShake(InputAction.CallbackContext ctx)
-            => _input.EmitMotion(MotionAction.Shake);*/
+        private void OnMotionShake(InputAction.CallbackContext ctx)
+            => _input.EmitMotion(MotionAction.Shake);
 
         private void OnMotionUp(InputAction.CallbackContext ctx)
             => _input.EmitMotion(MotionAction.Up);
