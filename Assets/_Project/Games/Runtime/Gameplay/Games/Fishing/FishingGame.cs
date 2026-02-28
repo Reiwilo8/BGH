@@ -1,6 +1,13 @@
+using Project.Core.Audio;
+using Project.Core.Audio.Steps;
 using Project.Core.AudioFx;
 using Project.Core.Haptics;
+using Project.Core.Input;
 using Project.Core.Input.Motion;
+using Project.Core.Localization;
+using Project.Core.Settings;
+using Project.Core.Speech;
+using Project.Core.Visual.Games.Fishing;
 using Project.Games.Gameplay.Contracts;
 using System;
 using System.Collections.Generic;
@@ -11,10 +18,21 @@ namespace Project.Games.Fishing
 {
     public sealed class FishingGame : MonoBehaviour,
         IGameplayGame,
+        IGameplayInputHandler,
         IGameplayMotionHandler,
         IGameplayRuntimeStatsProvider,
         IGameplayRepeatHandler
     {
+        private const string GameId = "fishing";
+        private const string GameTable = "Game_Fishing";
+
+        private const string KeyHintObjective = "hint";
+        private const string KeyHintTouch = "hint.touch";
+        private const string KeyHintKeyboard = "hint.keyboard";
+
+        private const float TutorialPostOnboardingDelaySeconds = 1.0f;
+        private const float TutorialSpeechStableFalseSeconds = 0.50f;
+
         private const string PBaseBiteWaitMin = "fishing.biteWaitMinSeconds";
         private const string PBaseBiteWaitMax = "fishing.biteWaitMaxSeconds";
         private const string PBaseReactionWindowBase = "fishing.reactionWindowBaseSeconds";
@@ -43,7 +61,6 @@ namespace Project.Games.Fishing
         private const string PFatigueLossOnWrong = "fishing.fatigueLossOnWrong";
         private const string PFatigueLossOnLoosen = "fishing.fatigueLossOnLoosen";
 
-        // Mode (settings-driven via provider)
         private const string PDifficultyScale = "fishing.difficultyScale";
         private const string PTargetFishCount = "fishing.targetFishCount";
         private const string PAggressionMin = "fishing.aggressionMin";
@@ -84,7 +101,6 @@ namespace Project.Games.Fishing
 
         private const float LinePanMax = 1.00f;
 
-        // These remain constant (not exposed / not in provider as per scope)
         private const float CenterSnapStrength = 0.95f;
 
         private const float TurnBStartSeconds = 1.590f;
@@ -146,6 +162,12 @@ namespace Project.Games.Fishing
 
         private IAudioFxService _audioFx;
         private IHapticsService _haptics;
+        private IFishingVisualDriver _visual;
+
+        private IUiAudioOrchestrator _uiAudio;
+        private ILocalizationService _loc;
+        private ISettingsService _settings;
+        private ISpeechService _speech;
 
         private bool _initialized;
         private bool _running;
@@ -305,6 +327,9 @@ namespace Project.Games.Fishing
 
         private Coroutine _finishCo;
 
+        private bool _tutorialOnboardingSpoken;
+        private Coroutine _tutorialOnboardingCo;
+
         public event Action<GameplayGameResult> GameFinished;
 
         public void Initialize(GameplayGameContext context)
@@ -312,8 +337,8 @@ namespace Project.Games.Fishing
             _ctx = context;
 
             ResolveServices();
+            ResolveVisual();
 
-            // -------- Provider parameters: base --------
             _biteWaitMin = GetRequiredFloat(_ctx.InitialParameters, PBaseBiteWaitMin, min: 0.10f, max: 30f);
             _biteWaitMax = GetRequiredFloat(_ctx.InitialParameters, PBaseBiteWaitMax, min: 0.10f, max: 30f);
             if (_biteWaitMax < _biteWaitMin)
@@ -348,9 +373,7 @@ namespace Project.Games.Fishing
 
             _reactionWindowScale = GetRequiredFloat(_ctx.InitialParameters, PReactionWindowScale, min: 0.10f, max: 10.0f);
 
-            // -------- Provider parameters: advanced tuning --------
             _tensionMaxTicks = GetRequiredInt(_ctx.InitialParameters, PTensionMaxTicks, min: 1, max: 12);
-            // last safe tick before break -> continuous feedback near the end
             _tensionHapticsTick = Mathf.Clamp(_tensionMaxTicks - 1, 0, _tensionMaxTicks);
 
             _actionMinSeconds = GetRequiredFloat(_ctx.InitialParameters, PActionMinSeconds, min: 0.10f, max: 30.0f);
@@ -385,6 +408,14 @@ namespace Project.Games.Fishing
             _running = false;
             _paused = false;
             _finishQueued = false;
+
+            StopTutorialOnboardingRoutine();
+            _tutorialOnboardingSpoken = false;
+
+            TryVisualSetVisible(false);
+            TryVisualReset();
+            TryVisualSetPaused(false);
+            PushVisualState();
         }
 
         public void StartGame()
@@ -400,6 +431,18 @@ namespace Project.Games.Fishing
 
             ResetRuntimeState(fullReset: true);
             EnterIdle();
+
+            TryVisualReset();
+            TryVisualSetPaused(false);
+            TryVisualSetVisible(true);
+            PushVisualState();
+
+            if (string.Equals(_ctx.ModeId, "tutorial", StringComparison.OrdinalIgnoreCase) && !_tutorialOnboardingSpoken)
+            {
+                _tutorialOnboardingSpoken = true;
+                StopTutorialOnboardingRoutine();
+                _tutorialOnboardingCo = StartCoroutine(TutorialOnboardingRoutine());
+            }
         }
 
         public void StopGame()
@@ -407,22 +450,34 @@ namespace Project.Games.Fishing
             _running = false;
             _paused = false;
 
+            StopTutorialOnboardingRoutine();
+
             StopFinishRoutineIfAny();
             StopAllHandlesAndClear();
 
             _phase = Phase.Idle;
+
+            TryVisualSetPaused(false);
+            TryVisualSetVisible(false);
+            PushVisualState();
         }
 
         public void PauseGame()
         {
             _paused = true;
             PauseKnownHandles();
+
+            TryVisualSetPaused(true);
+            PushVisualState();
         }
 
         public void ResumeGame()
         {
             _paused = false;
             ResumeKnownHandles();
+
+            TryVisualSetPaused(false);
+            PushVisualState();
         }
 
         private void Update()
@@ -444,6 +499,22 @@ namespace Project.Games.Fishing
             TickScheduledTurnB();
             TickReactionDeadline();
             TickPhase(dt);
+
+            PushVisualState();
+        }
+
+        public void Handle(NavAction action)
+        {
+            if (!_initialized || !_running || _paused)
+                return;
+
+            if (_finishQueued)
+                return;
+
+            if (action == NavAction.Confirm)
+            {
+                OnShake();
+            }
         }
 
         public void Handle(MotionAction action)
@@ -478,9 +549,162 @@ namespace Project.Games.Fishing
                     _tiltHoldUntilT = _gameTime + TiltSignalHoldSeconds;
                     break;
             }
+
+            PushVisualState();
         }
 
         public void OnRepeatRequested() { }
+
+        private void StopTutorialOnboardingRoutine()
+        {
+            if (_tutorialOnboardingCo != null)
+            {
+                StopCoroutine(_tutorialOnboardingCo);
+                _tutorialOnboardingCo = null;
+            }
+        }
+
+        private System.Collections.IEnumerator TutorialOnboardingRoutine()
+        {
+            if (_uiAudio == null || _speech == null)
+            {
+                _tutorialOnboardingCo = null;
+                yield break;
+            }
+
+            SpeakGameKey(KeyHintObjective);
+            yield return WaitForSpeechToFinishStable(TutorialSpeechStableFalseSeconds);
+
+            if (!_running || _finishQueued) { _tutorialOnboardingCo = null; yield break; }
+
+            string controlsKey = ResolveControlsHintKey();
+            SpeakGameKey(controlsKey);
+            yield return WaitForSpeechToFinishStable(TutorialSpeechStableFalseSeconds);
+
+            yield return WaitUnscaledSecondsWhileRunning(TutorialPostOnboardingDelaySeconds);
+
+            _tutorialOnboardingCo = null;
+        }
+
+        private System.Collections.IEnumerator WaitUnscaledSecondsWhileRunning(float seconds)
+        {
+            float d = Mathf.Clamp(seconds, 0f, 10f);
+            float t = 0f;
+
+            while (t < d)
+            {
+                if (!_running) yield break;
+                if (_finishQueued) yield break;
+
+                if (_paused)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                t += Time.unscaledDeltaTime;
+                yield return null;
+            }
+        }
+
+        private System.Collections.IEnumerator WaitForSpeechToFinishStable(float stableFalseSeconds)
+        {
+            if (_speech == null)
+                yield break;
+
+            stableFalseSeconds = Mathf.Clamp(stableFalseSeconds, 0.05f, 2.0f);
+            float stable = 0f;
+
+            while (true)
+            {
+                if (!_running) yield break;
+                if (_finishQueued) yield break;
+
+                if (_paused)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                bool speaking = false;
+                try { speaking = _speech.IsSpeaking; } catch { speaking = false; }
+
+                if (speaking)
+                {
+                    stable = 0f;
+                    yield return null;
+                    continue;
+                }
+
+                stable += Time.unscaledDeltaTime;
+                if (stable >= stableFalseSeconds)
+                    yield break;
+
+                yield return null;
+            }
+        }
+
+        private void SpeakGameKey(string key, params object[] args)
+        {
+            if (_uiAudio == null) return;
+
+            _uiAudio.Play(
+                UiAudioScope.Gameplay,
+                ctx => SpeakGameKeyAndWait(ctx, key, args),
+                SpeechPriority.Normal,
+                interruptible: true
+            );
+        }
+
+        private System.Collections.IEnumerator SpeakGameKeyAndWait(UiAudioContext ctx, string key, params object[] args)
+        {
+            if (ctx?.Handle == null || ctx.Handle.IsCancelled)
+                yield break;
+
+            string localized = null;
+
+            try
+            {
+                if (_loc != null)
+                {
+                    localized = (args == null || args.Length == 0)
+                        ? _loc.GetFromTable(GameTable, key)
+                        : _loc.GetFromTable(GameTable, key, args);
+                }
+            }
+            catch
+            {
+                localized = null;
+            }
+
+            if (string.IsNullOrWhiteSpace(localized))
+                localized = key;
+
+            yield return UiAudioSteps.SpeakKeyAndWait(ctx, "common.text", localized);
+        }
+
+        private string ResolveControlsHintKey()
+        {
+            ControlHintMode mode = ControlHintMode.Auto;
+
+            try
+            {
+                if (_settings != null)
+                    mode = _settings.Current.controlHintMode;
+            }
+            catch
+            {
+                mode = ControlHintMode.Auto;
+            }
+
+            if (mode == ControlHintMode.Auto)
+            {
+                try { mode = StartupDefaultsResolver.ResolvePlatformPreferredHintMode(); }
+                catch { mode = ControlHintMode.KeyboardMouse; }
+            }
+
+            return mode == ControlHintMode.Touch ? KeyHintTouch : KeyHintKeyboard;
+        }
 
         private bool IsInputIgnored()
         {
@@ -537,7 +761,13 @@ namespace Project.Games.Fishing
                         _nextTurnBAtT = 0f;
                         _afterTurnLockUntilT = -999f;
 
+                        RegisterCorrectAction();
+                        ApplyIterativeCatchStep();
+                        UpdateSplashingLoop();
+                        TickHaptics();
+
                         BeginPostBurstPullGap();
+                        PushVisualState();
                         return;
                     }
 
@@ -862,6 +1092,8 @@ namespace Project.Games.Fishing
 
             _idleSfxEndsAtT = 0f;
             _moveSfxEndsAtT = 0f;
+
+            PushVisualState();
         }
 
         private void StartRound()
@@ -920,6 +1152,8 @@ namespace Project.Games.Fishing
 
             _idleSfxEndsAtT = 0f;
             _moveSfxEndsAtT = 0f;
+
+            PushVisualState();
         }
 
         private void EnterBiting()
@@ -940,6 +1174,8 @@ namespace Project.Games.Fishing
             StopContinuousHaptics();
 
             _suppressIdleSfxUntilT = 0f;
+
+            PushVisualState();
         }
 
         private void BeginReeling(bool fromBite)
@@ -974,6 +1210,8 @@ namespace Project.Games.Fishing
 
             _biteIsOn = false;
             _biteSwitchAtT = 0f;
+
+            PushVisualState();
         }
 
         private void BeginCatch()
@@ -994,6 +1232,9 @@ namespace Project.Games.Fishing
             StopContinuousHaptics();
 
             PlayCatchOneShot();
+
+            TryVisualPulseCatch();
+            PushVisualState();
 
             if (_caught >= _targetFishCount)
             {
@@ -1029,6 +1270,8 @@ namespace Project.Games.Fishing
 
             _pendingTurnBPlays = 0;
             _nextTurnBAtT = 0f;
+
+            PushVisualState();
 
             StopFinishRoutineIfAny();
             _finishCo = StartCoroutine(WinRoutine());
@@ -1074,6 +1317,8 @@ namespace Project.Games.Fishing
         private void BeginRoundEnd(float delaySeconds)
         {
             _phase = Phase.RoundEnd;
+
+            PushVisualState();
 
             StopFinishRoutineIfAny();
             _finishCo = StartCoroutine(RoundEndRoutine(delaySeconds));
@@ -1618,6 +1863,8 @@ namespace Project.Games.Fishing
 
         private void RegisterWrongActionAndResetToIdle()
         {
+            TryVisualPulseMistakeBlink();
+
             if (_tensionTicks < _tensionMaxTicks)
                 _tensionTicks++;
 
@@ -1652,10 +1899,14 @@ namespace Project.Games.Fishing
             _nextFishSfxCheckAtT = Mathf.Max(_nextFishSfxCheckAtT, _gameTime + 0.30f);
 
             TickHaptics();
+
+            PushVisualState();
         }
 
         private void RegisterTimeoutAndResetToIdle()
         {
+            TryVisualPulseMistakeBlink();
+
             _lostTimeout++;
 
             if (_tensionTicks < _tensionMaxTicks)
@@ -1694,6 +1945,8 @@ namespace Project.Games.Fishing
             _nextFishSfxCheckAtT = Mathf.Max(_nextFishSfxCheckAtT, _gameTime + 0.30f);
 
             TickHaptics();
+
+            PushVisualState();
         }
 
         private void RegisterCorrectAction()
@@ -1743,6 +1996,8 @@ namespace Project.Games.Fishing
 
             RestartLineBreakOneShot();
 
+            PushVisualState();
+
             BeginRoundEnd(delaySeconds: PostRoundResetDelaySeconds);
         }
 
@@ -1757,7 +2012,7 @@ namespace Project.Games.Fishing
 
             _progressStartDistance = _fishDistance;
 
-            _fishLateral = UnityEngine.Random.Range(-0.03f, +0.03f);
+            _fishLateral = 0f;
 
             _tensionTicks = 0;
             _fatigue = 0f;
@@ -1803,6 +2058,8 @@ namespace Project.Games.Fishing
 
             _idleSfxEndsAtT = 0f;
             _moveSfxEndsAtT = 0f;
+
+            PushVisualState();
         }
 
         private void ResolvePullsToCatchTarget(out int min, out int max)
@@ -1952,6 +2209,9 @@ namespace Project.Games.Fishing
                 runtimeStats: GetRuntimeStatsSnapshot()
             );
 
+            TryVisualSetVisible(false);
+            PushVisualState();
+
             try { GameFinished?.Invoke(result); } catch { }
         }
 
@@ -1972,7 +2232,6 @@ namespace Project.Games.Fishing
 
                 ["fishing.difficultyScale"] = _difficultyScale.ToString("0.###", CultureInfo.InvariantCulture),
 
-                // Extra useful debug stats (safe additions; no functional impact)
                 ["fishing.tensionMaxTicks"] = _tensionMaxTicks.ToString(CultureInfo.InvariantCulture),
                 ["fishing.failGraceSeconds"] = _failGraceSeconds.ToString("0.###", CultureInfo.InvariantCulture),
             };
@@ -2337,6 +2596,42 @@ namespace Project.Games.Fishing
 
             try { _audioFx = services.Resolve<IAudioFxService>(); } catch { _audioFx = null; }
             try { _haptics = services.Resolve<IHapticsService>(); } catch { _haptics = null; }
+
+            try { _uiAudio = services.Resolve<IUiAudioOrchestrator>(); } catch { _uiAudio = null; }
+            try { _loc = services.Resolve<ILocalizationService>(); } catch { _loc = null; }
+            try { _settings = services.Resolve<ISettingsService>(); } catch { _settings = null; }
+            try { _speech = services.Resolve<ISpeechService>(); } catch { _speech = null; }
+        }
+
+        private void ResolveVisual()
+        {
+            _visual = null;
+
+            try
+            {
+                var services = Core.App.AppContext.Services;
+                try { _visual = services.Resolve<IFishingVisualDriver>(); } catch { _visual = null; }
+            }
+            catch { }
+
+            if (_visual != null)
+                return;
+
+            try
+            {
+                var all = UnityEngine.Object.FindObjectsOfType<MonoBehaviour>(includeInactive: true);
+                for (int i = 0; i < all.Length; i++)
+                {
+                    var mb = all[i];
+                    if (mb == null) continue;
+                    if (mb is IFishingVisualDriver v)
+                    {
+                        _visual = v;
+                        break;
+                    }
+                }
+            }
+            catch { }
         }
 
         private void ResolveFishAudioBase(out float volume01, out float pan)
@@ -2409,6 +2704,96 @@ namespace Project.Games.Fishing
                 throw new InvalidOperationException($"FishingGame: parameter '{key}' out of range [{min}..{max}] value={v.ToString(CultureInfo.InvariantCulture)}.");
 
             return v;
+        }
+
+        private FishingVisualPhase MapPhase(Phase p)
+        {
+            switch (p)
+            {
+                case Phase.Idle: return FishingVisualPhase.Idle;
+                case Phase.Waiting: return FishingVisualPhase.Waiting;
+                case Phase.Biting: return FishingVisualPhase.Biting;
+                case Phase.Reeling: return FishingVisualPhase.Reeling;
+                case Phase.RoundEnd: return FishingVisualPhase.RoundEnd;
+                case Phase.Win: return FishingVisualPhase.Win;
+                default: return FishingVisualPhase.Idle;
+            }
+        }
+
+        private FishingVisualFishAction MapAction(FishAction a)
+        {
+            switch (a)
+            {
+                case FishAction.Idle: return FishingVisualFishAction.Idle;
+                case FishAction.Move: return FishingVisualFishAction.Move;
+                case FishAction.Burst: return FishingVisualFishAction.Burst;
+                default: return FishingVisualFishAction.Idle;
+            }
+        }
+
+        private void PushVisualState()
+        {
+            if (_visual == null) return;
+
+            bool floatVisible =
+                _running &&
+                !_finishQueued &&
+                (_phase == Phase.Waiting || _phase == Phase.Biting || _phase == Phase.Reeling);
+
+            float dist01 = Mathf.Clamp01(_fishDistance / Mathf.Max(0.0001f, BoardForwardMax));
+
+            float lat01 = 0f;
+            if (BoardSideHalf > 0.0001f)
+                lat01 = Mathf.Clamp(_fishLateral / BoardSideHalf, -1f, 1f);
+
+            bool biteOn = (_phase == Phase.Biting) && _biteIsOn;
+
+            var s = new FishingVisualState(
+                visible: _running && !_finishQueued,
+                paused: _paused,
+                phase: MapPhase(_phase),
+                fishAction: MapAction(_fishAction),
+                floatVisible: floatVisible,
+                fishDistance01: dist01,
+                fishLateral01: lat01,
+                biteIsOn: biteOn,
+                canCatchNow: CanCatchNow(),
+                tensionTicks: Mathf.Clamp(_tensionTicks, 0, Mathf.Max(0, _tensionMaxTicks)),
+                tensionMaxTicks: Mathf.Max(0, _tensionMaxTicks),
+                tensionWarnTick: Mathf.Clamp(_tensionHapticsTick, 0, Mathf.Max(0, _tensionMaxTicks))
+            );
+
+            try { _visual.Apply(in s); } catch { }
+        }
+
+        private void TryVisualReset()
+        {
+            if (_visual == null) return;
+            try { _visual.Reset(); } catch { }
+        }
+
+        private void TryVisualSetVisible(bool visible)
+        {
+            if (_visual == null) return;
+            try { _visual.SetVisible(visible); } catch { }
+        }
+
+        private void TryVisualSetPaused(bool paused)
+        {
+            if (_visual == null) return;
+            try { _visual.SetPaused(paused); } catch { }
+        }
+
+        private void TryVisualPulseMistakeBlink()
+        {
+            if (_visual == null) return;
+            try { _visual.PulseMistakeBlink(); } catch { }
+        }
+
+        private void TryVisualPulseCatch()
+        {
+            if (_visual == null) return;
+            try { _visual.PulseCatch(); } catch { }
         }
     }
 }

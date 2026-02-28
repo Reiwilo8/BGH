@@ -301,6 +301,23 @@ MonoBehaviour:
       line.
     m_Metadata:
       m_Items: []
+  - m_Id: 10822314426789888
+    m_Localized: Catch the fish. React to its moves and bring it close enough to
+      land it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10822466260594688
+    m_Localized: 'Shake to cast and to pull. Swipe down to reel in. Swipe up is a
+      rescue: it lowers tension but costs progress. When the fish moves sideways,
+      tilt against it and reel in right away.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10822659613814784
+    m_Localized: 'Press Enter to cast and to pull. Press Down to reel in. Press Up
+      is a rescue: it lowers tension but costs progress. When the fish moves sideways,
+      press Left/Right against it and press Down right away.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

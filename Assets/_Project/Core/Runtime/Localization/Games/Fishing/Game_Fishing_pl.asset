@@ -307,6 +307,25 @@ MonoBehaviour:
     m_Localized: "Okre\u015Bla, o ile spada zm\u0119czenie, gdy gracz luzuje \u017Cy\u0142k\u0119."
     m_Metadata:
       m_Items: []
+  - m_Id: 10822314426789888
+    m_Localized: "Z\u0142\xF3w ryb\u0119. Reaguj na jej ruchy i przyci\u0105gnij
+      j\u0105 na tyle blisko, by j\u0105 wyci\u0105gn\u0105\u0107."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10822466260594688
+    m_Localized: "Potrz\u0105\u015Bnij, aby zarzuci\u0107 i szarpn\u0105\u0107. Przeci\u0105gnij
+      w d\xF3\u0142, aby zwija\u0107. Przeci\u0105gni\u0119cie w g\xF3r\u0119 to
+      ratunek: zmniejsza napi\u0119cie, ale kosztuje post\u0119p. Gdy ryba ucieka
+      w bok, przechyl przeciwnie i od razu zwijaj."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10822659613814784
+    m_Localized: "Wci\u015Bnij Enter, aby zarzuci\u0107 i szarpn\u0105\u0107. Wci\u015Bnij
+      strza\u0142k\u0119 w d\xF3\u0142, aby zwija\u0107. Strza\u0142ka w g\xF3r\u0119
+      to ratunek: zmniejsza napi\u0119cie, ale kosztuje post\u0119p. Gdy ryba ucieka
+      w bok, wci\u015Bnij lewo/prawo przeciwnie i od razu wci\u015Bnij w d\xF3\u0142."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

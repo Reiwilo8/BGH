@@ -51,7 +51,6 @@ namespace Project.Core.Input.Gestures
 
             _input = AppContext.Services.Resolve<IInputService>();
             _repeat = AppContext.Services.Resolve<IRepeatService>();
-
             _va = AppContext.Services.Resolve<IVisualAssistService>();
         }
 
@@ -225,6 +224,7 @@ namespace Project.Core.Input.Gestures
 
                     _lastTapTime = -999f;
                     _input.Emit(NavAction.Confirm);
+                    //_input.EmitMotion(MotionAction.Shake);
                 }
                 else
                 {

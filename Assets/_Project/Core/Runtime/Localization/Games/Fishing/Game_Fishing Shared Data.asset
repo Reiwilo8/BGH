@@ -287,6 +287,18 @@ MonoBehaviour:
     m_Key: settings.preset.hard
     m_Metadata:
       m_Items: []
+  - m_Id: 10822314426789888
+    m_Key: hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10822466260594688
+    m_Key: hint.touch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10822659613814784
+    m_Key: hint.keyboard
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

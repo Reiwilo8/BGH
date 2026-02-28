@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Project.Core.App;
 using UnityEngine;
 
@@ -15,7 +14,6 @@ namespace Project.Core.Input.Motion
         private IInputService _input;
 
         private Vector3 _gravity;
-        private Vector3 _linear;
 
         private float _neutralTiltDeg;
 
@@ -24,9 +22,18 @@ namespace Project.Core.Input.Motion
 
         private float _nextTiltEmitTime;
 
-        private readonly Queue<float> _shakePeaks = new Queue<float>();
-        private float _lastPeakTime = -999f;
-        private float _shakeCooldownUntil = -999f;
+#if ENABLE_INPUT_SYSTEM
+        private Accelerometer _accelerometer;
+#endif
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        private AndroidAccelListener _androidListener;
+        private AndroidJavaObject _androidSensorService;
+        private Vector3 _androidAccMs2;
+        private bool _androidHasAcc;
+#endif
+
+        private const float Ms2PerG = 9.80665f;
 
         private void Awake()
         {
@@ -43,8 +50,25 @@ namespace Project.Core.Input.Motion
         private void OnEnable()
         {
 #if ENABLE_INPUT_SYSTEM
-            if (Accelerometer.current != null)
-                InputSystem.EnableDevice(Accelerometer.current);
+            _accelerometer = Accelerometer.current;
+            if (_accelerometer == null)
+            {
+                try { _accelerometer = InputSystem.AddDevice<Accelerometer>(); }
+                catch { _accelerometer = Accelerometer.current; }
+            }
+            if (_accelerometer != null) InputSystem.EnableDevice(_accelerometer);
+#endif
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+            if (settings.useAndroidSensorManagerFallback)
+                TryStartAndroidAccel();
+#endif
+        }
+
+        private void OnDisable()
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            TryStopAndroidAccel();
 #endif
         }
 
@@ -54,31 +78,157 @@ namespace Project.Core.Input.Motion
             float now = Now();
             float dt = DeltaTime();
 
-            Vector3 acc = ReadAccelerationG(); // includes gravity, in g
+            bool haveAccG = TryReadAccelerometerG(out Vector3 accG);
 
-            // Gravity low-pass
-            float lerpT = 1f - settings.gravityLowPass;
-            _gravity = Vector3.Lerp(_gravity, acc, lerpT);
+            if (!haveAccG)
+                haveAccG = TryReadLegacyAccelerationG(out accG);
 
-            // Linear motion high-pass
-            _linear = acc - _gravity;
+#if UNITY_ANDROID && !UNITY_EDITOR
+            if (!haveAccG && settings.useAndroidSensorManagerFallback)
+            {
+                if (TryReadAndroidAccelerometerG(out Vector3 aG))
+                {
+                    accG = aG;
+                    haveAccG = true;
+                }
+            }
+#endif
+
+            if (!haveAccG)
+                return;
+
+            float tiltLerpT = 1f - settings.gravityLowPass;
+            _gravity = Vector3.Lerp(_gravity, accG, tiltLerpT);
 
             UpdateTilt(now, dt);
-            UpdateShake(now);
 #endif
         }
 
         private float Now() => settings.useUnscaledTime ? Time.unscaledTime : Time.time;
         private float DeltaTime() => settings.useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
 
-        private Vector3 ReadAccelerationG()
-        {
 #if ENABLE_INPUT_SYSTEM
-            if (Accelerometer.current != null)
-                return Accelerometer.current.acceleration.ReadValue();
-#endif
-            return UnityEngine.Input.acceleration;
+        private bool TryReadAccelerometerG(out Vector3 g)
+        {
+            g = default;
+            if (_accelerometer == null) return false;
+
+            Vector3 ms2 = _accelerometer.acceleration.ReadValue();
+            if (ms2.sqrMagnitude < 0.000001f) return false;
+
+            g = ms2 / Ms2PerG;
+            return true;
         }
+#else
+        private bool TryReadAccelerometerG(out Vector3 g) { g = default; return false; }
+#endif
+
+        private bool TryReadLegacyAccelerationG(out Vector3 g)
+        {
+            g = default;
+#if UNITY_ANDROID || UNITY_IOS
+            Vector3 a = UnityEngine.Input.acceleration;
+            if (a.sqrMagnitude < 0.000001f) return false;
+            g = a;
+            return true;
+#else
+            return false;
+#endif
+        }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        private bool TryReadAndroidAccelerometerG(out Vector3 g)
+        {
+            g = default;
+            if (!_androidHasAcc) return false;
+            Vector3 ms2 = _androidAccMs2;
+            if (ms2.sqrMagnitude < 0.000001f) return false;
+            g = ms2 / Ms2PerG;
+            return true;
+        }
+
+        private void TryStartAndroidAccel()
+        {
+            if (_androidListener != null) return;
+
+            try
+            {
+                using var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                if (activity == null) return;
+
+                using var contextClass = new AndroidJavaClass("android.content.Context");
+                string sensorServiceName = contextClass.GetStatic<string>("SENSOR_SERVICE");
+                var sensorService = activity.Call<AndroidJavaObject>("getSystemService", sensorServiceName);
+                if (sensorService == null) return;
+
+                int sensorTypeAccelerometer = 1;
+                var accel = sensorService.Call<AndroidJavaObject>("getDefaultSensor", sensorTypeAccelerometer);
+                if (accel == null) return;
+
+                _androidListener = new AndroidAccelListener(this);
+                int delayGame = 1;
+
+                bool ok = sensorService.Call<bool>("registerListener", _androidListener, accel, delayGame);
+                if (!ok)
+                {
+                    _androidListener = null;
+                    return;
+                }
+
+                _androidSensorService = sensorService;
+                _androidHasAcc = true;
+            }
+            catch
+            {
+                _androidListener = null;
+                _androidSensorService = null;
+                _androidHasAcc = false;
+            }
+        }
+
+        private void TryStopAndroidAccel()
+        {
+            if (_androidListener == null) return;
+
+            try
+            {
+                if (_androidSensorService != null)
+                    _androidSensorService.Call("unregisterListener", _androidListener);
+            }
+            catch { }
+
+            _androidListener = null;
+            _androidSensorService = null;
+            _androidHasAcc = false;
+        }
+
+        private sealed class AndroidAccelListener : AndroidJavaProxy
+        {
+            private readonly MotionInputSource _owner;
+
+            public AndroidAccelListener(MotionInputSource owner)
+                : base("android.hardware.SensorEventListener")
+            {
+                _owner = owner;
+            }
+
+            void onSensorChanged(AndroidJavaObject eventObj)
+            {
+                try
+                {
+                    float[] values = eventObj.Get<float[]>("values");
+                    if (values == null || values.Length < 3) return;
+
+                    _owner._androidAccMs2 = new Vector3(values[0], values[1], values[2]);
+                    _owner._androidHasAcc = true;
+                }
+                catch { }
+            }
+
+            void onAccuracyChanged(AndroidJavaObject sensor, int accuracy) { }
+        }
+#endif
 
         private void UpdateTilt(float now, float dt)
         {
@@ -91,9 +241,7 @@ namespace Project.Core.Input.Motion
             }
 
             float rollDeg = ComputeScreenRollDeg(_gravity, Screen.orientation);
-
             float foldedTiltDeg = FoldRollToSteeringTiltDeg(rollDeg);
-
             float centered = foldedTiltDeg - _neutralTiltDeg;
 
             if (Mathf.Abs(centered) <= settings.neutralFollowMaxAbsDeg)
@@ -138,31 +286,6 @@ namespace Project.Core.Input.Motion
                 _input.EmitMotion(MotionAction.TiltLeft);
             else
                 _input.EmitMotion(MotionAction.TiltRight);
-        }
-
-        private void UpdateShake(float now)
-        {
-            if (now < _shakeCooldownUntil)
-                return;
-
-            float mag = _linear.magnitude;
-
-            if (mag >= settings.shakePeakThresholdG &&
-                (now - _lastPeakTime) >= settings.shakeMinPeakGapSeconds)
-            {
-                _lastPeakTime = now;
-                _shakePeaks.Enqueue(now);
-            }
-
-            while (_shakePeaks.Count > 0 && (now - _shakePeaks.Peek()) > settings.shakeWindowSeconds)
-                _shakePeaks.Dequeue();
-
-            if (_shakePeaks.Count >= settings.shakeRequiredPeaks)
-            {
-                _shakePeaks.Clear();
-                _shakeCooldownUntil = now + settings.shakeCooldownSeconds;
-                _input.EmitMotion(MotionAction.Shake);
-            }
         }
 
         private static float ComputeScreenRollDeg(Vector3 g, ScreenOrientation orientation)
